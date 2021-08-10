@@ -32,7 +32,7 @@ namespace HGM {
 		void HgmLvglIndevInit();
 		void HgmLvglFsInit();
 
-		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
+		
 		static void HgmLvglTask(void* params);
 		static void HgmLvglTick(void* params);
 	public:
@@ -42,6 +42,8 @@ namespace HGM {
 
 		void HgmLvglBegin();
 		void HgmLvglUIBegin();
+
+		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
 	};
 };
 
