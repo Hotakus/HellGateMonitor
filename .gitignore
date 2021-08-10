@@ -31,6 +31,9 @@
 *.out
 *.app
 
-/.vs/HellGateMonitor/v16/Browse.VC.opendb
-/Release/
+/.vs
+/Release
 /Release/*.*
+
+/.idea
+/.vscode
