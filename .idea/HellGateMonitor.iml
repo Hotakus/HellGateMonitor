@@ -9,6 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Release/SPIFFS" />
       <excludeFolder url="file://$MODULE_DIR$/Release/TFT_eSPI" />
       <excludeFolder url="file://$MODULE_DIR$/Release/Wire" />
+      <excludeFolder url="file://$MODULE_DIR$/Release" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

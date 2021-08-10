@@ -12,6 +12,7 @@
 using namespace HGM;
 
 HgmControlLogic* hcl = new HgmControlLogic(Wire1);
+HgmLvgl* hgmLvgl = new HgmLvgl();
 
 void setup()
 {
@@ -24,9 +25,7 @@ void setup()
 	Serial.printf("0x%X\n", hcl->imu->whoAmI());
 
 	/* Hgm LVGL init */
-	HgmLvgl *hgmLvgl = new HgmLvgl(135, 240);
 	hgmLvgl->HgmLvglBegin();
-	hgmLvgl->HgmLvglUIBegin();
 }
 
 void loop()

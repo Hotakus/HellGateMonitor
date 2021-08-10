@@ -21,7 +21,11 @@ namespace HGM {
 	{
 	private:
 		/*  */
+		int16_t _width = 0;
+		int16_t _height = 0;
+
 		xTaskHandle hgmLvglTaskHandle;
+		xTaskHandle hgmLvglTickHandle;
 		int16_t lvTick = 50;
 
 		void HgmLvglDispInit();
@@ -30,9 +34,10 @@ namespace HGM {
 
 		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
 		static void HgmLvglTask(void* params);
+		static void HgmLvglTick(void* params);
 	public:
 
-		HgmLvgl(int16_t w = HGM_MONITOR_WIDTH, int16_t h = HGM_MONITOR_HEIGHT);
+		HgmLvgl(int16_t width = HGM_MONITOR_WIDTH, int16_t height = HGM_MONITOR_HEIGHT);
 		~HgmLvgl();
 
 		void HgmLvglBegin();

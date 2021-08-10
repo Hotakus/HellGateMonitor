@@ -18,9 +18,11 @@ using namespace HGM;
 
 static TFT_eSPI* lcd = nullptr;
 
-HGM::HgmLvgl::HgmLvgl(int16_t w, int16_t h)
+HGM::HgmLvgl::HgmLvgl(int16_t width, int16_t height)
 {
-	lcd = new TFT_eSPI();
+	this->_width = width;
+	this->_height = height;
+	lcd = new TFT_eSPI(this->_width, this->_height);
 }
 
 HgmLvgl::~HgmLvgl()
@@ -29,12 +31,45 @@ HgmLvgl::~HgmLvgl()
 	vTaskDelete(&this->hgmLvglTaskHandle);
 }
 
+static void event_handler(lv_event_t* e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+	if (code == LV_EVENT_CLICKED) {
+		LV_LOG_USER("Clicked");
+	}
+	else if (code == LV_EVENT_VALUE_CHANGED) {
+		LV_LOG_USER("Toggled");
+	}
+}
+void lv_example_btn_1(void)
+{
+	lv_obj_t* label1 = lv_label_create(lv_scr_act());
+	lv_label_set_long_mode(label1, LV_LABEL_LONG_WRAP); /*Break the long lines*/
+	lv_label_set_recolor(label1, true); /*Enable re-coloring by␣
+	,→commands in the text*/
+	lv_label_set_text(label1, "#0000ff Re-color# #ff00ff words# #ff0000 of a# label"
+		"align the lines to the center "
+		"and wrap long text automatically.");
+	lv_obj_set_width(label1, 150); /*Set smaller width to make the lines wrap*/
+	lv_obj_set_style_text_align(label1, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_align(label1, LV_ALIGN_CENTER, 0, -40);
+	lv_obj_t* label2 = lv_label_create(lv_scr_act());
+	lv_label_set_long_mode(label2, LV_LABEL_LONG_SCROLL_CIRCULAR); /*Circular␣
+	,→scroll*/
+	lv_obj_set_width(label2, 150);
+	lv_label_set_text(label2, "It is a circularly scrolling text. ");
+	lv_obj_align(label2, LV_ALIGN_CENTER, 0, 40);
+
+}
+
+
 /* public function */
 void HGM::HgmLvgl::HgmLvglBegin()
 {
 	/* LCD init */
 	lcd->begin();
-	lcd->fillScreen(TFT_RED);
+	lcd->setRotation(1);
+	lcd->fillScreen(TFT_YELLOW);
 
 	/* LVGL init */
 	lv_init();
@@ -42,6 +77,18 @@ void HGM::HgmLvgl::HgmLvglBegin()
 	this->HgmLvglIndevInit();
 	this->HgmLvglFsInit();
 
+	//
+	this->HgmLvglUIBegin();
+
+	//
+	xTaskCreate(
+		HgmLvglTick,
+		"HgmLvglTick",
+		2048,
+		&lvTick,
+		5,
+		&this->hgmLvglTickHandle
+	);
 	xTaskCreate(
 		HgmLvglTask,
 		"HgmLvglTask",
@@ -58,8 +105,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
 void HGM::HgmLvgl::HgmLvglUIBegin()
 {
 	//hgm_framework_init();
-	static lv_obj_t* btn = lv_btn_create(lv_scr_act());
-	lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
+	lv_example_btn_1();
 }
 
 /* private function */
@@ -67,8 +113,16 @@ void HGM::HgmLvgl::HgmLvglTask(void* params)
 {
 	uint16_t tick = *(uint16_t*)params;
 	while (true) {
-		lv_tick_inc(tick);
 		lv_timer_handler(); /* let the GUI do its work */
+		vTaskDelay(tick);		// use FreeRTOS
+	}
+}
+
+void HGM::HgmLvgl::HgmLvglTick(void* params)
+{
+	uint16_t tick = *(uint16_t*)params;
+	while (true) {
+		lv_tick_inc(tick);
 		vTaskDelay(tick);		// use FreeRTOS
 	}
 }
@@ -83,8 +137,8 @@ void HGM::HgmLvgl::HgmLvglDispInit()
 
 	/*Set up the functions to access to your display*/
 	/*Set the resolution of the display*/
-	disp_drv.hor_res = HGM_MONITOR_WIDTH;
-	disp_drv.ver_res = HGM_MONITOR_HEIGHT;
+	disp_drv.hor_res = HGM_MONITOR_HEIGHT;
+	disp_drv.ver_res = HGM_MONITOR_WIDTH;
 
 	/*Used to copy the buffer's content to the display*/
 	disp_drv.flush_cb = HgmLvglDispFlush;
