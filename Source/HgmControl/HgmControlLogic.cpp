@@ -55,7 +55,7 @@ void HGM::HgmControlLogic::RelativeAccelValueConfig(float* dax, float* day, floa
 }
 
 /**
- * @brief  Analitical task.
+ * @brief  Analyze task.
  */
 void HGM::HgmControlLogic::AnalyzeTask()
 {

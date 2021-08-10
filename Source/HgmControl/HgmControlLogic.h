@@ -10,15 +10,15 @@
 #ifndef HGM_CONTROL_LOGIC_H
 #define HGM_CONTROL_LOGIC_H
 
-namespace HGM {
-
 #include <I2C_MPU6886.h>
+
+namespace HGM {
 
 #define GX_THRESHOLD 200
 #define GY_THRESHOLD 200
 #define GZ_THRESHOLD 200
 
-	/* Motions */
+	/* Motions' type when user confront the screen surface */
 	typedef enum MotionType {
 		CLOCKWISE = 0,
 		ANTICLOCKWISE,
@@ -69,7 +69,6 @@ namespace HGM {
 		void RelativeAccelValueConfig(float* dax, float* day, float* daz);
 		void AnalyzeTask();
 		MotionType AnalyzeMotion();
-
 	};
 }
 

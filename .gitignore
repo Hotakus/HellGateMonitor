@@ -31,3 +31,6 @@
 *.out
 *.app
 
+/.vs/HellGateMonitor/v16/Browse.VC.opendb
+/.vs/HellGateMonitor/v16/Browse.VC.db-wal
+/.vs/HellGateMonitor/v16/Browse.VC.db-shm
