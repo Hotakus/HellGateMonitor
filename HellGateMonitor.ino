@@ -21,19 +21,17 @@ void setup()
 	Serial.begin(115200);
 	Wire1.begin(21, 22);
 
-	
-
 	/* Hgm Control init */
 	hcl->HgmControlBegin();
 	Serial.printf("0x%X\n", hcl->imu->whoAmI());
 
 
 	HgmLvgl *hgmLvgl = new HgmLvgl();
-
+	hgmLvgl->HgmLvglBegin();
 }
 
 void loop()
 {
 	hcl->AnalyzeTask();
-	delay(100);
+	vTaskDelay(50);		// use FreeRTOS
 }

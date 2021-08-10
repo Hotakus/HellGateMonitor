@@ -11,7 +11,7 @@
 #define HELLGATEMONITOR_HGMLVGL_H
 
 #include <TFT_eSPI.h>
-#include "lvgl/lvgl.h"
+#include "../LvglSrc/lvgl/lvgl.h"
 
 namespace HGM {
 #define HGM_MONITOR_WIDTH  240
@@ -21,13 +21,22 @@ namespace HGM {
 	{
 	private:
 		/*  */
+		xTaskHandle hgmLvglTaskHandle;
+		int16_t lvTick = 50;
+
+		void HgmLvglDispInit();
+		void HgmLvglIndevInit();
+		void HgmLvglFsInit();
+
+		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
+		static void HgmLvglTask(void* params);
 	public:
-		TFT_eSPI* lcd = nullptr;
 
 		HgmLvgl(int16_t w = HGM_MONITOR_WIDTH, int16_t h = HGM_MONITOR_HEIGHT);
 		~HgmLvgl();
 
 		void HgmLvglBegin();
+		
 	};
 };
 
