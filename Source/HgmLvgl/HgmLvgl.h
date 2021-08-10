@@ -36,7 +36,7 @@ namespace HGM {
 		~HgmLvgl();
 
 		void HgmLvglBegin();
-		
+		void HgmLvglUIBegin();
 	};
 };
 

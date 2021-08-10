@@ -369,7 +369,10 @@
     <ClInclude Include="Source\LvglSrc\lv_conf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_disp.h">
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\hgm_top_framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\hgm_wifi_ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -755,7 +758,10 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\widgets\lv_textarea.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.c">
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\hgm_top_framework.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\hgm_wifi_ui.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

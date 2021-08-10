@@ -32,3 +32,4 @@
 *.app
 
 /.vs/HellGateMonitor/v16/Browse.VC.opendb
+/Release/

@@ -12,8 +12,6 @@
 using namespace HGM;
 
 HgmControlLogic* hcl = new HgmControlLogic(Wire1);
-TFT_eSPI* lcd = new TFT_eSPI(240, 320);
-
 
 void setup()
 {
@@ -25,9 +23,10 @@ void setup()
 	hcl->HgmControlBegin();
 	Serial.printf("0x%X\n", hcl->imu->whoAmI());
 
-
-	HgmLvgl *hgmLvgl = new HgmLvgl();
+	/* Hgm LVGL init */
+	HgmLvgl *hgmLvgl = new HgmLvgl(135, 240);
 	hgmLvgl->HgmLvglBegin();
+	hgmLvgl->HgmLvglUIBegin();
 }
 
 void loop()
