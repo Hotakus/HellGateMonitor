@@ -115,9 +115,8 @@
       <FileType>CppCode</FileType>
     </ClInclude>
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\hgm_top_framework.h" />
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\hgm_wifi_ui.h" />
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h" />
+    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_disp.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\lvgl.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\core\lv_disp.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\core\lv_event.h" />
@@ -235,9 +234,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\hgm_top_framework.c" />
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\hgm_wifi_ui.c" />
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />
+    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_event.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_group.c" />
@@ -372,7 +370,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties custom_esp32_esp32wrover_PartitionScheme="noota_3g" VM_ADDITIONAL_COMPILER_FLAGS="" />
+      <UserProperties custom_esp32_esp32wrover_PartitionScheme="noota_3g" VM_ADDITIONAL_COMPILER_FLAGS=" -fdata-sections -ffunction-sections" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
