@@ -52,34 +52,35 @@ namespace HGM {
 		float *dgy;
 		float *dgz;
 
+		xSemaphoreHandle i2cSemaphore;
+
 	public:
 		MotionType mt = MotionType::NULL_MOTION;
 		/* Instance of Control */
 		I2C_MPU6886* imu = nullptr;
+		float temp = 0;
 
 		HgmControlLogic(TwoWire& i2cPort);
 		~HgmControlLogic();
 
 		void HgmControlBegin();
 
+		float GetTemperature();
 		void GetAccelRowParams();
 		void GetGyroRowParams();
 
 		void RelativeGyroValueConfig(float* dgx, float* dgy, float* dgz);
 		void RelativeAccelValueConfig(float* dax, float* day, float* daz);
-		void AnalyzeTask();
-		MotionType AnalyzeMotion();
+		void AnalyzeMotion();
+		MotionType AnalyzeTask();
 	};
 }
+
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-
-
 
 #ifdef __cplusplus
 }

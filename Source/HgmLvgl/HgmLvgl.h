@@ -12,6 +12,8 @@
 
 #include <TFT_eSPI.h>
 #include "../LvglSrc/lvgl/lvgl.h"
+#include "../HgmControl/HgmControlLogic.h"
+#include "HgmGUI/HgmFramework.h"
 
 namespace HGM {
 #define HGM_MONITOR_WIDTH  240
@@ -24,18 +26,24 @@ namespace HGM {
 		int16_t _width = 0;
 		int16_t _height = 0;
 
+		xTaskHandle hgmControlHandle;
+
 		xTaskHandle hgmLvglTaskHandle;
 		xTaskHandle hgmLvglTickHandle;
-		int16_t lvTick = 50;
+		int16_t lvTick = 5;
 
 		void HgmLvglDispInit();
 		void HgmLvglIndevInit();
 		void HgmLvglFsInit();
 
-		
+
 		static void HgmLvglTask(void* params);
 		static void HgmLvglTick(void* params);
+		static void HgmControlCheckTask(void* params);
+
 	public:
+		HgmControlLogic *hcl = nullptr;
+		HgmGUI::HgmFramework *hgmFw = nullptr;
 
 		HgmLvgl(int16_t width = HGM_MONITOR_WIDTH, int16_t height = HGM_MONITOR_HEIGHT);
 		~HgmLvgl();
@@ -47,11 +55,14 @@ namespace HGM {
 	};
 };
 
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 	/*...*/
+	
 
 #ifdef __cplusplus
 }

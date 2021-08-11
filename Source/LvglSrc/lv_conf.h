@@ -64,10 +64,10 @@
  *====================*/
 
 /*Default display refresh period. LVG will redraw changed ares with this period time*/
-#define LV_DISP_DEF_REFR_PERIOD     30      /*[ms]*/
+#define LV_DISP_DEF_REFR_PERIOD     10      /*[ms]*/
 
 /*Input device read period in milliseconds*/
-#define LV_INDEV_DEF_READ_PERIOD    30      /*[ms]*/
+#define LV_INDEV_DEF_READ_PERIOD    300      /*[ms]*/
 
 /*Use a custom tick source that tells the elapsed time in milliseconds.
  *It removes the need to manually update the tick with `lv_tick_inc()`)*/
@@ -162,7 +162,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 /*1: Print the log with 'printf';
  *0: User need to register a callback with `lv_log_register_print_cb()`*/
-#  define LV_LOG_PRINTF   0
+#  define LV_LOG_PRINTF   Serial.printf
 
 /*Enable/disable LV_LOG_TRACE in modules that produces a huge number of logs*/
 #  define LV_LOG_TRACE_MEM            1
@@ -197,11 +197,11 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
  *-----------*/
 
 /*1: Show CPU usage and FPS count in the right bottom corner*/
-#define LV_USE_PERF_MONITOR     0
+#define LV_USE_PERF_MONITOR     1
 
 /*1: Show the used memory and the memory fragmentation  in the left bottom corner
  * Requires LV_MEM_CUSTOM = 0*/
-#define LV_USE_MEM_MONITOR      0
+#define LV_USE_MEM_MONITOR      1
 
 /*1: Draw random colored rectangles over the redrawn areas*/
 #define LV_USE_REFR_DEBUG       0
@@ -432,7 +432,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 /*-----------
  * Widgets
  *----------*/
-#define LV_USE_CALENDAR     1
+#define LV_USE_CALENDAR     0
 #if LV_USE_CALENDAR
 # define LV_CALENDAR_WEEK_STARTS_MONDAY 0
 # if LV_CALENDAR_WEEK_STARTS_MONDAY
@@ -448,13 +448,13 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_CHART        1
 
-#define LV_USE_COLORWHEEL   1
+#define LV_USE_COLORWHEEL   0
 
 #define LV_USE_IMGBTN       1
 
-#define LV_USE_KEYBOARD     1
+#define LV_USE_KEYBOARD     0
 
-#define LV_USE_LED          1
+#define LV_USE_LED          0
 
 #define LV_USE_LIST         1
 
@@ -470,7 +470,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_TILEVIEW     1
 
-#define LV_USE_WIN          1
+#define LV_USE_WIN          0
 
 #define LV_USE_SPAN         1
 #if LV_USE_SPAN

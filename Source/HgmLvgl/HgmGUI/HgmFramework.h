@@ -11,17 +11,36 @@
 #define LVGL_HGM_TOP_FRAMEWORK_H
 
 #include "../../LvglSrc/lvgl/lvgl.h"
+#include "HgmWiFiUI.h"
 
-#define TILE_NUMBER 3
+
+namespace HgmGUI {
+
+#define TAB_NUMBER 3
+
+	class HgmFramework
+	{
+	private:
+
+	public:
+		HgmWiFiUI* hgmWiFiUI = nullptr;
+
+		HgmFramework();
+		~HgmFramework();
+
+		void begin();
+	};
+
+};
+
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern lv_obj_t *hgm_fw_tv;
-extern lv_obj_t *tv_tile_list[TILE_NUMBER];
-
-void hgm_framework_init(void);
+extern lv_obj_t * hgmFwTabview;
+extern lv_obj_t * hgmTabList[TAB_NUMBER];
 
 #ifdef __cplusplus
 }

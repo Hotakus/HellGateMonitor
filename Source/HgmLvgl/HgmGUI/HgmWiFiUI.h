@@ -12,11 +12,29 @@
 
 #include <stdint.h>
 
+namespace HgmGUI {
+
+	class HgmWiFiUI
+	{
+	private:
+		uint8_t tab_id = 0;
+
+	public:
+		HgmWiFiUI(uint8_t tab_id);
+		~HgmWiFiUI();
+
+		void begin();
+	};
+
+};
+
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void hgm_wifi_config_ui(uint8_t tile_id);
 
 #ifdef __cplusplus
 }

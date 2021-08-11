@@ -24,12 +24,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmControl\HgmControlLogic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmLvgl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\LvglSrc\lvgl\src\core\lv_disp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -369,17 +363,20 @@
     <ClInclude Include="Source\LvglSrc\lv_conf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmLvgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_disp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmControl\HgmControlLogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -755,7 +752,16 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\widgets\lv_textarea.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

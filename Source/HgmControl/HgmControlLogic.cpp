@@ -18,6 +18,9 @@ HgmControlLogic::HgmControlLogic(TwoWire& i2cPort)
 	this->imu = new I2C_MPU6886(I2C_MPU6886_DEFAULT_ADDRESS, i2cPort);
 	this->RelativeGyroValueConfig(&_gx, &_gy, &_gz);
 	this->RelativeAccelValueConfig(&_ax, &_ay, &_az);
+
+	this->i2cSemaphore = xSemaphoreCreateBinary();
+	xSemaphoreGive(this->i2cSemaphore);
 }
 
 HgmControlLogic::~HgmControlLogic()
@@ -55,16 +58,20 @@ void HGM::HgmControlLogic::RelativeAccelValueConfig(float* dax, float* day, floa
 }
 
 /**
- * @brief  Analyze task.
+ * @brief Analyze task..
+ * @return MotionType
  */
-void HGM::HgmControlLogic::AnalyzeTask()
+MotionType HGM::HgmControlLogic::AnalyzeTask()
 {
+	xSemaphoreTake(this->i2cSemaphore, portMAX_DELAY);
 	this->GetAccelRowParams();
 	this->GetGyroRowParams();
+	xSemaphoreGive(this->i2cSemaphore);
 
-	this->mt = this->AnalyzeMotion();
+	this->AnalyzeMotion();
+
 	if (this->mt == MotionType::NULL_MOTION)
-		return;
+		return MotionType::NULL_MOTION;
 
 	switch (this->mt)
 	{
@@ -90,33 +97,42 @@ void HGM::HgmControlLogic::AnalyzeTask()
 		break;
 	}
 
+	return this->mt;
+}
+
+float HGM::HgmControlLogic::GetTemperature()
+{
+	xSemaphoreTake(this->i2cSemaphore, portMAX_DELAY);
+	static float last_temp = this->temp;
+	this->imu->getTemp(&this->temp);
+	if (this->temp > 100)
+		this->temp = last_temp;
+	xSemaphoreGive(this->i2cSemaphore);
+
+	return temp;
 }
 
 /**
  * @brief  Analyze the Motion of the imu.
- *
- * @return MotionType
  */
-MotionType HGM::HgmControlLogic::AnalyzeMotion()
+void HGM::HgmControlLogic::AnalyzeMotion()
 {
-
 	/*Serial.printf("GX: %0.2f\n", *dgx);
 	Serial.printf("GY: %0.2f\n", *dgy);
 	Serial.printf("GZ: %0.2f\n", *dgz);*/
 
+	this->mt = MotionType::NULL_MOTION;
+
 	if (*dgz >= GZ_THRESHOLD)
-		return MotionType::ANTICLOCKWISE;
+		mt = MotionType::ANTICLOCKWISE;
 	else if (*dgz <= -GZ_THRESHOLD)
-		return MotionType::CLOCKWISE;
+		mt = MotionType::CLOCKWISE;
 	else if (*dgy >= GY_THRESHOLD)
-		return MotionType::LEFT_TO_RIGHT;
+		mt = MotionType::LEFT_TO_RIGHT;
 	else if (*dgy <= -GY_THRESHOLD)
-		return MotionType::RIGHT_TO_LEFT;
+		mt = MotionType::RIGHT_TO_LEFT;
 	else if (*dgx >= GX_THRESHOLD)
-		return MotionType::DOWN_HEAD;
+		mt = MotionType::DOWN_HEAD;
 	else if (*dgx <= -GX_THRESHOLD)
-		return MotionType::RISE_HEAD;
-
-	return MotionType::NULL_MOTION;
+		mt = MotionType::RISE_HEAD;
 }
-

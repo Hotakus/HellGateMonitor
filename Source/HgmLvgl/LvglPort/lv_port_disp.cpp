@@ -14,35 +14,14 @@
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "lv_port_disp.h"
 #include "../HgmLvgl.h"
-/*********************
- *      DEFINES
- *********************/
 
-/**********************
- *      TYPEDEFS
- **********************/
 
-/**********************
- *  STATIC PROTOTYPES
- **********************/
-
-//static void gpu_fill(lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
-//        const lv_area_t * fill_area, lv_color_t color);
-
-/**********************
- *  STATIC VARIABLES
- **********************/
-
-/**********************
- *      MACROS
- **********************/
-
-/**********************
- *   GLOBAL FUNCTIONS
- **********************/
-
-void lv_port_disp_init(void)
+void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 {
+
+	int16_t _width = hwSwap ? height : width;
+	int16_t _height = hwSwap ? width : height;
+
 	/*-----------------------------------
 	 * Register the display in LVGL
 	 *----------------------------------*/
@@ -51,33 +30,35 @@ void lv_port_disp_init(void)
 
 	/*Set up the functions to access to your display*/
 	/*Set the resolution of the display*/
-	disp_drv.hor_res = HGM_MONITOR_HEIGHT;
-	disp_drv.ver_res = HGM_MONITOR_WIDTH;
+	disp_drv.hor_res = _width;
+	disp_drv.ver_res = _height;
 
 	/*Used to copy the buffer's content to the display*/
 	disp_drv.flush_cb = HGM::HgmLvgl::HgmLvglDispFlush;
 
-#define BUF_METHOD 0
+#define BUF_METHOD 1
 #if BUF_METHOD == 0
 	/* Example for 1) */
 	static lv_disp_draw_buf_t draw_buf_dsc_1;
-	static lv_color_t buf_1[HGM_MONITOR_WIDTH * 10];                          /*A buffer for 10 rows*/
-	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * 10);   /*Initialize the display buffer*/
+	static lv_color_t* buf_1 = (lv_color_t*)lv_mem_alloc(_width * 10);  /*A buffer for 10 rows*/
+	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, _width * 10);   /*Initialize the display buffer*/
 	/*Set a display buffer*/
 	disp_drv.draw_buf = &draw_buf_dsc_1;
 #elif BUF_METHOD == 1
 	/* Example for 2) */
 	static lv_disp_draw_buf_t draw_buf_dsc_2;
-	static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 10];                        /*A buffer for 10 rows*/
-	static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 10];                        /*An other buffer for 10 rows*/
-	lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, HGM_MONITOR_WIDTH * 10);   /*Initialize the display buffer*/
+	// static lv_color_t *buf_2_1 = (lv_color_t*)lv_mem_alloc(_width * 10);
+	// static lv_color_t *buf_2_2 = (lv_color_t*)lv_mem_alloc(_width * 10);
+	static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 10];
+	static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 10];
+	lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, _width * 10);
 	disp_drv.draw_buf = &draw_buf_dsc_2;
 #elif BUF_METHOD == 2
-	* Example for 3) also set disp_drv.full_refresh = 1 below * /
+	/* Example for 3) also set disp_drv.full_refresh = 1 below */
 	static lv_disp_draw_buf_t draw_buf_dsc_3;
-	static lv_color_t buf_3_1[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT];            /*A screen sized buffer*/
-	static lv_color_t buf_3_2[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT];            /*An other screen sized buffer*/
-	lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2, HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT);   /*Initialize the display buffer*/
+	static lv_color_t buf_3_1[_width * _height];            /*A screen sized buffer*/
+	static lv_color_t buf_3_2[_width * _height];            /*An other screen sized buffer*/
+	lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2, _width * _height);   /*Initialize the display buffer*/
 	disp_drv.full_refresh = 1;
 	disp_drv.draw_buf = &draw_buf_dsc_3;
 #endif // 0
