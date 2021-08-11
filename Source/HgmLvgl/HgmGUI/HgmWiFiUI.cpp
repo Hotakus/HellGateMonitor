@@ -12,8 +12,6 @@
 #include "HgmFramework.h"
 
 
-static void hgm_wifi_config_ui(uint8_t tab_id);
-
 using namespace HgmGUI;
 
 HgmWiFiUI::HgmWiFiUI(uint8_t tab_id)

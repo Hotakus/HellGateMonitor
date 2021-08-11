@@ -7,8 +7,8 @@
  * @date 2021/8/8 18:39
  * @copyright Copyright (c) 2021/8/8
 *******************************************************************/
-#ifndef LVGL_HGM_TOP_FRAMEWORK_H
-#define LVGL_HGM_TOP_FRAMEWORK_H
+#ifndef LVGL_HGM_FRAMEWORK_H
+#define LVGL_HGM_FRAMEWORK_H
 
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "HgmWiFiUI.h"
@@ -16,7 +16,7 @@
 
 namespace HgmGUI {
 
-#define TAB_NUMBER 3
+#define TAB_NUMBER 4
 
 	class HgmFramework
 	{

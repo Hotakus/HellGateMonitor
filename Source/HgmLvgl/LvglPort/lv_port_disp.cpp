@@ -47,10 +47,10 @@ void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 #elif BUF_METHOD == 1
 	/* Example for 2) */
 	static lv_disp_draw_buf_t draw_buf_dsc_2;
-	// static lv_color_t *buf_2_1 = (lv_color_t*)lv_mem_alloc(_width * 10);
-	// static lv_color_t *buf_2_2 = (lv_color_t*)lv_mem_alloc(_width * 10);
-	static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 10];
-	static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 10];
+	static lv_color_t *buf_2_1 = (lv_color_t*)lv_mem_alloc(_width * 10);
+	static lv_color_t *buf_2_2 = (lv_color_t*)lv_mem_alloc(_width * 10);
+	// static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 10];
+	// static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 10];
 	lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, _width * 10);
 	disp_drv.draw_buf = &draw_buf_dsc_2;
 #elif BUF_METHOD == 2

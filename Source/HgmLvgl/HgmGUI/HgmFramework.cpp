@@ -9,18 +9,16 @@
 *******************************************************************/
 
 #include <Arduino.h>
-
 #include "HgmWiFiUI.h"
-
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "HgmFramework.h"
+
 
 using namespace HgmGUI;
 
 
 lv_obj_t* hgmFwTabview;
 lv_obj_t* hgmTabList[TAB_NUMBER];
-
 
 HgmFramework::HgmFramework()
 {
