@@ -100,7 +100,8 @@ static void TcpControlTask(void* params)
 {
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
-    static TaskHandle_t tcpTaskHandle;
+    static TaskHandle_t tcpServerTaskHandle;
+    static TaskHandle_t tcpClientTaskHandle;
 
     while (true) {
         if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
@@ -127,7 +128,7 @@ static void TcpControlTask(void* params)
                 4096,
                 NULL,
                 10,
-                &tcpTaskHandle,
+                &tcpServerTaskHandle,
                 1
             );
             break;
@@ -135,12 +136,11 @@ static void TcpControlTask(void* params)
             // TODO
             break;
         case TCP_STOP_SERVER:         // server stop
-            vTaskDelete(tcpTaskHandle);
+            vTaskDelete(tcpServerTaskHandle);
             wifiServer.stop();
             break;
         case TCP_STOP_CLIENT:         // client stop
-            // TODO
-            vTaskDelete(tcpTaskHandle);
+            vTaskDelete(tcpClientTaskHandle);
             wifiClient.stop();
             break;
         default:
@@ -154,9 +154,14 @@ static void TcpControlTask(void* params)
     }
 }
 
+/**
+ * @brief Tcp server listening task.
+ * @param params
+ */
 static void TcpServerListeningTask(void* params)
 {
     static bool hasClient = false;
+    static WiFiClient wc = NULL;        // To store the object of the client that want to connect to server.
 
     Serial.printf("TCP Server begin to listen in port %d.\n", SERVER_DEFAULT_PORT);
     while (true) {
@@ -165,21 +170,22 @@ static void TcpServerListeningTask(void* params)
             goto _delay;
 
         /*To accept the client that want to connect server */
-        Serial.printf("There is a client try to connect.\n");
-        wifiClient = wifiServer.accept();
-        if (!wifiClient)
+        wc = wifiServer.accept();
+        if (!wc)
             goto _delay;
         Serial.printf("A client has connected into server.\n");
         
-        while (wifiClient.connected()) {
-            if (wifiClient.available()) {
+
+        /* TODO: complete the  */
+        while (wc.connected()) {
+            if (wc.available()) {
                 uint8_t buf[512] = {0};
-                wifiClient.read(buf, wifiClient.available());
-                Serial.print(wifiClient.remoteIP());
+                wc.read(buf, wc.available());
+                Serial.print(wc.remoteIP());
                 Serial.print(" -> ");
                 Serial.printf("%s\n", buf);
                 if (buf[0] == 'e')
-                    wifiClient.stop();
+                    wc.stop();
             }
             vTaskDelay(50);
         }
