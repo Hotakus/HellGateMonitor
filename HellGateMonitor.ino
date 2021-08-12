@@ -44,19 +44,37 @@
 //	vTaskDelay(1000);		// use FreeRTOS
 //}
 
-
+#include "Source/HgmApp/HgmApp.h"
 
 
 #define COMPILE_DATE __DATE__
 #define COMPILE_TIME __TIME__
 
+using namespace HgmApplication;
+
+
+char* ssid = "trisuborn";
+char* password = "12345678";
+HgmApp* hgmApp;
+
+
+
 void setup()
 {
+	/* Base init */
 	Serial.begin(115200);
-	Serial.printf("Hello HGM!!! %s %s\n", COMPILE_DATE, COMPILE_TIME);
+	Serial.printf("\n********** Hell Gate Monitor **********\n");
+	Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
+	Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION); 
+	Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
+	Serial.printf("LVGL     : %d\n", 0);
+	Serial.printf("***************************************\n");
+
+	hgmApp = new HgmApp(ssid, password);
+	hgmApp->Begin();
 }
 
 void loop()
 {
+	vTaskDelay(1000);		// use FreeRTOS
 }
-

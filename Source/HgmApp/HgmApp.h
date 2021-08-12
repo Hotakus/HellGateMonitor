@@ -10,8 +10,29 @@
 #ifndef HELLGATEMONITOR_HGMAPP_H
 #define HELLGATEMONITOR_HGMAPP_H
 
+#include <WiFi.h>
+#include "HgmWiFi/HgmWiFi.h"
+
 namespace HgmApplication {
-	
+
+#define WIFI_USE_MODE WIFI_STA
+
+	class HgmApp
+	{
+	private:
+		
+
+	public:
+		HgmWiFi* hgmWifi = nullptr;
+
+		HgmApp();
+		HgmApp(char* ssid = nullptr, char* password = nullptr);
+		~HgmApp();
+
+		void Begin();
+
+	};
+
 };
 
 #ifdef __cplusplus
