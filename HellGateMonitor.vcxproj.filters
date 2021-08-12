@@ -30,12 +30,18 @@
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmApp\HgmApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

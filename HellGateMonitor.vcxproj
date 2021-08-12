@@ -182,11 +182,13 @@
       <FileType>CppCode</FileType>
     </ClInclude>
     <ClInclude Include="Source\HgmApp\HgmApp.h" />
+    <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h" />
     <ClInclude Include="__vm\.HellGateMonitor.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmApp\HgmApp.cpp" />
+    <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp" />
   </ItemGroup>
   <PropertyGroup>

@@ -11,15 +11,16 @@
 #define HELLGATEMONITOR_HGMWIFI_H
 
 #include <WiFi.h>
+#include "HgmTCP/HgmTCP.h"
 
 namespace HgmApplication {
 	class HgmWiFi
 	{
 	private:
-		void wifiTaskInit();
+		void WifiTaskInit();
 
 	public:
-		
+		HgmTCP* hgmTcp = nullptr;
 
 		HgmWiFi();
 		HgmWiFi(char* ssid = nullptr, char* password = nullptr);
@@ -27,6 +28,7 @@ namespace HgmApplication {
 
 		void ConfigWiFi(char* ssid = nullptr, char* password = nullptr);
 		void OpenWiFi(bool sw = true);
+		void OpenTCP(bool sw = true, bool asServer = true);
 
 		void Begin();
 

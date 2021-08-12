@@ -19,26 +19,35 @@ static WiFiClass wifi = WiFi;
 static char* _ssid = NULL;
 static char* _password = NULL;
 
-static TaskHandle_t wifiCheckTaskHandle   = NULL;
+static TaskHandle_t wifiCheckTaskHandle = NULL;
 static TaskHandle_t wifiControlTaskHandle = NULL;
 static QueueHandle_t wifiCtlMsgBox = NULL;
 static void wifiCheckTask(void* params);
 static void wifiControlTask(void* params);
 
+
+
 HgmWiFi::HgmWiFi()
 {
-    // TODOs
+    this->hgmTcp = new HgmTCP();
 }
 
 HgmWiFi::HgmWiFi(char* ssid, char* password)
 {
     _ssid = ssid;
     _password = password;
+
+    this->hgmTcp = new HgmTCP();
 }
 
 HgmWiFi::~HgmWiFi()
 {
-    // TODO
+    delete this->hgmTcp;
+
+    // TODO: finish the gc
+    vTaskDelete(wifiCheckTaskHandle);
+    vTaskDelete(wifiControlTaskHandle);
+    vQueueDelete(wifiCtlMsgBox);
 }
 
 /**
@@ -61,11 +70,31 @@ void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
     wifiSwitch = sw;
     vTaskDelay(10);
     if (xQueueSend(wifiCtlMsgBox, &wifiSwitch, portMAX_DELAY) == pdPASS) {
-        Serial.print("WiFi is open (");
-        Serial.print(wifiSwitch);
-        Serial.println(")");
+        Serial.println(
+            sw ? "Open wifi" : "Close wifi"
+        );
     } else {
         Serial.println("Switch the wifi on/off failed.");
+    }
+}
+
+/**
+ * @brief Open TCP as the server at default.
+ * @param sw to control on/off
+ * @param asServer to control asServer of asClient
+ */
+void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
+{
+    if (sw) {
+        if (asServer)
+            this->hgmTcp->BeginServer();
+        else
+            this->hgmTcp->BeginClient();
+    } else {
+        if (asServer)
+            this->hgmTcp->StopServer();
+        else
+            this->hgmTcp->StopClient();
     }
 }
 
@@ -81,14 +110,17 @@ void HgmApplication::HgmWiFi::Begin()
     }
 
     /* Init WiFi relative tasks */
-    this->wifiTaskInit();
+    this->WifiTaskInit();
     this->OpenWiFi();
+
+    this->hgmTcp->Begin();
+    this->OpenTCP();
 }
 
 /**
  * @brief All WiFi application are initialized in here.
  */
-void HgmApplication::HgmWiFi::wifiTaskInit()
+void HgmApplication::HgmWiFi::WifiTaskInit()
 {
     wifiCtlMsgBox = xQueueCreate(1, sizeof(bool));
 
@@ -134,6 +166,7 @@ static void wifiCheckTask(void* params)
                 wifi.mode(WIFI_USE_MODE);
                 wifi.begin(_ssid, _password);
             }
+            Serial.print(".");
             vTaskDelay(500);
             continue;
         }

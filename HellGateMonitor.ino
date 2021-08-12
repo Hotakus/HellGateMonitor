@@ -58,7 +58,6 @@ char* password = "12345678";
 HgmApp* hgmApp;
 
 
-
 void setup()
 {
 	/* Base init */
@@ -72,9 +71,12 @@ void setup()
 
 	hgmApp = new HgmApp(ssid, password);
 	hgmApp->Begin();
+
+	// Serial.println(ESP.getFreePsram());
+
 }
 
 void loop()
 {
-	vTaskDelay(1000);		// use FreeRTOS
+	vTaskDelay(10 * 1000);		// 10 sec
 }
