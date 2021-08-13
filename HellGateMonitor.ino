@@ -50,7 +50,6 @@ void setup()
     Serial.printf("***************************************\n");
 
     hgmApp = new HgmApp(ssid, password);
-    // hgmApp->Begin();
 
     // TODO: Check the wifi config file in SPIFF
     HgmSC hgmSC;

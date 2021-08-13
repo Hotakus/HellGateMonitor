@@ -23,7 +23,6 @@ namespace HgmApplication {
 	class HgmBT
 	{
 	private:
-
 		void BluetoothTaskInit();
 		void BluetoothTaskDelete();
 		/* Pack the raw data as a data frame via designated method */

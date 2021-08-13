@@ -2,12 +2,13 @@
  * @file HgmBT.cpp
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
- * @brief ...
+ * @brief HGM's BT function, use the json format to send/receive data
  * @version 1.0
  * @date 2021/8/13 5:08
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <BluetoothSerial.h>
 #include "HgmBT.h"
 
@@ -133,6 +134,10 @@ static void BluetoothCheckTask(void* params)
     }
 }
 
+/**
+ * @brief Bluetooth listening task.
+ * @param params
+ */
 static void BluetoothListeningTask(void* params)
 {
     while (true) {
