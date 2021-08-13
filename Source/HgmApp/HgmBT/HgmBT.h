@@ -25,6 +25,7 @@ namespace HgmApplication {
 	private:
 
 		void BluetoothTaskInit();
+		void BluetoothTaskDelete();
 		/* Pack the raw data as a data frame via designated method */
 		void PackRawData(const char* dataToPack, size_t size, HgmBTPackMethod method);
 

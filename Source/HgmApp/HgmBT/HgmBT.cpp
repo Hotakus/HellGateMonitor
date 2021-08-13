@@ -30,11 +30,16 @@ HgmBT::HgmBT(char* n)
 {
     name = n;
     this->bs = new BluetoothSerial();
+    _bs = this->bs;
+    btCtlMsgbox = xQueueCreate(1, sizeof(bool));
+    this->BluetoothTaskInit();
 }
 
 HgmBT::~HgmBT()
 {
     delete this->bs;
+    this->BluetoothTaskDelete();
+    vQueueDelete(btCtlMsgbox);
 }
 
 void HgmApplication::HgmBT::BluetoothTaskInit()
@@ -50,24 +55,21 @@ void HgmApplication::HgmBT::BluetoothTaskInit()
     );
 }
 
+void HgmApplication::HgmBT::BluetoothTaskDelete()
+{
+    vTaskDelete(bluetoothCheckTaskHandle);
+}
+
 void HgmApplication::HgmBT::Begin()
 {
     bool sw = true;
-    _bs = this->bs;
-
-
-    btCtlMsgbox = xQueueCreate(1, sizeof(bool));
-    this->BluetoothTaskInit();
     xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
-
 }
 
 void HgmApplication::HgmBT::Stop()
 {
     bool sw = false;
     xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
-    vTaskDelay(50);
-    vQueueDelete(btCtlMsgbox);
 }
 
 
@@ -78,7 +80,7 @@ void HgmApplication::HgmBT::Stop()
  */
 void HgmApplication::HgmBT::PackRawData(const char* dataToPack, size_t size, HgmBTPackMethod method)
 {
-
+    // TODO:
 }
 
 /**
@@ -106,31 +108,36 @@ static void BluetoothCheckTask(void* params)
         }
 
         if (sw) {
-            Serial.printf("BT Start to listening...");
-            _bs->begin(name);
-            xTaskCreatePinnedToCore(
-                BluetoothListeningTask,
-                "bluetoothListeningTask",
-                4096,
-                NULL,
-                10,
-                &bluetoothListeningTaskHandle,
-                1
-            );
+            if (bluetoothListeningTaskHandle == NULL) {
+                Serial.println("BT Start to listening...");
+                _bs->begin(name);
+                xTaskCreatePinnedToCore(
+                    BluetoothListeningTask,
+                    "bluetoothListeningTask",
+                    4096,
+                    NULL,
+                    10,
+                    &bluetoothListeningTaskHandle,
+                    1
+                );
+            }
         } else {
-            Serial.printf("BT closing...");
-            _bs->disconnect();
-            _bs->end();
-            vTaskDelete(bluetoothListeningTaskHandle);
+            if (bluetoothListeningTaskHandle) {
+                Serial.println("BT stop listening ...");
+                _bs->disconnect();
+                _bs->end();
+                vTaskDelete(bluetoothListeningTaskHandle);
+                bluetoothListeningTaskHandle = NULL;
+            }
         }
     }
-
 }
 
 static void BluetoothListeningTask(void* params)
 {
     while (true) {
-        _bs->printf("Hello %s\n" ,__func__);
+        // TODO:
+        _bs->printf("Hello %s\n", __func__);
         vTaskDelay(1000);
     }
 }

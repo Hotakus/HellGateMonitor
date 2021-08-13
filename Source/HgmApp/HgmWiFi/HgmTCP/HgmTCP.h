@@ -39,6 +39,7 @@ namespace HgmApplication {
         ~HgmTCP();
 
         void Begin();
+        void Stop();
 
         void BeginServer();
         void StopServer();

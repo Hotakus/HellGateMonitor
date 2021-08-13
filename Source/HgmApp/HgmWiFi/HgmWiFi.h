@@ -19,15 +19,16 @@ namespace HgmApplication {
 	class HgmWiFi
 	{
 	private:
-		void WifiTaskInit();
+		char* ssid;		// For storing ssid after power on self checking
+		char* password;	// For storing password after power on self checking
 
+		void WifiTaskInit();
 	public:
-		static char* ssid;
-		static char* password;
+		
 
 		HgmTCP* hgmTcp = nullptr;
 
-		HgmWiFi();
+		HgmWiFi(bool flag);
 		HgmWiFi(char* ssid = nullptr, char* password = nullptr);
 		~HgmWiFi();
 
@@ -37,6 +38,8 @@ namespace HgmApplication {
 
 		void Begin();
 
+		// TODO: WiFi stop;
+		void Stop();
 	};
 };
 

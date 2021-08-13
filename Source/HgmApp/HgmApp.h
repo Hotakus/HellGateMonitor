@@ -21,17 +21,24 @@ namespace HgmApplication {
 	class HgmApp
 	{
 	private:
-		
 
 	public:
 		HgmWiFi* hgmWifi = nullptr;
 		HgmBT* hgmBT = nullptr;
 
-		HgmApp();
+		HgmApp(bool flag);
 		HgmApp(char* ssid = nullptr, char* password = nullptr);
 		~HgmApp();
 
 		void Begin();
+
+		void BeginWiFi();
+		void BeginWiFiWithConfig(char* ssid, char* password);
+		void BeginBT();
+
+		void Stop();
+		void StopWiFi();
+		void StopBT();
 
 	};
 

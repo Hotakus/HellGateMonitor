@@ -46,6 +46,11 @@ void HgmApplication::HgmTCP::Begin()
     this->HgmTcpTaskInit();
 }
 
+void HgmApplication::HgmTCP::Stop()
+{
+
+}
+
 /**
  * @brief Init TCP relative task.
  */
@@ -100,8 +105,8 @@ static void TcpControlTask(void* params)
 {
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
-    static TaskHandle_t tcpServerTaskHandle;
-    static TaskHandle_t tcpClientTaskHandle;
+    static TaskHandle_t tcpServerTaskHandle = NULL;
+    static TaskHandle_t tcpClientTaskHandle = NULL;
 
     while (true) {
         if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
@@ -121,30 +126,46 @@ static void TcpControlTask(void* params)
 
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
-            wifiServer.begin(SERVER_DEFAULT_PORT);
-            xTaskCreatePinnedToCore(
-                TcpServerListeningTask,
-                "TcpServerListeningTask",
-                4096,
-                NULL,
-                10,
-                &tcpServerTaskHandle,
-                1
-            );
+            if (tcpServerTaskHandle == NULL) {
+                wifiServer.begin(SERVER_DEFAULT_PORT);
+                xTaskCreatePinnedToCore(
+                    TcpServerListeningTask,
+                    "TcpServerListeningTask",
+                    4096,
+                    NULL,
+                    10,
+                    &tcpServerTaskHandle,
+                    1
+                );
+                Serial.printf("TCP Server begin to listen in port %d.\n", SERVER_DEFAULT_PORT);
+            } else {
+                Serial.printf("TCP Server already open in port %d\n", SERVER_DEFAULT_PORT);
+            }
+            
             break;
         case TCP_BEGIN_CLIENT:         // client begin
-            // TODO
+            // TODO:
+
+            Serial.printf("TCP Client begin\n");
             break;
         case TCP_STOP_SERVER:         // server stop
-            vTaskDelete(tcpServerTaskHandle);
-            wifiServer.stop();
+            if (tcpServerTaskHandle) {
+                wifiServer.stop();
+                vTaskDelete(tcpServerTaskHandle);
+                tcpServerTaskHandle = NULL;
+                Serial.printf("TCP server stop\n");
+            }
             break;
         case TCP_STOP_CLIENT:         // client stop
-            vTaskDelete(tcpClientTaskHandle);
-            wifiClient.stop();
+            if (tcpClientTaskHandle) {
+                wifiClient.stop();
+                vTaskDelete(tcpClientTaskHandle);
+                tcpClientTaskHandle = NULL;
+                Serial.printf("TCP client stop\n");
+            }
             break;
         default:
-            Serial.printf("Error in %s %s %s", __FILE__, __func__, __LINE__);
+            Serial.printf("Error in %s %s %s\n", __FILE__, __func__, __LINE__);
             break;
         }
 
@@ -163,7 +184,6 @@ static void TcpServerListeningTask(void* params)
     static bool hasClient = false;
     static WiFiClient wc = NULL;        // To store the object of the client that want to connect to server.
 
-    Serial.printf("TCP Server begin to listen in port %d.\n", SERVER_DEFAULT_PORT);
     while (true) {
         hasClient = wifiServer.hasClient();
         if (!hasClient)
@@ -176,7 +196,7 @@ static void TcpServerListeningTask(void* params)
         Serial.printf("A client has connected into server.\n");
         
 
-        /* TODO: complete the  */
+        // TODO: complete the
         while (wc.connected()) {
             if (wc.available()) {
                 uint8_t buf[512] = {0};

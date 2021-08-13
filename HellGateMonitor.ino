@@ -40,24 +40,25 @@ void setup()
     Serial.begin(115200);
 
     /* Base init */
-	Serial.printf("\n********** Hell Gate Monitor **********\n");
-	Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
-	Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION); 
-	Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
-	Serial.printf("LVGL     : %d\n", 0);
-    Serial.printf("Firmware : %0.2f MiB\n", ESP.getSketchSize()/1024.0/1024.0);
-	Serial.printf("***************************************\n");
+    size_t codeSize = ESP.getSketchSize();
+    Serial.printf("\n********** Hell Gate Monitor **********\n");
+    Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
+    Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION);
+    Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
+    Serial.printf("LVGL     : %d\n", 0);
+    Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
+    Serial.printf("***************************************\n");
+
+    hgmApp = new HgmApp(ssid, password);
+    // hgmApp->Begin();
 
     // TODO: Check the wifi config file in SPIFF
     HgmSC hgmSC;
-    
+    hgmSC.Begin();
+
     //hgmLvgl->HgmLvglBegin();
 
-	/*hgmApp = new HgmApp(ssid, password);
-	hgmApp->Begin();*/
 
-
-    // SerialBT.begin("HellGateMonitorBT"); //蓝牙模块名称
 }
 
 
@@ -78,6 +79,5 @@ void loop()
     //    Serial.printf("%s\n", buf);
     //}
 
-    vTaskDelay(100);
-
+    vTaskDelay(10 * 1000);
 }

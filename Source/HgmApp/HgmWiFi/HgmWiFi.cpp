@@ -26,10 +26,11 @@ static void wifiCheckTask(void* params);
 static void wifiControlTask(void* params);
 
 
-
-HgmWiFi::HgmWiFi()
+HgmWiFi::HgmWiFi(bool flag)
 {
     this->hgmTcp = new HgmTCP();
+    this->WifiTaskInit();
+    this->hgmTcp->Begin();
 }
 
 HgmWiFi::HgmWiFi(char* ssid, char* password)
@@ -38,6 +39,8 @@ HgmWiFi::HgmWiFi(char* ssid, char* password)
     _password = password;
 
     this->hgmTcp = new HgmTCP();
+    this->WifiTaskInit();
+    this->hgmTcp->Begin();
 }
 
 HgmWiFi::~HgmWiFi()
@@ -45,7 +48,6 @@ HgmWiFi::~HgmWiFi()
     delete this->hgmTcp;
 
     // TODO: finish the gc
-    vTaskDelete(wifiCheckTaskHandle);
     vTaskDelete(wifiControlTaskHandle);
     vQueueDelete(wifiCtlMsgBox);
 }
@@ -59,6 +61,8 @@ void HgmApplication::HgmWiFi::ConfigWiFi(char* ssid, char* password)
 {
     _ssid = ssid;
     _password = password;
+    this->ssid = ssid;
+    this->password = password;
 }
 
 /**
@@ -105,16 +109,25 @@ void HgmApplication::HgmWiFi::Begin()
 {
 
     if (!_ssid || !_password) {
-        Serial.println("SSID or Password has not been given. \n WiFi begin failed.");
+        Serial.println("SSID or Password has not been given. \n WiFi begin failed. \n");
         return;
     }
 
-    /* Init WiFi relative tasks */
-    this->WifiTaskInit();
     this->OpenWiFi();
 
-    this->hgmTcp->Begin();
-    this->OpenTCP();
+    this->OpenTCP(true, true);          // Open TCP Server
+    this->OpenTCP(true, false);         // Open TCP client
+}
+
+/**
+ * @brief Stop the WiFi and.
+ */
+void HgmApplication::HgmWiFi::Stop()
+{
+    this->OpenTCP(false, true);     // Close server
+    this->OpenTCP(false, false);    // Close client
+
+    this->OpenWiFi(false);
 }
 
 /**
@@ -125,15 +138,6 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
     wifiCtlMsgBox = xQueueCreate(1, sizeof(bool));
 
     xTaskCreatePinnedToCore(
-        wifiCheckTask,
-        "wifiCheckTask",
-        4096,
-        NULL,
-        7,
-        &wifiCheckTaskHandle,
-        1
-    );
-    xTaskCreatePinnedToCore(
         wifiControlTask,
         "wifiControlTask",
         4096,
@@ -143,6 +147,49 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
         1
     );
 }
+
+
+/**
+ * @brief To Control WiFi application.
+ * @param params
+ */
+static void wifiControlTask(void* params)
+{
+    static bool sw = false;
+
+    while (true) {
+        if (xQueueReceive(wifiCtlMsgBox, &sw, portMAX_DELAY) != pdPASS)
+            continue;
+
+        if (sw == true) {
+            if (wifiCheckTaskHandle == NULL) {
+                wifi.mode(WIFI_USE_MODE);
+                wifi.begin(_ssid, _password);
+                wifi.setTxPower(WIFI_POWER_15dBm);
+                xTaskCreatePinnedToCore(
+                    wifiCheckTask,
+                    "wifiCheckTask",
+                    4096,
+                    NULL,
+                    7,
+                    &wifiCheckTaskHandle,
+                    1
+                );
+                Serial.println("WiFi open.");
+            }
+        } else {
+            if (wifiCheckTaskHandle) {
+                wifi.mode(WIFI_OFF);
+                wifi.disconnect();
+                wifi.setSleep(true);
+                vTaskDelete(wifiCheckTaskHandle);
+                wifiCheckTaskHandle = NULL;
+                Serial.println("WiFi close.");
+            }
+        }
+    }
+}
+
 
 /**
  * @brief WiFi check task.
@@ -185,30 +232,6 @@ static void wifiCheckTask(void* params)
     }
 }
 
-
-/**
- * @brief To Control WiFi application.
- * @param params
- */
-static void wifiControlTask(void* params)
-{
-    static bool sw = false;
-
-    while (true) {
-        if (xQueueReceive(wifiCtlMsgBox, &sw, portMAX_DELAY) != pdPASS)
-            continue;
-
-        if (sw == true) {
-            wifi.mode(WIFI_USE_MODE);
-            wifi.begin(_ssid, _password);
-            wifi.setTxPower(WIFI_POWER_15dBm);
-        } else {
-            wifi.mode(WIFI_OFF);
-            wifi.disconnect();
-            wifi.setSleep(true);
-        }
-    }
-}
 
 
 
