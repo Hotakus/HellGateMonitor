@@ -12,11 +12,12 @@
 #include <User_Setup.h>
 #include <User_Setup_Select.h>
 #include <I2C_MPU6886.h>
-#include <BluetoothSerial.h>
 
 /* User include files */
+#include "Source/HgmApp/HgmBT/HgmBT.h"
 #include "Source/HgmApp/HgmApp.h"
 #include "Source/HgmLvgl/HgmLvgl.h"
+#include "Source/HgmSelfChecking/HgmSelfChecking.h"
 
 // TODO: TCP Server for projection
 // TODO: TCP Client for getting another info
@@ -24,18 +25,15 @@
 
 #define COMPILE_DATE __DATE__
 #define COMPILE_TIME __TIME__
-#define COMPILE_SIZE ESP.getSketchSize()
 
+using namespace HGM;
 using namespace HgmApplication;
 
 
 char* ssid = "trisuborn";
 char* password = "12345678";
-HgmApp* hgmApp;
-BluetoothSerial SerialBT;
+HgmApp* hgmApp = nullptr;
 //extern HgmLvgl* hgmLvgl;
-
-size_t fwSize = COMPILE_SIZE;
 
 void setup()
 {
@@ -47,36 +45,38 @@ void setup()
 	Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION); 
 	Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
 	Serial.printf("LVGL     : %d\n", 0);
-    Serial.printf("Firmware : %0.2f KiB\n", fwSize/1024.0/1024.0);
+    Serial.printf("Firmware : %0.2f MiB\n", ESP.getSketchSize()/1024.0/1024.0);
 	Serial.printf("***************************************\n");
 
+    // TODO: Check the wifi config file in SPIFF
+    HgmSC hgmSC;
     
     //hgmLvgl->HgmLvglBegin();
 
-	hgmApp = new HgmApp(ssid, password);
-	hgmApp->Begin();
+	/*hgmApp = new HgmApp(ssid, password);
+	hgmApp->Begin();*/
 
 
-    SerialBT.begin("HellGateMonitorBT"); //蓝牙模块名称
+    // SerialBT.begin("HellGateMonitorBT"); //蓝牙模块名称
 }
 
 
 uint8_t buf[512];
 void loop()
 {
-    
-    memset(buf, 0, 512);
-    if (SerialBT.available()) {
-        /*String str = SerialBT.readString();
-        Serial.println(str.c_str());*/
 
-        int i = 0;
-        while (SerialBT.available()) {
-            buf[i] = SerialBT.read();
-            i++;
-        }
-        Serial.printf("%s\n", buf);
-    }
+    //memset(buf, 0, 512);
+    //if (SerialBT.available()) {
+    //    /*String str = SerialBT.readString();
+    //    Serial.println(str.c_str());*/
+
+    //    int i = 0;
+    //    while (SerialBT.available()) {
+    //        buf[i] = SerialBT.read();
+    //        i++;
+    //    }
+    //    Serial.printf("%s\n", buf);
+    //}
 
     vTaskDelay(100);
 

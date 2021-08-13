@@ -33,7 +33,10 @@
     <ClInclude Include="Source\HgmApp\HgmApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmApp\HgmWiFi\HgmBT\HgmBT.h">
+    <ClInclude Include="Source\HgmApp\HgmBT\HgmBT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +50,10 @@
     <ClCompile Include="Source\HgmApp\HgmApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmApp\HgmWiFi\HgmBT\HgmBT.cpp">
+    <ClCompile Include="Source\HgmApp\HgmBT\HgmBT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

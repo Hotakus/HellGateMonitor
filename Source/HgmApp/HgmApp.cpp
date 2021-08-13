@@ -24,11 +24,13 @@ HgmApplication::HgmApp::HgmApp()
 HgmApp::HgmApp(char* ssid, char* password)
 {
     this->hgmWifi = new HgmWiFi(ssid, password);
+    this->hgmBT = new HgmBT();
 }
 
 HgmApp::~HgmApp()
 {
     delete this->hgmWifi;
+    delete this->hgmBT;
 }
 
 /**
@@ -38,7 +40,8 @@ void HgmApplication::HgmApp::Begin()
 {
     // WiFi app
     this->hgmWifi->Begin();
-    //
+    // Bluetooth
+    this->hgmBT->Begin();
 }
 
 

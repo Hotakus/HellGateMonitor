@@ -160,7 +160,7 @@ static void wifiCheckTask(void* params)
         }
         if (wifi.status() != WL_CONNECTED) {
             cnt += 1;
-            if (cnt == 255) {
+            if (cnt == 20) {
                 cnt = 0;
                 wifi.disconnect();
                 wifi.mode(WIFI_USE_MODE);

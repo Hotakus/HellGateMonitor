@@ -13,6 +13,8 @@
 #include <WiFi.h>
 #include "HgmTCP/HgmTCP.h"
 
+#define WIFI_CONFIG_FILE_PATH "/wifi.conf"
+
 namespace HgmApplication {
 	class HgmWiFi
 	{
@@ -20,6 +22,9 @@ namespace HgmApplication {
 		void WifiTaskInit();
 
 	public:
+		static char* ssid;
+		static char* password;
+
 		HgmTCP* hgmTcp = nullptr;
 
 		HgmWiFi();

@@ -12,6 +12,7 @@
 
 #include <WiFi.h>
 #include "HgmWiFi/HgmWiFi.h"
+#include "HgmBT/HgmBT.h"
 
 namespace HgmApplication {
 
@@ -24,6 +25,7 @@ namespace HgmApplication {
 
 	public:
 		HgmWiFi* hgmWifi = nullptr;
+		HgmBT* hgmBT = nullptr;
 
 		HgmApp();
 		HgmApp(char* ssid = nullptr, char* password = nullptr);
