@@ -120,6 +120,7 @@ static void TcpControlTask(void* params)
             }
         }
         if (!wifi.isConnected()) {
+            Serial.println("");
             tcpOk = false;
             continue;
         }
@@ -204,8 +205,6 @@ static void TcpServerListeningTask(void* params)
                 Serial.print(wc.remoteIP());
                 Serial.print(" -> ");
                 Serial.printf("%s\n", buf);
-                if (buf[0] == 'e')
-                    wc.stop();
             }
             vTaskDelay(50);
         }

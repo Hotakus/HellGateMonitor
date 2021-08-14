@@ -20,7 +20,7 @@ HGM的蓝牙数据包格式(JSON)
 
 例子：
 > {
-"header": "Hgm",
+"Header": "Hgm",
 "DataType": "WiFiConfigInfo",
 "Data": {
 "ssid": "xxx",

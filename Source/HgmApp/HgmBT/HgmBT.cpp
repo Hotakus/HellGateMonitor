@@ -11,6 +11,7 @@
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
 #include "HgmBT.h"
+#include "../HgmApp.h"
 
 using namespace HgmApplication;
 
@@ -74,30 +75,121 @@ void HgmApplication::HgmBT::Stop()
 }
 
 
+
 /**
- * @brief Pack the raw data as a data frame via designated method.
+ * @brief Pack the raw data as a data frame via designated method..
  * @param dataToPack
  * @param method
+ * @return pack
  */
-void HgmApplication::HgmBT::PackRawData(const char* dataToPack, size_t size, HgmBTPackMethod method)
+String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod method)
 {
     // TODO:
+    // { "Header": "Hgm", "DataType": "WiFiConfigInfo", "Data": { "ssid": "xxx", "password": "xxx" } }
+    StaticJsonDocument<512> hgmPack;
+    String tmp;
+    JsonObject Data;
+
+    hgmPack["Header"] = BT_PACK_HEADER;
+    hgmPack["DataType"] = "";
+
+    switch (method) {
+    case HGM_BT_PACK_METHOD_WIFI_CONF:
+        // TODO:
+        Data = hgmPack.createNestedObject("Data");
+        break;
+    case HGM_BT_PACK_METHOD_OK:
+        // TODO:
+        hgmPack["DataType"] = "status";
+        hgmPack["Data"] = "ok";
+        break;
+    default:
+        break;
+    }
+
+    serializeJson(hgmPack, tmp);
+    return tmp;
 }
 
 /**
  * @brief Send the data that is packed.
  * @param rawData
- * @param size
  * @param method
  */
-void HgmApplication::HgmBT::SendDatePack(const char* rawData, size_t size, HgmBTPackMethod method)
+void HgmApplication::HgmBT::SendDatePack(String& rawData, HgmBTPackMethod method)
 {
-    this->PackRawData(rawData, size, method);
-    this->bs->write((const uint8_t*)rawData, size);
+    String pack = HgmBT::PackRawData(rawData, method);
+    _bs->write((uint8_t*)pack.c_str(), pack.length());
+}
+
+static void BeginWiFiWithConfig(String& ssid, String& password)
+{
+    extern HgmApp* hgmApp;
+    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
+}
+
+/**
+ * @brief Receive and analyze the data pack.
+ * @param DateToSave Return data that was analyzed
+ * @param method Return method
+ */
+void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod* method)
+{
+    DynamicJsonDocument rawPack(512);
+
+    if (!_bs->available())
+        return;
+
+    // Receive raw pack
+    while (_bs->available()) {
+        dataToSave.concat((char)_bs->read());
+    }
+    deserializeJson(rawPack, dataToSave.c_str());
+    Serial.println(dataToSave);
+
+    // Match Header
+    String Header = rawPack["Header"];
+    if (Header.compareTo(BT_PACK_HEADER)) {
+        Serial.println("Header error. No a valid HGM bluetooth pack");
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_NULL;
+    }
+
+    // Match DataType
+    HgmBTPackMethod DataType = rawPack["DataType"];
+    switch (DataType) {
+
+    case HGM_BT_PACK_METHOD_WIFI_CONF: {
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_WIFI_CONF;
+        String _ssid = rawPack["Data"]["ssid"];
+        String _password = rawPack["Data"]["password"];
+
+        BeginWiFiWithConfig(_ssid, _password);
+
+        Serial.println("WiFi had been config via bluetooth.");
+        return;
+    }
+    case HGM_BT_PACK_METHOD_OK: {
+        // TODO:
+        *method = HGM_BT_PACK_METHOD_OK;
+        return;
+    }
+    default:
+        Serial.println("DataType error. No a valid HGM bluetooth pack");
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_NULL;
+    }
+
+    return;
+
 }
 
 
-
+/**
+ * @brief To control BT behavior.
+ * @param params
+ */
 static void BluetoothCheckTask(void* params)
 {
     static TaskHandle_t bluetoothListeningTaskHandle = NULL;
@@ -140,9 +232,21 @@ static void BluetoothCheckTask(void* params)
  */
 static void BluetoothListeningTask(void* params)
 {
+    uint16_t sleepTimes = 1000;
+    uint16_t times = 0;
+
     while (true) {
         // TODO:
-        _bs->printf("Hello %s\n", __func__);
-        vTaskDelay(1000);
+        if (!_bs->connected()) {
+            vTaskDelay(1000);
+        }
+
+        if (_bs->available()) {
+            String str;
+            HgmBTPackMethod method;
+            HgmBT::ReceiveDataPack(str, &method);
+        }
+
+        vTaskDelay(50);
     }
 }

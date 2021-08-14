@@ -12,6 +12,9 @@
 #include <User_Setup.h>
 #include <User_Setup_Select.h>
 #include <I2C_MPU6886.h>
+#include <ArduinoJson.h>
+#include <iostream>
+#include <string>
 
 /* User include files */
 #include "Source/HgmApp/HgmBT/HgmBT.h"
@@ -32,7 +35,8 @@ using namespace HgmApplication;
 
 char* ssid = "trisuborn";
 char* password = "12345678";
-HgmApp* hgmApp = nullptr;
+
+extern HgmApp* hgmApp;
 //extern HgmLvgl* hgmLvgl;
 
 void setup()
@@ -49,15 +53,18 @@ void setup()
     Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
     Serial.printf("***************************************\n");
 
-    hgmApp = new HgmApp(ssid, password);
+    hgmApp = new HgmApp(true);
+    hgmApp->BeginBT();
+    
 
     // TODO: Check the wifi config file in SPIFF
-    HgmSC hgmSC;
-    hgmSC.Begin();
+    /*HgmSC hgmSC;
+    hgmSC.Begin();*/
 
     //hgmLvgl->HgmLvglBegin();
 
 
+    
 }
 
 
@@ -78,5 +85,10 @@ void loop()
     //    Serial.printf("%s\n", buf);
     //}
 
-    vTaskDelay(10 * 1000);
+    if (hgmApp->hgmBT->bs->connected()) {
+        String test = "Hotakus";
+        hgmApp->hgmBT->SendDatePack(test, HGM_BT_PACK_METHOD_OK);
+    }
+
+    vTaskDelay(1 * 1000);
 }

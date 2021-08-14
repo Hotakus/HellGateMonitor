@@ -9,24 +9,31 @@
 *******************************************************************/
 #ifndef HELLGATEMONITOR_HGMBT_H
 #define HELLGATEMONITOR_HGMBT_H
-
+#include <ArduinoJson.h>
 #include <BluetoothSerial.h>
 
 namespace HgmApplication {
 #define BT_DEFAULT_NAME "HellGateMonitorBT"
-
+#define BT_PACK_HEADER "Hgm"
 	typedef enum HgmBTPackMethod
 	{
+		// Received method
+		HGM_BT_PACK_METHOD_WIFI_CONF,
 
+		// Send method
+		HGM_BT_PACK_METHOD_OK,
+
+		HGM_BT_PACK_METHOD_NULL,
 	};
 
 	class HgmBT
 	{
 	private:
+
 		void BluetoothTaskInit();
 		void BluetoothTaskDelete();
 		/* Pack the raw data as a data frame via designated method */
-		void PackRawData(const char* dataToPack, size_t size, HgmBTPackMethod method);
+		static String PackRawData(String& dataToPack, HgmBTPackMethod method);
 
 	public:
 		BluetoothSerial *bs = nullptr;
@@ -38,7 +45,8 @@ namespace HgmApplication {
 		void Stop();
 		
 		/* To send data pack, used by another Hgm App */
-		void SendDatePack(const char* rawData, size_t size, HgmBTPackMethod method);
+		static void SendDatePack(String& rawData, HgmBTPackMethod method);
+		static void ReceiveDataPack(String& dataToSave, HgmBTPackMethod *method);
 	};
 };
 

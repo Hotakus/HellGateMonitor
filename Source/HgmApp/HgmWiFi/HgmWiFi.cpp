@@ -16,15 +16,14 @@ using namespace HgmApplication;
 static bool wifiSwitch;		// To control the WiFi's on/off
 
 static WiFiClass wifi = WiFi;
-static char* _ssid = NULL;
-static char* _password = NULL;
+char* _ssid = NULL;
+char* _password = NULL;
 
 static TaskHandle_t wifiCheckTaskHandle = NULL;
 static TaskHandle_t wifiControlTaskHandle = NULL;
 static QueueHandle_t wifiCtlMsgBox = NULL;
 static void wifiCheckTask(void* params);
 static void wifiControlTask(void* params);
-
 
 HgmWiFi::HgmWiFi(bool flag)
 {
@@ -59,11 +58,19 @@ HgmWiFi::~HgmWiFi()
  */
 void HgmApplication::HgmWiFi::ConfigWiFi(char* ssid, char* password)
 {
+    
+    this->Stop();
+    vTaskDelay(2 * 1000);
+
     _ssid = ssid;
     _password = password;
     this->ssid = ssid;
     this->password = password;
+    
+    this->Begin();
+    vTaskDelay(2 * 1000);
 }
+
 
 /**
  * @brief Use to open or close wifi.
@@ -130,6 +137,11 @@ void HgmApplication::HgmWiFi::Stop()
     this->OpenWiFi(false);
 }
 
+void HgmApplication::HgmWiFi::test()
+{
+    
+}
+
 /**
  * @brief All WiFi application are initialized in here.
  */
@@ -176,6 +188,8 @@ static void wifiControlTask(void* params)
                     1
                 );
                 Serial.println("WiFi open.");
+            } else {
+                Serial.println("WiFi open already.");
             }
         } else {
             if (wifiCheckTaskHandle) {
@@ -185,6 +199,8 @@ static void wifiControlTask(void* params)
                 vTaskDelete(wifiCheckTaskHandle);
                 wifiCheckTaskHandle = NULL;
                 Serial.println("WiFi close.");
+            } else {
+                Serial.println("WiFi close already.");
             }
         }
     }
@@ -220,6 +236,7 @@ static void wifiCheckTask(void* params)
         cnt = 0;
 
         if (!flag) {
+            Serial.println("");
             flag = true;
             Serial.println("WiFi Connected");
             Serial.print("IP Address: ");

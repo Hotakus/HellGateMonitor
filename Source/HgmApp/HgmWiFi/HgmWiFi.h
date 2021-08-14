@@ -40,6 +40,10 @@ namespace HgmApplication {
 
 		// TODO: WiFi stop;
 		void Stop();
+
+
+		static void test();
+
 	};
 };
 

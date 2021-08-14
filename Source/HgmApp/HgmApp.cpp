@@ -14,18 +14,29 @@
 
 using namespace HgmApplication;
 
+HgmApp* hgmApp = nullptr;
+
+HgmWiFi* _hgmWiFi = nullptr;
+HgmBT* _hgmBT = nullptr;
+
 static WiFiClass wifi = WiFi;
 
 HgmApplication::HgmApp::HgmApp(bool flag)
 {
     this->hgmWifi = new HgmWiFi(true);
     this->hgmBT = new HgmBT();
+
+    _hgmWiFi = this->hgmWifi;
+    _hgmBT = this->hgmBT;
 }
 
 HgmApp::HgmApp(char* ssid, char* password)
 {
     this->hgmWifi = new HgmWiFi(ssid, password);
     this->hgmBT = new HgmBT();
+
+    _hgmWiFi = this->hgmWifi;
+    _hgmBT = this->hgmBT;
 }
 
 HgmApp::~HgmApp()
@@ -53,7 +64,6 @@ void HgmApplication::HgmApp::BeginWiFi()
 void HgmApplication::HgmApp::BeginWiFiWithConfig(char* ssid, char* password)
 {
     this->hgmWifi->ConfigWiFi(ssid, password);
-    this->hgmWifi->Begin();
 }
 
 void HgmApplication::HgmApp::BeginBT()
@@ -64,6 +74,8 @@ void HgmApplication::HgmApp::BeginBT()
 
 void HgmApplication::HgmApp::Stop()
 {
+    this->StopWiFi();
+    this->StopBT();
 }
 
 void HgmApplication::HgmApp::StopWiFi()
