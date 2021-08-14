@@ -22,6 +22,7 @@ namespace HgmApplication {
 
 		// Send method
 		HGM_BT_PACK_METHOD_OK,
+		HGM_BT_PACK_METHOD_NORMAL,
 
 		HGM_BT_PACK_METHOD_NULL,
 	};

@@ -85,10 +85,10 @@ void loop()
     //    Serial.printf("%s\n", buf);
     //}
 
-    if (hgmApp->hgmBT->bs->connected()) {
+    /*if (hgmApp->hgmBT->bs->connected()) {
         String test = "Hotakus";
         hgmApp->hgmBT->SendDatePack(test, HGM_BT_PACK_METHOD_OK);
-    }
+    }*/
 
     vTaskDelay(1 * 1000);
 }

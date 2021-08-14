@@ -94,21 +94,29 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
     hgmPack["DataType"] = "";
 
     switch (method) {
-    case HGM_BT_PACK_METHOD_WIFI_CONF:
-        // TODO:
-        Data = hgmPack.createNestedObject("Data");
-        break;
-    case HGM_BT_PACK_METHOD_OK:
+    case HGM_BT_PACK_METHOD_OK: {
         // TODO:
         hgmPack["DataType"] = "status";
         hgmPack["Data"] = "ok";
         break;
+    }
+    case HGM_BT_PACK_METHOD_NORMAL: {
+        hgmPack["DataType"] = "normal";
+        hgmPack["Data"] = dataToPack.c_str();
+    }
     default:
         break;
     }
 
     serializeJson(hgmPack, tmp);
     return tmp;
+}
+
+
+static void BeginWiFiWithConfig(String& ssid, String& password)
+{
+    extern HgmApp* hgmApp;
+    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
 }
 
 /**
@@ -120,12 +128,6 @@ void HgmApplication::HgmBT::SendDatePack(String& rawData, HgmBTPackMethod method
 {
     String pack = HgmBT::PackRawData(rawData, method);
     _bs->write((uint8_t*)pack.c_str(), pack.length());
-}
-
-static void BeginWiFiWithConfig(String& ssid, String& password)
-{
-    extern HgmApp* hgmApp;
-    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
 }
 
 /**
@@ -164,6 +166,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         *method = HGM_BT_PACK_METHOD_WIFI_CONF;
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
 
         BeginWiFiWithConfig(_ssid, _password);
 
@@ -172,6 +175,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     }
     case HGM_BT_PACK_METHOD_OK: {
         // TODO:
+        dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_OK;
         return;
     }
