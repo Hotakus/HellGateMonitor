@@ -238,10 +238,12 @@ static void BluetoothListeningTask(void* params)
 {
     uint16_t sleepTimes = 1000;
     uint16_t times = 0;
+    bool flag = false;
 
     while (true) {
         // TODO:
         if (!_bs->connected()) {
+            flag = false;
             vTaskDelay(1000);
         }
 

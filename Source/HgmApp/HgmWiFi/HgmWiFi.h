@@ -42,7 +42,8 @@ namespace HgmApplication {
 		void Stop();
 
 
-		static void test();
+		static String GetSSID();
+		static String GetPassword();
 
 	};
 };

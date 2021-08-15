@@ -21,7 +21,7 @@ namespace HGM {
 
 	public:
 
-		bool beginFlag = false;
+		bool CheckFlag = false;
 
 		HgmSC();
 		~HgmSC();

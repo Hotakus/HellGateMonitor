@@ -49,22 +49,17 @@ void setup()
     Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
     Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION);
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
-    Serial.printf("LVGL     : %d\n", 0);
+    Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(), lv_version_info());
     Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
     Serial.printf("***************************************\n");
 
     hgmApp = new HgmApp(true);
-    hgmApp->BeginBT();
     
-
     // TODO: Check the wifi config file in SPIFF
-    /*HgmSC hgmSC;
-    hgmSC.Begin();*/
+    HgmSC hgmSC;
+    hgmSC.Begin();
 
     //hgmLvgl->HgmLvglBegin();
-
-
-    
 }
 
 

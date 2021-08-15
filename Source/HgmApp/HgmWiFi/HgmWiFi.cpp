@@ -16,8 +16,8 @@ using namespace HgmApplication;
 static bool wifiSwitch;		// To control the WiFi's on/off
 
 static WiFiClass wifi = WiFi;
-char* _ssid = NULL;
-char* _password = NULL;
+static char* _ssid = NULL;
+static char* _password = NULL;
 
 static TaskHandle_t wifiCheckTaskHandle = NULL;
 static TaskHandle_t wifiControlTaskHandle = NULL;
@@ -137,9 +137,14 @@ void HgmApplication::HgmWiFi::Stop()
     this->OpenWiFi(false);
 }
 
-void HgmApplication::HgmWiFi::test()
+String HgmApplication::HgmWiFi::GetSSID()
 {
-    
+    return _ssid;
+}
+
+String HgmApplication::HgmWiFi::GetPassword()
+{
+    return _password;
 }
 
 /**
