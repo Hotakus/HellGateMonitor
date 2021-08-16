@@ -14,16 +14,16 @@
 ## 基本信息：
 
 ---
-> 主控： &nbsp;  &nbsp; &nbsp; &nbsp; ESP32-PICO-D4，240Mhz，4MB Flash，512KB RAM  
-> PSRAM：&nbsp; &nbsp; ESP-PSRAM64，8MB SPI RAM  
-> 电源IC：&nbsp; &nbsp; &nbsp; BQ25896  
-> IMU: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MPU6050  
-> USB串口：&nbsp; CP2104    
-> LDO芯片：&nbsp; XC6210B332，700mA  
-> 屏幕：&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1.14英寸 135x240分辨率IPS  
-> 锂电池： &nbsp; &nbsp; &nbsp; 700mAh  
+> 主控: &emsp; &emsp; ESP32-PICO-D4，240Mhz，4MB Flash，512KB RAM  
+> PSRAM: &emsp;ESP-PSRAM64，8MB SPI RAM  
+> 电源IC: &emsp; &nbsp;BQ25896  
+> IMU: &emsp; &emsp; &nbsp;MPU6050  
+> USB串口:&emsp;CP2104    
+> LDO芯片:&emsp;XC6210B332，700mA  
+> 屏幕: &emsp; &emsp; 1.14英寸 135x240分辨率IPS  
+> 锂电池:&emsp; &nbsp; 700mAh  
 > 
-> LVGL：&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;V8.1.0 dev
+> LVGL: &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;V8.1.0 dev
 
 ---
 ## 基本功能：
