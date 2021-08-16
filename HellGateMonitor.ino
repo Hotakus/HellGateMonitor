@@ -15,12 +15,14 @@
 #include <ArduinoJson.h>
 #include <iostream>
 #include <string>
+#include <TJpg_Decoder.h>
 
 /* User include files */
 #include "Source/HgmApp/HgmBT/HgmBT.h"
 #include "Source/HgmApp/HgmApp.h"
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
+#include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 
 // TODO: TCP Server for projection
 // TODO: TCP Client for getting another info
@@ -39,6 +41,17 @@ char* password = "12345678";
 extern HgmApp* hgmApp;
 //extern HgmLvgl* hgmLvgl;
 
+
+
+TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
+
+bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
+{
+    tft.pushImage(x, y, w, h, bitmap);
+    return 1;
+}
+
+
 void setup()
 {
     Serial.begin(115200);
@@ -54,36 +67,62 @@ void setup()
     Serial.printf("***************************************\n");
 
     hgmApp = new HgmApp(true);
-    
-    // TODO: Check the wifi config file in SPIFF
+
+    // TODO: Complete the UI transition after power on.
+    ledcAttachPin(32, 0);
+    ledcSetup(0, (10 * 1000), 8);
+    ledcWrite(0, 0);
+
+    //hgmLvgl->HgmLvglBegin();
+
     HgmSC hgmSC;
     hgmSC.Begin();
 
-    //hgmLvgl->HgmLvglBegin();
+    BiliInfoRecv bili;
+    bili.SetUID("341974201");
+    bili.GetBasicInfo();
+    bili.GetFollower();
+    // bili.GetUserFaceImg();
+    // uint8_t* face;
+    // size_t size = 0;
+    // face = bili.GetUserFaceImgBuf(&size);
+    // Serial.printf("%x\n", face);
+
+    // Initialise the TFT
+    tft.begin();
+    tft.fillScreen(TFT_RED);
+
+    /*TJpgDec.setJpgScale(1);
+    TJpgDec.setSwapBytes(true);
+    TJpgDec.setCallback(tft_output);
+
+    uint32_t t = millis();
+    uint16_t w = 0, h = 0;
+    TJpgDec.getJpgSize(&w, &h, face, size);
+    Serial.print("Width = ");
+    Serial.print(w);
+    Serial.print(", height = ");
+    Serial.println(h);
+    TJpgDec.drawJpg(0, 0, face, size);
+    t = millis() - t;
+    Serial.print(t); Serial.println(" ms");*/
+
+    hgmApp->StopBT();
+    vTaskDelay(200);
+    hgmApp->BeginBT();
 }
 
-
-uint8_t buf[512];
 void loop()
 {
+    for (size_t i = 0; i < 255; i++) {
+        ledcWrite(0, i);
+        vTaskDelay(10);
+    }
+    vTaskDelay(200);
 
-    //memset(buf, 0, 512);
-    //if (SerialBT.available()) {
-    //    /*String str = SerialBT.readString();
-    //    Serial.println(str.c_str());*/
-
-    //    int i = 0;
-    //    while (SerialBT.available()) {
-    //        buf[i] = SerialBT.read();
-    //        i++;
-    //    }
-    //    Serial.printf("%s\n", buf);
-    //}
-
-    /*if (hgmApp->hgmBT->bs->connected()) {
-        String test = "Hotakus";
-        hgmApp->hgmBT->SendDatePack(test, HGM_BT_PACK_METHOD_OK);
-    }*/
-
-    vTaskDelay(1 * 1000);
+    for (size_t i = 255; i > 0; i--) {
+        ledcWrite(0, i);
+        vTaskDelay(10);
+    }
+    vTaskDelay(200);
 }

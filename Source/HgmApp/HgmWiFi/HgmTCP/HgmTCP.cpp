@@ -97,6 +97,16 @@ void HgmApplication::HgmTCP::StopClient()
     xQueueSend(beginMsgbox, &method, portMAX_DELAY);
 }
 
+WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
+{
+    return this->wifiServer;
+}
+
+WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
+{
+    return this->wifiClient;
+}
+
 /**
  * @brief TCP control task.
  * @param params
@@ -145,7 +155,7 @@ static void TcpControlTask(void* params)
             
             break;
         case TCP_BEGIN_CLIENT:         // client begin
-            // TODO:
+            // TODO: If there is not any other app that use client handle
 
             Serial.printf("TCP Client begin\n");
             break;
@@ -195,11 +205,11 @@ static void TcpServerListeningTask(void* params)
         if (!wc)
             goto _delay;
         Serial.printf("A client has connected into server.\n");
-        
 
-        // TODO: complete the
         while (wc.connected()) {
             if (wc.available()) {
+                // TODO: Analyze HGM data pack
+
                 uint8_t buf[512] = {0};
                 wc.read(buf, wc.available());
                 Serial.print(wc.remoteIP());
