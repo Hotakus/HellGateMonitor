@@ -15,7 +15,7 @@ HGM的蓝牙数据包格式(JSON)
 >>用于WiFi配置，Data存放ssid和password  
 >>Data:["ssid":"xxx", "password":"xxx"]
 >
-可以自己实现更多功能
+可以自己实现更多功能(详见代码)
 
 例子：
 > {
