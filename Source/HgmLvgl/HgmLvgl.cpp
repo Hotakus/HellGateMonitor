@@ -9,6 +9,7 @@
 *******************************************************************/
 #include <Arduino.h>
 #include "HgmLvgl.h"
+#include <Wire.h>
 
 #include "HgmGUI/HgmFramework.h"
 #include "LvglPort/lv_port_disp.h"
@@ -58,34 +59,34 @@ void HGM::HgmLvgl::HgmLvglBegin()
     // this->HgmLvglIndevInit();
     // this->HgmLvglFsInit();
 
-    /* Create All basic UI */
-    this->HgmLvglUIBegin();
+    ///* Create All basic UI */
+    //this->HgmLvglUIBegin();
 
     /* Create the basic tasks */
-    xTaskCreatePinnedToCore(
-        HgmLvglTick,
-        "HgmLvglTick",
-        2048,
-        &this->lvTick,
-        5,
-        &this->hgmLvglTickHandle,
-        1
-    );
     xTaskCreatePinnedToCore(
         HgmLvglTask,
         "HgmLvglTask",
         4096,
         &this->lvTick,
-        4,
+        6,
         &this->hgmLvglTaskHandle,
+        1
+    );
+    xTaskCreatePinnedToCore(
+        HgmLvglTick,
+        "HgmLvglTick",
+        2048,
+        &this->lvTick,
+        10,
+        &this->hgmLvglTickHandle,
         1
     );
     xTaskCreatePinnedToCore(
         HgmControlCheckTask,
         "HgmControlCheckTask",
-        4096,
+        2048,
         this,
-        10,
+        7,
         &this->hgmControlHandle,
         1
     );

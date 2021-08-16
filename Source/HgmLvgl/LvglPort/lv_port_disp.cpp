@@ -36,11 +36,12 @@ void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 	/*Used to copy the buffer's content to the display*/
 	disp_drv.flush_cb = HGM::HgmLvgl::HgmLvglDispFlush;
 
-#define BUF_METHOD 1
+#define BUF_METHOD 0
 #if BUF_METHOD == 0
 	/* Example for 1) */
 	static lv_disp_draw_buf_t draw_buf_dsc_1;
-	static lv_color_t* buf_1 = (lv_color_t*)lv_mem_alloc(_width * 10);  /*A buffer for 10 rows*/
+	// static lv_color_t* buf_1 = (lv_color_t*)malloc(_width * 10);  /*A buffer for 10 rows*/
+	static lv_color_t buf_1[HGM_MONITOR_WIDTH * 10];
 	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, _width * 10);   /*Initialize the display buffer*/
 	/*Set a display buffer*/
 	disp_drv.draw_buf = &draw_buf_dsc_1;

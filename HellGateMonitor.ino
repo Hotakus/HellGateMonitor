@@ -39,8 +39,19 @@ char* ssid = "trisuborn";
 char* password = "12345678";
 
 extern HgmApp* hgmApp;
-//extern HgmLvgl* hgmLvgl;
+extern HgmLvgl* hgmLvgl;
 
+// Show the init progress task
+static void ProgressShow(void* params)
+{
+    uint8_t progress = 0;
+    while (true) {
+        if (progress == 100) {
+            // TODO:
+        }
+        vTaskDelay(10);
+    }
+}
 
 
 TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
@@ -56,24 +67,36 @@ void setup()
 {
     Serial.begin(115200);
 
-    /* Base init */
     size_t codeSize = ESP.getSketchSize();
-    Serial.printf("\n********** Hell Gate Monitor **********\n");
+    Serial.printf("\n************** Hell Gate Monitor **************\n");
+    Serial.printf("        ___           ___           ___                  \n");
+    Serial.printf("       /\\__\\         /\\  \\         /\\__\\           \n");
+    Serial.printf("      /:/  /        /::\\  \\       /::|  |              \n");
+    Serial.printf("     /:/__/        /:/\\:\\  \\     /:|:|  |             \n");
+    Serial.printf("    /::\\  \\ ___   /:/  \\:\\  \\   /:/|:|__|__         \n");
+    Serial.printf("   /:/\\:\\  /\\__\\ /:/__/_\\:\\__\\ /:/ |::::\\__\\    \n");
+    Serial.printf("   \\/__\\:\\/:/  / \\:\\  /\\ \\/__/ \\/~~/__/:/  /     \n");
+    Serial.printf("        \\::/  /   \\:\\ \\:\\__\\         /:/  /        \n");
+    Serial.printf("        /:/  /     \\:\\/:/  /        /:/  /             \n");
+    Serial.printf("       /:/  /       \\::/  /        /:/  /               \n");
+    Serial.printf("       \\/__/         \\/__/         \\/__/              \n\n");
     Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
     Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION);
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(), lv_version_info());
     Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
-    Serial.printf("***************************************\n");
+    Serial.printf("***********************************************\n");
 
     hgmApp = new HgmApp(true);
 
     // TODO: Complete the UI transition after power on.
     ledcAttachPin(32, 0);
     ledcSetup(0, (10 * 1000), 8);
-    ledcWrite(0, 0);
+    ledcWrite(0, 255);
 
-    //hgmLvgl->HgmLvglBegin();
+    /* HGM LVGL Component initialize */
+    Wire1.begin(21, 22);
+    hgmLvgl->HgmLvglBegin();
 
     HgmSC hgmSC;
     hgmSC.Begin();
@@ -82,20 +105,17 @@ void setup()
     bili.SetUID("341974201");
     bili.GetBasicInfo();
     bili.GetFollower();
-    // bili.GetUserFaceImg();
-    // uint8_t* face;
-    // size_t size = 0;
-    // face = bili.GetUserFaceImgBuf(&size);
-    // Serial.printf("%x\n", face);
+    bili.GetUserFaceImg();
+    uint8_t* face;
+    size_t size = 0;
+    face = bili.GetUserFaceImgBuf(&size);
+    Serial.printf("%x\n", face);
 
-    // Initialise the TFT
-    tft.begin();
-    tft.fillScreen(TFT_RED);
 
-    /*TJpgDec.setJpgScale(1);
+    TJpgDec.setJpgScale(1);
     TJpgDec.setSwapBytes(true);
     TJpgDec.setCallback(tft_output);
-
+    
     uint32_t t = millis();
     uint16_t w = 0, h = 0;
     TJpgDec.getJpgSize(&w, &h, face, size);
@@ -105,7 +125,7 @@ void setup()
     Serial.println(h);
     TJpgDec.drawJpg(0, 0, face, size);
     t = millis() - t;
-    Serial.print(t); Serial.println(" ms");*/
+    Serial.print(t); Serial.println(" ms");
 
     hgmApp->StopBT();
     vTaskDelay(200);

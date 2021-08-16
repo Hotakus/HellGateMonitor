@@ -45,7 +45,7 @@
 #define LV_MEM_CUSTOM      0
 #if LV_MEM_CUSTOM == 0
 /*Size of the memory available for `lv_mem_alloc()` in bytes (>= 2kB)*/
-#  define LV_MEM_SIZE    (64U * 1024U)          /*[bytes]*/
+#  define LV_MEM_SIZE    (32U * 1024U)          /*[bytes]*/
 
 /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
 #  define LV_MEM_ADR          0     /*0: unused*/
@@ -458,21 +458,21 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_LIST         1
 
-#define LV_USE_METER        1
+#define LV_USE_METER        0
 
-#define LV_USE_MSGBOX       1
+#define LV_USE_MSGBOX       0
 
-#define LV_USE_SPINBOX      1
+#define LV_USE_SPINBOX      0
 
-#define LV_USE_SPINNER      1
+#define LV_USE_SPINNER      0
 
 #define LV_USE_TABVIEW      1
 
-#define LV_USE_TILEVIEW     1
+#define LV_USE_TILEVIEW     0
 
 #define LV_USE_WIN          0
 
-#define LV_USE_SPAN         1
+#define LV_USE_SPAN         0
 #if LV_USE_SPAN
 /*A line text can contain maximum num of span descriptor */
 #  define LV_SPAN_SNIPPET_STACK_SIZE   64
