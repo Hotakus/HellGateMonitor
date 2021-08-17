@@ -101,22 +101,3 @@ __最后：__
 ![HGM](image/HGM.png)
 
 ---
-
-
-
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
