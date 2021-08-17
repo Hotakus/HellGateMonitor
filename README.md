@@ -77,8 +77,10 @@ LVGL源码采用子模块的方式引用到此项目中，这样可以方便的�
 ```shell
 https://dl.espressif.com/dl/package_esp32_index.json
 ```
+
 当然，不能直接在Arduino的官方IDE中直接编译项目，因为它的项目管理能力太差了。
 我们使用Visual Studio 2019作为开发环境，这里也不推荐vscode，理由同Arduino官方IDE。
+
 ---
 
 ### 开始项目编译：
