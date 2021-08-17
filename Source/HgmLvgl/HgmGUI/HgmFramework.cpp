@@ -41,7 +41,7 @@ void HgmGUI::HgmFramework::begin()
 	hgmFwTabview = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 5);
 
 	for (uint8_t i = 0; i < TAB_NUMBER; i++) {
-		hgmTabList[i] = lv_tabview_add_tab(hgmFwTabview, "-");
+		hgmTabList[i] = lv_tabview_add_tab(hgmFwTabview, " ");
 	}
 
 	/* ui init */

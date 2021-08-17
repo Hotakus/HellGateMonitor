@@ -20,13 +20,14 @@ using namespace HgmGUI;
 
 HgmLvgl* hgmLvgl = new HgmLvgl(135, 240);
 
-static TFT_eSPI* lcd = nullptr;
+static TFT_eSPI* _lcd = nullptr;
 
 HGM::HgmLvgl::HgmLvgl(int16_t width, int16_t height)
 {
     this->_width = width;
     this->_height = height;
-    lcd = new TFT_eSPI(this->_width, this->_height);
+    _lcd = new TFT_eSPI(this->_width, this->_height);
+    this->lcd = _lcd;
 
     this->hcl = new HgmControlLogic(Wire1);
     this->hgmFw = new HgmFramework();
@@ -34,7 +35,7 @@ HGM::HgmLvgl::HgmLvgl(int16_t width, int16_t height)
 
 HgmLvgl::~HgmLvgl()
 {
-    delete lcd;
+    delete _lcd;
     delete this->hcl;
     delete this->hgmFw;
     vTaskDelete(&this->hgmLvglTaskHandle);
@@ -45,9 +46,9 @@ HgmLvgl::~HgmLvgl()
 void HGM::HgmLvgl::HgmLvglBegin()
 {
     /* LCD init */
-    lcd->begin();
-    lcd->setRotation(1);
-    lcd->fillScreen(TFT_YELLOW);
+    _lcd->begin();
+    _lcd->setRotation(1);
+    _lcd->fillScreen(TFT_YELLOW);
 
     /* Hgm Control init */
     this->hcl->HgmControlBegin();
@@ -137,10 +138,10 @@ void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* ar
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
 
-    lcd->startWrite();
-    lcd->setAddrWindow(area->x1, area->y1, w, h);
-    lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
-    lcd->endWrite();
+    _lcd->startWrite();
+    _lcd->setAddrWindow(area->x1, area->y1, w, h);
+    _lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
+    _lcd->endWrite();
 
     lv_disp_flush_ready(disp_drv);
 }

@@ -42,6 +42,7 @@ namespace HGM {
 		static void HgmControlCheckTask(void* params);
 
 	public:
+		TFT_eSPI* lcd;
 		HgmControlLogic *hcl = nullptr;
 		HgmGUI::HgmFramework *hgmFw = nullptr;
 

@@ -23,6 +23,7 @@
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "Source/LvglSrc/lv_sjpg.h"
 
 #define SCREEN_BK_PIN   32
 
@@ -64,6 +65,26 @@ static void backlightControl(void* params)
         }
     }
 }
+
+typedef uint16_t(*_fb_t)[64];
+static uint16_t* faceBuf = NULL;
+bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
+{
+    // 强制为二维数组
+    uint16_t(*_faceBuf)[64] = (_fb_t)faceBuf;
+
+    size_t pos = 0;
+    for (size_t _h = 0; _h < h; _h++) {
+        for (size_t _w = 0; _w < w; _w++) {
+            _faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
+            pos++;
+        }
+    }
+
+    return 1;
+}
+
+
 
 void setup()
 {
@@ -115,7 +136,10 @@ void setup()
 
     hgmLvgl->HgmLvglUIBegin();
 
-    /*HgmSC hgmSC;
+
+    hgmApp = new HgmApp(true);
+
+    HgmSC hgmSC;
     hgmSC.Begin();
 
     BiliInfoRecv bili;
@@ -128,13 +152,58 @@ void setup()
     face = bili.GetUserFaceImgBuf(&size);
     Serial.printf("%x\n", face);
 
-    hgmApp = new HgmApp(true);
-    hgmApp->StopBT();
-    vTaskDelay(200);
-    hgmApp->BeginBT();*/
+
+    faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
+    TJpgDec.setJpgScale(1);
+    TJpgDec.setSwapBytes(true);
+    TJpgDec.setCallback(tft_output);
+
+    uint32_t t = millis();
+    uint16_t w = 0, h = 0;
+    TJpgDec.getJpgSize(&w, &h, face, size);
+    Serial.print("Width = ");
+    Serial.print(w);
+    Serial.print(", height = ");
+    Serial.println(h);
+    TJpgDec.drawJpg(0, 0, face, size);
+
+    hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
+    
+    t = millis() - t;
+    Serial.print(t); Serial.println(" ms");
+
+
+
+    delay(1000);
+
+    static lv_obj_t* img1;
+    lv_split_jpeg_init();
+    img1 = lv_img_create(lv_scr_act());
+    static lv_img_dsc_t face_dsc;
+    face_dsc.header.always_zero = 0;
+    face_dsc.header.w = 64;
+    face_dsc.header.h = 64;
+    face_dsc.data_size = 4096 * 2;
+    face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+    face_dsc.data = (uint8_t*)faceBuf;
+    lv_img_set_src(img1, &face_dsc);
+    lv_obj_align(img1, LV_ALIGN_LEFT_MID, 0, 0);
+    
+    lv_anim_t anim;
+    lv_anim_init(&anim);
+    lv_anim_set_var(&anim, img1);
+    lv_anim_set_values(&anim, 0, 100);
+    lv_anim_set_time(&anim, 5000);
+    lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&anim, lv_anim_path_overshoot);
+    lv_anim_start(&anim);
+
+    /*  hgmApp->StopBT();
+      vTaskDelay(200);
+      hgmApp->BeginBT();*/
 }
 
 void loop()
 {
-    
+
 }

@@ -416,6 +416,9 @@
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lv_sjpg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -866,6 +869,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lv_sjpg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
