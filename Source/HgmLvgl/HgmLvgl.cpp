@@ -60,7 +60,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
     // this->HgmLvglFsInit();
 
     /* Create All basic UI */
-    this->HgmLvglUIBegin();
+    // this->HgmLvglUIBegin();
 
     /* Create the basic tasks */
     xTaskCreatePinnedToCore(
