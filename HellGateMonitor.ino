@@ -68,6 +68,7 @@ static void backlightControl(void* params)
 void setup()
 {
     Serial.begin(115200);
+    delay(10);
 
     size_t codeSize = ESP.getSketchSize();
     Serial.printf("\n****************** Hell Gate Monitor ******************\n");
@@ -77,7 +78,7 @@ void setup()
     Serial.printf("        /:/__/        /:/\\:\\  \\     /:|:|  |          \n");
     Serial.printf("       /::\\  \\ ___   /:/  \\:\\  \\   /:/|:|__|__      \n");
     Serial.printf("      /:/\\:\\  /\\__\\ /:/__/_\\:\\__\\ /:/ |::::\\__\\ \n");
-    Serial.printf("      \\/__\\:\\/:/  / \\:\\  /\\ \\/__/ \\/~~/__/:/  /  \n");
+    Serial.printf("      \\/__\\:\\/:/  / \\:\\  /\\ \\/__/ \\/__/~~/:/  /  \n");
     Serial.printf("           \\::/  /   \\:\\ \\:\\__\\         /:/  /     \n");
     Serial.printf("           /:/  /     \\:\\/:/  /        /:/  /          \n");
     Serial.printf("          /:/  /       \\::/  /        /:/  /            \n");
