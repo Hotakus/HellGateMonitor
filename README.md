@@ -9,7 +9,7 @@
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 
 
-![HellGateMonitor](image/HellGateMonitor.png)
+![HellGateMonitor](Image/HellGateMonitor.png)
 
 ---
 
@@ -62,7 +62,7 @@ git clone --recurse-submodules https://github.com/Hotakus/HellGateMonitor.git
 
 ## 项目基本结构：
 下位机所有的程序源码都放在Source文件夹下  
-![HellGateMonitor](image/SourceStruct.png)  
+![HellGateMonitor](Image/SourceStruct.png)  
 LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
 另外，由于此项目使用的是Arduino平台，所以在使用此项目前，你应该先安装指定库：
 * ArduinoJson （解析/打包JSON数据）
@@ -88,15 +88,15 @@ https://dl.espressif.com/dl/package_esp32_index.json
 
 现在，我默认你已经搞清楚了Arduino的扩展，接下来找到vMicro按照我下图进行简单配置。
 
-![ArduinoConfig](image/ArduinoConfig.png)  
+![ArduinoConfig](Image/ArduinoConfig.png)  
 我之所以选这个是因为这个开发板环境和此项目几乎完美契合。
 
 然后，将项目Debug改为Release，不然项目跑不起来。  
 __最后：__  
-![tb](image/tb.png)
+![tb](Image/tb.png)
 
 如果编译烧写正常，那么串口会出现以下信息(115200)：  
-![HGM](image/HGM.png)  
+![HGM](Image/HGM.png)  
 则项目构建完成。
 
 ---
