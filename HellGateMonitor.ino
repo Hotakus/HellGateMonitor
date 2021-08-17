@@ -70,7 +70,7 @@ void setup()
     Serial.begin(115200);
 
     size_t codeSize = ESP.getSketchSize();
-    Serial.printf("\n************** Hell Gate Monitor **************\n");
+    Serial.printf("\n****************** Hell Gate Monitor ******************\n");
     Serial.printf("           ___           ___           ___               \n");
     Serial.printf("          /\\__\\         /\\  \\         /\\__\\        \n");
     Serial.printf("         /:/  /        /::\\  \\       /::|  |           \n");
@@ -88,7 +88,7 @@ void setup()
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(), lv_version_info());
     Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
-    Serial.printf("***********************************************\n");
+    Serial.printf("********************************************************\n");
 
     ledcAttachPin(SCREEN_BK_PIN, 0);
     ledcSetup(0, (10 * 1000), 8);   // PWM 10kHz
