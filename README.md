@@ -9,10 +9,8 @@
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 
 
-![HellGateMonitor](image/HellGateMonitor.png)
+<div align=center>![HellGateMonitor](image/HellGateMonitor.png)
 ---
-
- 
 ---
 
 ## 基本信息：
@@ -112,7 +110,9 @@ __最后：__
 使用[HGMC]()对PC进行监控或投屏，监控数据会实时发送给HGM，投屏功能可选择开启。
 
 ### 2、如何配置并使用天气功能
-天气功能所使用的API为“和风天气”提供的API，要想使用天气功能，那么你必须去“和风天气”的官网创建应用，
+天气功能所使用的API为“ [和风天气](https://id.qweather.com) ”提供的API
+，要想使用天气功能，
+那么你必须去“ [和风天气控制台](https://id.qweather.com/#/login?redirect=https%3A%2F%2Fconsole.qweather.com) ”创建应用，
 然后获得APP key（免费），这个key是天气功能开启的关键，HGM默认不开启天气功能，要想使用天气功能，
 需要获得key后，用[HGMA]()（HGM的安卓配置APP）配置HGM，即可使用。
 
