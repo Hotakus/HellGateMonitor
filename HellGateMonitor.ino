@@ -143,6 +143,12 @@ void setup()
     //hgmLvgl->HgmLvglUIBegin();
 
     LV_IMG_DECLARE(HGM_LOGO);
+    LV_IMG_DECLARE(HGMBG);
+
+    lv_obj_t* bg;
+    bg = lv_img_create(lv_scr_act());
+    lv_img_set_src(bg, &HGMBG);
+    lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
 
     lv_obj_t* img1;
     img1 = lv_img_create(lv_scr_act());
@@ -201,9 +207,8 @@ void setup()
 
     delay(1000);
 
-    static lv_obj_t* img1;
-    lv_split_jpeg_init();
-    img1 = lv_img_create(lv_scr_act());
+    static lv_obj_t* img2;
+    img2 = lv_img_create(lv_scr_act());
     static lv_img_dsc_t face_dsc;
     face_dsc.header.always_zero = 0;
     face_dsc.header.w = 64;
@@ -211,17 +216,17 @@ void setup()
     face_dsc.data_size = 4096 * 2;
     face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
     face_dsc.data = (uint8_t*)faceBuf;
-    lv_img_set_src(img1, &face_dsc);
-    lv_obj_align(img1, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_img_set_src(img2, &face_dsc);
+    lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
-    lv_anim_t anim;
-    lv_anim_init(&anim);
-    lv_anim_set_var(&anim, img1);
-    lv_anim_set_values(&anim, 0, 100);
-    lv_anim_set_time(&anim, 5000);
-    lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(&anim, lv_anim_path_overshoot);
-    lv_anim_start(&anim);*/
+    lv_anim_t anim1;
+    lv_anim_init(&anim1);
+    lv_anim_set_var(&anim1, img2);
+    lv_anim_set_values(&anim1, 0, 100);
+    lv_anim_set_time(&anim1, 5000);
+    lv_anim_set_exec_cb(&anim1, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
+    lv_anim_start(&anim1);*/
 
     /*  hgmApp->StopBT();
       vTaskDelay(200);
