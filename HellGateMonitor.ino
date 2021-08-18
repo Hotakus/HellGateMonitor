@@ -23,6 +23,7 @@
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
 
 #define SCREEN_BK_PIN   32
 
@@ -35,15 +36,12 @@
 #define COMPILE_TIME __TIME__
 
 using namespace HGM;
+using namespace HgmGUI;
 using namespace HgmApplication;
-
-
-char* ssid = "trisuborn";
-char* password = "12345678";
 
 extern HgmApp* hgmApp;
 extern HgmLvgl* hgmLvgl;
-
+HgmSetupUI* hgmSetupUI;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -57,14 +55,14 @@ static void backlightControl(void* params)
         }
 
         if (flag) {
-            for (size_t i = 0; i < 255; i++) {
+            for (size_t i = 0; i < 127; i++) {
                 ledcWrite(0, i);
-                vTaskDelay(10);
+                vTaskDelay(15);
             }
         } else {
-            for (size_t i = 255; i > 0; i--) {
+            for (size_t i = 127; i > 0; i--) {
                 ledcWrite(0, i);
-                vTaskDelay(10);
+                vTaskDelay(15);
             }
         }
     }
@@ -81,7 +79,8 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
     for (size_t _h = 0; _h < h; _h++) {
         for (size_t _w = 0; _w < w; _w++) {
             // 字序交替赋值
-            _faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
+            //_faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
+            _faceBuf[y + _h][x + _w] = bitmap[pos];
             pos++;
         }
     }
@@ -141,36 +140,10 @@ void setup()
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
     //hgmLvgl->HgmLvglUIBegin();
-
-    LV_IMG_DECLARE(HGM_LOGO);
-    LV_IMG_DECLARE(HGMBG);
-
-    lv_obj_t* bg;
-    bg = lv_img_create(lv_scr_act());
-    lv_img_set_src(bg, &HGMBG);
-    lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
-
-    lv_obj_t* img1;
-    img1 = lv_img_create(lv_scr_act());
-    lv_img_set_src(img1, &HGM_LOGO);
-    lv_obj_align(img1, LV_ALIGN_TOP_MID, 0, -32);
-
-    lv_obj_t* scr = lv_scr_act();
-    lv_obj_set_style_bg_color(scr, lv_color_make(0, 0, 0), 0);
-
-    lv_anim_t anim;
-    lv_anim_init(&anim);
-    lv_anim_set_var(&anim, img1);
-    lv_anim_set_values(&anim, -32, 20);
-    lv_anim_set_time(&anim, 1000);
-    lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_y);
-    lv_anim_set_path_cb(&anim, lv_anim_path_overshoot);
-    lv_anim_start(&anim);
-
-
+    hgmSetupUI = new HgmSetupUI();
+    hgmSetupUI->Begin();
 
     /*hgmApp = new HgmApp(true);
-
     HgmSC hgmSC;
     hgmSC.Begin();
 
@@ -182,12 +155,12 @@ void setup()
     uint8_t* face;
     size_t size = 0;
     face = bili.GetUserFaceImgBuf(&size);
-    Serial.printf("%x\n", face);
+    Serial.printf("%x\n", face);*/
 
 
-    faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
+    /*faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
     TJpgDec.setJpgScale(1);
-    TJpgDec.setSwapBytes(true);
+    TJpgDec.setSwapBytes(false);
     TJpgDec.setCallback(tft_output);
 
     uint32_t t = millis();
@@ -202,12 +175,12 @@ void setup()
     hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
 
     t = millis() - t;
-    Serial.print(t); Serial.println(" ms");
+    Serial.print(t); Serial.println(" ms");*/
 
 
     delay(1000);
 
-    static lv_obj_t* img2;
+    /*static lv_obj_t* img2;
     img2 = lv_img_create(lv_scr_act());
     static lv_img_dsc_t face_dsc;
     face_dsc.header.always_zero = 0;

@@ -17,7 +17,7 @@
 
 namespace HGM {
 #define HGM_MONITOR_WIDTH  240
-#define HGM_MONITOR_HEIGHT 320
+#define HGM_MONITOR_HEIGHT 135
 
 	class HgmLvgl
 	{
@@ -53,10 +53,6 @@ namespace HGM {
 		void HgmLvglUIBegin();
 
 		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
-
-
-		static void ProgressUIBegin();
-		static void ProgressSet(uint8_t progress);
 
 	};
 };

@@ -112,9 +112,13 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     _httpClient->end();
 }
 
-
+/**
+ * @brief Get user face image from UID. 
+ * @param imgWidth
+ * @param imgHeight
+ */
 void HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
-{
+{ 
     if (!userFaceImgUrl) {
         Serial.println("The URL of the user's face has not been get. please run \"GetBasicInfo()\"");
         return;

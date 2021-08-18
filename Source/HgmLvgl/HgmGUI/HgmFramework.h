@@ -11,7 +11,7 @@
 #define LVGL_HGM_FRAMEWORK_H
 
 #include "../../LvglSrc/lvgl/lvgl.h"
-#include "HgmWiFiUI.h"
+#include "HgmSetupUI.h"
 
 
 namespace HgmGUI {
@@ -23,7 +23,6 @@ namespace HgmGUI {
 	private:
 
 	public:
-		HgmWiFiUI* hgmWiFiUI = nullptr;
 
 		HgmFramework();
 		~HgmFramework();

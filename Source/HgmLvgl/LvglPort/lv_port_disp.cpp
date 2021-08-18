@@ -15,6 +15,7 @@
 #include "lv_port_disp.h"
 #include "../HgmLvgl.h"
 
+using namespace HGM;
 
 void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 {
@@ -40,9 +41,8 @@ void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 #if BUF_METHOD == 0
 	/* Example for 1) */
 	static lv_disp_draw_buf_t draw_buf_dsc_1;
-	// static lv_color_t* buf_1 = (lv_color_t*)malloc(_width * 10);  /*A buffer for 10 rows*/
 	static lv_color_t buf_1[HGM_MONITOR_WIDTH * 10];
-	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, _width * 10);   /*Initialize the display buffer*/
+	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * 10);   /*Initialize the display buffer*/
 	/*Set a display buffer*/
 	disp_drv.draw_buf = &draw_buf_dsc_1;
 #elif BUF_METHOD == 1

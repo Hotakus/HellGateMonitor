@@ -62,6 +62,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
 
     /* Create All basic UI */
     // this->HgmLvglUIBegin();
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
 
     /* Create the basic tasks */
     xTaskCreatePinnedToCore(
@@ -154,15 +155,5 @@ void HGM::HgmLvgl::HgmLvglIndevInit()
 void HGM::HgmLvgl::HgmLvglFsInit()
 {
     // lv_port_fs_init();
-}
-
-
-
-void HGM::HgmLvgl::ProgressUIBegin()
-{
-}
-
-void HGM::HgmLvgl::ProgressSet(uint8_t)
-{
 }
 

@@ -32,9 +32,6 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmWiFiUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -416,15 +413,15 @@
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmWiFiUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp">
@@ -869,6 +866,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\HGM_LOGO.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\HGMBG.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

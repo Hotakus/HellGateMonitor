@@ -23,13 +23,11 @@ lv_obj_t* hgmTabList[TAB_NUMBER];
 HgmFramework::HgmFramework()
 {
 	/* Create All UI */
-	this->hgmWiFiUI = new HgmWiFiUI(0);
 }
 
 HgmFramework::~HgmFramework()
 {
 	/* Remove All UI */
-	 delete this->hgmWiFiUI;
 }
 
 
@@ -45,6 +43,6 @@ void HgmGUI::HgmFramework::begin()
 	}
 
 	/* ui init */
-	this->hgmWiFiUI->begin();
+	
 
 }
