@@ -146,7 +146,6 @@ void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* ar
     lv_disp_flush_ready(disp_drv);
 }
 
-
 void HGM::HgmLvgl::HgmLvglIndevInit()
 {
     lv_port_indev_init();
@@ -156,3 +155,14 @@ void HGM::HgmLvgl::HgmLvglFsInit()
 {
     // lv_port_fs_init();
 }
+
+
+
+void HGM::HgmLvgl::ProgressUIBegin()
+{
+}
+
+void HGM::HgmLvgl::ProgressSet(uint8_t)
+{
+}
+

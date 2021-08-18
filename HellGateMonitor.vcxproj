@@ -313,7 +313,6 @@
     <ClInclude Include="Source\LvglSrc\lvgl\tests\unity\unity_internals.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\tests\unity\unity_support.h" />
     <ClInclude Include="Source\LvglSrc\lv_conf.h" />
-    <ClInclude Include="Source\LvglSrc\lv_sjpg.h" />
     <ClInclude Include="__vm\.HellGateMonitor.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -328,6 +327,7 @@
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp" />
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp" />
+    <ClCompile Include="Source\LvglSrc\HGM_LOGO.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_event.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_group.c" />
@@ -467,7 +467,6 @@
     <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_fonts\font_3.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\tests\unity\unity.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\tests\unity\unity_support.c" />
-    <ClCompile Include="Source\LvglSrc\lv_sjpg.c" />
   </ItemGroup>
   <PropertyGroup>
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>

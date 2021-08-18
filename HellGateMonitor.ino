@@ -23,9 +23,13 @@
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
-#include "Source/LvglSrc/lv_sjpg.h"
 
 #define SCREEN_BK_PIN   32
+
+#define HGM_VERSION_INFO  "dev"
+#define HGM_VERSION_MAJOR 1
+#define HGM_VERSION_MINOR 0
+#define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
 #define COMPILE_TIME __TIME__
@@ -76,6 +80,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
     size_t pos = 0;
     for (size_t _h = 0; _h < h; _h++) {
         for (size_t _w = 0; _w < w; _w++) {
+            // 字序交替赋值
             _faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
             pos++;
         }
@@ -108,7 +113,8 @@ void setup()
     Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION);
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(), lv_version_info());
-    Serial.printf("Firmware : %0.2f MiB\n", codeSize / 1024.0 / 1024.0);
+    Serial.printf("Firmware : V%d.%d.%d %s %0.2f MiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH, HGM_VERSION_INFO
+        , codeSize / 1024.0 / 1024.0);
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
 
@@ -132,12 +138,32 @@ void setup()
     hgmLvgl->HgmLvglBegin();
 
     bool flag = true;
-    xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backloght
+    xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    hgmLvgl->HgmLvglUIBegin();
+    //hgmLvgl->HgmLvglUIBegin();
+
+    LV_IMG_DECLARE(HGM_LOGO);
+
+    lv_obj_t* img1;
+    img1 = lv_img_create(lv_scr_act());
+    lv_img_set_src(img1, &HGM_LOGO);
+    lv_obj_align(img1, LV_ALIGN_TOP_MID, 0, -32);
+
+    lv_obj_t* scr = lv_scr_act();
+    lv_obj_set_style_bg_color(scr, lv_color_make(0, 0, 0), 0);
+
+    lv_anim_t anim;
+    lv_anim_init(&anim);
+    lv_anim_set_var(&anim, img1);
+    lv_anim_set_values(&anim, -32, 20);
+    lv_anim_set_time(&anim, 1000);
+    lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_y);
+    lv_anim_set_path_cb(&anim, lv_anim_path_overshoot);
+    lv_anim_start(&anim);
 
 
-    hgmApp = new HgmApp(true);
+
+    /*hgmApp = new HgmApp(true);
 
     HgmSC hgmSC;
     hgmSC.Begin();
@@ -168,7 +194,7 @@ void setup()
     TJpgDec.drawJpg(0, 0, face, size);
 
     hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
-    
+
     t = millis() - t;
     Serial.print(t); Serial.println(" ms");
 
@@ -187,7 +213,7 @@ void setup()
     face_dsc.data = (uint8_t*)faceBuf;
     lv_img_set_src(img1, &face_dsc);
     lv_obj_align(img1, LV_ALIGN_LEFT_MID, 0, 0);
-    
+
     lv_anim_t anim;
     lv_anim_init(&anim);
     lv_anim_set_var(&anim, img1);
@@ -195,7 +221,7 @@ void setup()
     lv_anim_set_time(&anim, 5000);
     lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_path_cb(&anim, lv_anim_path_overshoot);
-    lv_anim_start(&anim);
+    lv_anim_start(&anim);*/
 
     /*  hgmApp->StopBT();
       vTaskDelay(200);
