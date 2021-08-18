@@ -15,7 +15,7 @@
  
 ---
 
-### 基本信息：
+## 基本信息：
 
 ---
 > 主控: &emsp; &emsp; ESP32-PICO-D4，240Mhz，4MB Flash，512KB RAM  
@@ -32,7 +32,7 @@
 从代码上看，ESP32系列只要支持PSRAM，则代码通用。 
 
 ---
-### 基本功能：
+## 基本功能：
 >通过蓝牙安卓APP进行Hell Gate Monitor 的 __实时控制与WiFi配置等__  
 >通过WiFi对局域网PC进行实时的 __硬件信息监控__ 显示（通过我的另外一个项目 
 > [HGMC]() 后续考虑开发Linux版的
@@ -42,7 +42,7 @@
 >通过WiFi进行实时的 __B站基本信息显示__（通过我的蓝牙APP进行B站配置）  
 
 __蓝牙默认名：__ HellGateMonitorBT  
-Bluetooth 和 Wi-Fi TCP 为本人规定固定格式的json数据包组成，采用命令代码方式进行数据交互
+Bluetooth 和 Wi-Fi TCP 与上位机通信的数据包格式为本人规定的固定格式的json数据包组成，采用命令代码方式进行数据交互
 ，可通过命令和固件定制，添加更多功能。  
 
 [HGM 的蓝牙JSON数据包格式](./Source/HgmApp/HgmBT/README.md)  
@@ -50,7 +50,7 @@ Bluetooth 和 Wi-Fi TCP 为本人规定固定格式的json数据包组成，采�
 
 ---
 
-### 项目克隆：
+## 项目克隆：
 项目使用了 __子模块__，clone 时要加 __--recurse-submodules__  
 一、需要为你的Github账号配置 SSH key（方法请百度）
 ```shell
@@ -63,7 +63,7 @@ git clone --recurse-submodules https://github.com/Hotakus/HellGateMonitor.git
 
 ---
 
-### 项目基本结构：
+## 项目基本结构：
 下位机所有的程序源码都放在Source文件夹下  
 ![HellGateMonitor](image/SourceStruct.png)  
 LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
@@ -83,7 +83,7 @@ https://dl.espressif.com/dl/package_esp32_index.json
 
 ---
 
-### 开始项目编译：
+## 开始项目编译：
 如果上述工作都正确完成了，那么接下来可以编译项目了。  
 首先，你应该在 VS2019 的“扩展”--“管理扩展”中，搜索并添加Arduino的扩展，
 扩展安装方法不赘述，关于VS2019的Arduino扩展，请自行摸索一遍，再对项目使用。
@@ -101,3 +101,40 @@ __最后：__
 ![HGM](image/HGM.png)
 
 ---
+
+## 详细功能说明：
+
+### 如何配置并使用局域网PC监控功能
+
+---
+
+### 如何配置并使用天气功能
+
+---
+
+
+### 如何使用安卓APP控制HGM
+
+---
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>

@@ -173,7 +173,6 @@ void setup()
     Serial.print(t); Serial.println(" ms");
 
 
-
     delay(1000);
 
     static lv_obj_t* img1;
