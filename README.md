@@ -9,8 +9,8 @@
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 
 
-<div align=center>![HellGateMonitor](image/HellGateMonitor.png)
----
+<div align=center>![HellGateMonitor](image/HellGateMonitor.png) </div>
+
 ---
 
 ## 基本信息：
