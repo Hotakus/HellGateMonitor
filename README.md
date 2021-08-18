@@ -15,7 +15,6 @@
 
 ## 基本信息：
 
----
 > 主控: &emsp; &emsp; ESP32-PICO-D4，240Mhz，4MB Flash，512KB RAM  
 > PSRAM: &emsp;ESP-PSRAM64，8MB SPI RAM  
 > 电源IC: &emsp; &nbsp;BQ25896  
