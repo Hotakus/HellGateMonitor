@@ -49,6 +49,7 @@ namespace HgmGUI {
 
 		// Be call for other class
 		static void ComponentControl(HgmComponent* component);
+		static void ComponentInitDone();
 	};
 
 };
