@@ -874,5 +874,8 @@
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LvglSrc\k12x8_10px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
