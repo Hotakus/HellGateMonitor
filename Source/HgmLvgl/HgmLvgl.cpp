@@ -70,7 +70,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTask",
         4096,
         &this->lvTick,
-        6,
+        8,
         &this->hgmLvglTaskHandle,
         1
     );
@@ -88,7 +88,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmControlCheckTask",
         2048,
         this,
-        7,
+        5,
         &this->hgmControlHandle,
         1
     );

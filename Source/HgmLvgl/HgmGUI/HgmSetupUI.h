@@ -13,6 +13,36 @@
 #include <TJpg_Decoder.h>
 
 namespace HgmGUI {
+
+	// HGM's components' type
+	typedef enum HgmComponentType
+	{
+		HGM_COMPONENT_BT,
+		HGM_COMPONENT_CONFIG_FILE,
+		HGM_COMPONENT_WIFI,
+		HGM_COMPONENT_NET_TIME,
+		HGM_COMPONENT_WEATHER,
+		HGM_COMPONENT_BILIBILI,
+
+		HGM_COMPONENT_DONE,
+
+		HGM_COMPONENT_NULL,
+	};
+
+	// HGM's status of the initialization.
+	typedef struct HgmComponentStatus
+	{
+		bool* curStatus;		// Component's current status
+		bool* waitStatus;		// Component's wait status
+	};
+
+	// HGM's components
+	typedef struct HgmComponent
+	{
+		HgmComponentType type;
+		HgmComponentStatus* status;
+	};
+
 	class HgmSetupUI
 	{
 	private:
@@ -23,9 +53,8 @@ namespace HgmGUI {
 
 		void Begin();
 
-		static void ProgressUIBegin();
-		static void ProgressSet(uint8_t progress);
-
+		// Be call for other class
+		static void ComponentStatus(HgmComponentType ct, HgmComponentStatus* status);
 	};
 
 };

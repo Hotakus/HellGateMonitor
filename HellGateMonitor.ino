@@ -57,12 +57,12 @@ static void backlightControl(void* params)
         if (flag) {
             for (size_t i = 0; i < 127; i++) {
                 ledcWrite(0, i);
-                vTaskDelay(15);
+                vTaskDelay(13);
             }
         } else {
             for (size_t i = 127; i > 0; i--) {
                 ledcWrite(0, i);
-                vTaskDelay(15);
+                vTaskDelay(13);
             }
         }
     }
