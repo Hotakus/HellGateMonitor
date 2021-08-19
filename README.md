@@ -26,7 +26,7 @@
 > 
 > LVGL: &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;V8.1.0 dev
 
-从代码上看，ESP32系列只要支持PSRAM，则代码通用。 
+从硬件上看，ESP32系列只要支持PSRAM，则代码通用。 
 
 ---
 ## 基本功能：

@@ -29,18 +29,12 @@ namespace HgmGUI {
 		HGM_COMPONENT_NULL,
 	};
 
-	// HGM's status of the initialization.
-	typedef struct HgmComponentStatus
-	{
-		bool* curStatus;		// Component's current status
-		bool* waitStatus;		// Component's wait status
-	};
-
 	// HGM's components
 	typedef struct HgmComponent
 	{
 		HgmComponentType type;
-		HgmComponentStatus* status;
+		bool curStatus;			// Component's current status
+		bool waitStatus;		// Component's wait status
 	};
 
 	class HgmSetupUI
@@ -54,7 +48,7 @@ namespace HgmGUI {
 		void Begin();
 
 		// Be call for other class
-		static void ComponentStatus(HgmComponentType ct, HgmComponentStatus* status);
+		static void ComponentControl(HgmComponent* component);
 	};
 
 };

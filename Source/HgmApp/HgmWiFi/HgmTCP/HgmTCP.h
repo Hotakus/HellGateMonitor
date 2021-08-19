@@ -47,8 +47,8 @@ namespace HgmApplication {
         void BeginClient();
         void StopClient();
 
-        WiFiServer* GetWiFiServer();
-        WiFiClient* GetWiFiClient();
+        static WiFiServer* GetWiFiServer();
+        static WiFiClient* GetWiFiClient();
     };
 
 

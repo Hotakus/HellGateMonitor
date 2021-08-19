@@ -120,9 +120,18 @@ void HgmGUI::HgmSetupUI::Begin()
 
     vTaskDelay(1000);   // TODO: delete
 
-    HgmComponentStatus* status;
-    for (size_t i = 0; i < HGM_COMPONENT_NULL; i++) {
-        this->ComponentStatus(HGM_COMPONENT_BT, status);
+
+    HgmComponent com;
+    com.type = HGM_COMPONENT_BILIBILI;
+    com.curStatus = false;
+    com.waitStatus = false;
+
+    this->ComponentControl(&com);
+    vTaskDelay(2000);
+    com.waitStatus = true;
+    
+    //for (size_t i = 0; i < HGM_COMPONENT_NULL; i++) {
+        /*this->ComponentStatus(HGM_COMPONENT_BT, status);
         vTaskDelay(500);
         this->ComponentStatus(HGM_COMPONENT_CONFIG_FILE, status);
         vTaskDelay(600);
@@ -133,8 +142,8 @@ void HgmGUI::HgmSetupUI::Begin()
         this->ComponentStatus(HGM_COMPONENT_WEATHER, status);
         vTaskDelay(600);
         this->ComponentStatus(HGM_COMPONENT_BILIBILI, status);
-        vTaskDelay(700);
-    }
+        vTaskDelay(700);*/
+    //}
 
     /* logo out */
     /*lv_anim_set_var(&logoAnim, logo);
@@ -153,21 +162,30 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_anim_set_exec_cb(&checkLabelAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&checkLabelAnim, lv_anim_path_overshoot);
     lv_anim_start(&checkLabelAnim);*/
+
+    while (true) {
+        vTaskDelay(1000);
+    }
 }
 
-void HgmGUI::HgmSetupUI::ComponentStatus(HgmComponentType ct, HgmComponentStatus* status)
+/**
+ * @brief Use it to control SetupCheckTask().
+ * @param component
+ */
+void HgmGUI::HgmSetupUI::ComponentControl(HgmComponent* component)
 {
-    static HgmComponent component;
-    component.type = ct;
-    component.status = status;
     xQueueSend(setupMsgBox, &component, portMAX_DELAY);
 }
 
 
+/**
+ * @brief Setup check task.
+ * @param params
+ */
 static void SetupCheckTask(void* params)
 {
     uint16_t progress = 0;
-    HgmComponent component;
+    HgmComponent* component;
 
     static String ok = "#486817 ok#";
     static String failed = "#ce0b0b failed#";
@@ -178,7 +196,7 @@ static void SetupCheckTask(void* params)
             continue;
         }
 
-        switch (component.type) {
+        switch (component->type) {
 
         case HGM_COMPONENT_BT: {
             prevText = " ";
@@ -216,25 +234,25 @@ static void SetupCheckTask(void* params)
         lv_label_set_text(prevCheckLabel, prevText.c_str());
         lv_label_set_text(curCheckLabel, curText.c_str());
 
-        // TODO: delay replace 
-        vTaskDelay(200);
-
-        curText += failed;
-        lv_label_set_text(curCheckLabel, curText.c_str());
 
         // If the curStatus != true, then loop to wait the waitStatus
         // If the waitStatus == true, component initialization is OK
         // If they both are false, then component initialization is failed
-        //if (*component.status.curStatus != true) {
-        //    // TODO: Check the status of the component.
-        //    while (*component.status.waitStatus != true) {
-        //        vTaskDelay(100);
-        //    }
-        //}
+        if (component->curStatus != true) {
+            String tmp = curText + failed;
+            lv_label_set_text(curCheckLabel, tmp.c_str());
+            // TODO: Check the status of the component.
+            while (component->waitStatus != true) {
+                vTaskDelay(100);
+            }
+        }
 
         progress += HGM_COMPONENT_NULL * 1000 / HGM_COMPONENT_NULL;
         lv_bar_set_value(pb, progress, LV_ANIM_ON);
-        //// TODO: Add animation to it.
+        // TODO: Add animation to it.
+
+        curText += ok;
+        lv_label_set_text(curCheckLabel, curText.c_str());
 
 
         //switch (component.type) {

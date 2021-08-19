@@ -16,8 +16,8 @@ using namespace HgmApplication;
 #define SERVER_DEFAULT_PORT 20
 
 static WiFiClass wifi = WiFi;
-static WiFiServer wifiServer;
-static WiFiClient wifiClient;
+static WiFiServer _wifiServer;
+static WiFiClient _wifiClient;
 
 static bool tcpOk = false;
 TcpControlMethod method;
@@ -99,12 +99,12 @@ void HgmApplication::HgmTCP::StopClient()
 
 WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
 {
-    return this->wifiServer;
+    return &_wifiServer;
 }
 
 WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
 {
-    return this->wifiClient;
+    return &_wifiClient;
 }
 
 /**
@@ -138,7 +138,7 @@ static void TcpControlTask(void* params)
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
             if (tcpServerTaskHandle == NULL) {
-                wifiServer.begin(SERVER_DEFAULT_PORT);
+                _wifiServer.begin(SERVER_DEFAULT_PORT);
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
@@ -161,7 +161,7 @@ static void TcpControlTask(void* params)
             break;
         case TCP_STOP_SERVER:         // server stop
             if (tcpServerTaskHandle) {
-                wifiServer.stop();
+                _wifiServer.stop();
                 vTaskDelete(tcpServerTaskHandle);
                 tcpServerTaskHandle = NULL;
                 Serial.printf("TCP server stop\n");
@@ -169,7 +169,7 @@ static void TcpControlTask(void* params)
             break;
         case TCP_STOP_CLIENT:         // client stop
             if (tcpClientTaskHandle) {
-                wifiClient.stop();
+                _wifiClient.stop();
                 vTaskDelete(tcpClientTaskHandle);
                 tcpClientTaskHandle = NULL;
                 Serial.printf("TCP client stop\n");
@@ -196,12 +196,12 @@ static void TcpServerListeningTask(void* params)
     static WiFiClient wc = NULL;        // To store the object of the client that want to connect to server.
 
     while (true) {
-        hasClient = wifiServer.hasClient();
+        hasClient = _wifiServer.hasClient();
         if (!hasClient)
             goto _delay;
 
         /*To accept the client that want to connect server */
-        wc = wifiServer.accept();
+        wc = _wifiServer.accept();
         if (!wc)
             goto _delay;
         Serial.printf("A client has connected into server.\n");
