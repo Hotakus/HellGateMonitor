@@ -154,7 +154,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
     xTaskCreatePinnedToCore(
         wifiControlTask,
         "wifiControlTask",
-        4096,
+        2048,
         NULL,
         10,
         &wifiControlTaskHandle,
@@ -183,7 +183,7 @@ static void wifiControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     wifiCheckTask,
                     "wifiCheckTask",
-                    4096,
+                    2048,
                     NULL,
                     7,
                     &wifiCheckTaskHandle,

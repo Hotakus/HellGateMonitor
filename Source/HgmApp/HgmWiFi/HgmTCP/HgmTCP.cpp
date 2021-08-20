@@ -59,7 +59,7 @@ void HgmApplication::HgmTCP::HgmTcpTaskInit()
     xTaskCreatePinnedToCore(
         TcpControlTask,
         "TcpControlTask",
-        4096,
+        2048,
         NULL,
         5,
         &tcpControlTaskHandle,
@@ -142,7 +142,7 @@ static void TcpControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
-                    4096,
+                    2048,
                     NULL,
                     10,
                     &tcpServerTaskHandle,

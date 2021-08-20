@@ -111,7 +111,7 @@ void setup()
     Serial.printf("          /:/  /       \\::/  /        /:/  /            \n");
     Serial.printf("          \\/__/         \\/__/         \\/__/           \n\n");
     Serial.printf("Date     : %s %s\n", COMPILE_DATE, COMPILE_TIME);
-    Serial.printf("ESP-IDF  : %x\n", ESP_IDF_VERSION);
+    Serial.printf("ESP-IDF  : %s\n", ESP.getSdkVersion());
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(), lv_version_info());
     Serial.printf("Firmware : V%d.%d.%d %s %0.2f MiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH, HGM_VERSION_INFO
@@ -133,8 +133,10 @@ void setup()
         &bkHandle,
         1
     );
+    
 
     /* HGM LVGL Component initialize */
+    Wire1.setClock(400 * 1000);
     Wire1.begin(21, 22);
     hgmLvgl->HgmLvglBegin();
 
@@ -177,10 +179,17 @@ void setup()
     component.waitStatus = true;
     vTaskDelay(300);
 
-    
     ti.Begin();
-
+    vTaskDelay(300);
     
+    // Check weather component
+    Serial.println(ESP.getSdkVersion());
+    Serial.println(ESP.getChipCores());
+    Serial.println(ESP.getChipModel());
+    Serial.println(ESP.getCpuFreqMHz());
+    Serial.println(ESP.getFlashChipSize()); 
+    Serial.println(ESP.getFlashChipSpeed());
+    Serial.println(Wire1.getClock());
 
 
     /* BiliInfoRecv bili;

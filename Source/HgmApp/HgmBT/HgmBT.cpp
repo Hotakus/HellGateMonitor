@@ -49,7 +49,7 @@ void HgmApplication::HgmBT::BluetoothTaskInit()
     xTaskCreatePinnedToCore(
         BluetoothCheckTask,
         "BluetoothCheckTask",
-        4096,
+        2048,
         NULL,
         9,
         &bluetoothCheckTaskHandle,
@@ -211,7 +211,7 @@ static void BluetoothCheckTask(void* params)
                 xTaskCreatePinnedToCore(
                     BluetoothListeningTask,
                     "bluetoothListeningTask",
-                    4096,
+                    2048,
                     NULL,
                     10,
                     &bluetoothListeningTaskHandle,

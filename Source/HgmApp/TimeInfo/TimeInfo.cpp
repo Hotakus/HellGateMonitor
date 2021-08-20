@@ -60,15 +60,17 @@ void HgmApplication::TimeInfo::Begin()
 	}
 	component.waitStatus = true;
 
-	xTaskCreatePinnedToCore(
+	BaseType_t ret = xTaskCreatePinnedToCore(
 		netTimeTask,
 		"netTimeTask",
-		4096,
+		2048,
 		NULL,
-		5,
+		15,
 		&netTimeTaskHandle,
 		1
 	);
+
+	Serial.printf("asdadaddadsadasdas %d\n", ret);
 }
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
@@ -116,8 +118,12 @@ static void netTimeTask(void* params)
 {
 	static struct tm ts;
 
+	Serial.println("netTimeTask");
+
 	while (true) {
-		TimeInfo::GetNetTime(&ts);
-		vTaskDelay(NET_TIME_GAP);
+		//TimeInfo::GetNetTime(&ts);
+		//vTaskDelay(NET_TIME_GAP);
+		Serial.println(_rtc->getTime("%A, %B %d %Y %H:%M:%S"));
+		vTaskDelay(2000);
 	}
 }
