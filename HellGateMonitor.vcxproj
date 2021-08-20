@@ -188,6 +188,7 @@
     <ClInclude Include="Source\HgmApp\HgmBT\HgmBT.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h" />
+    <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h" />
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h" />
@@ -321,6 +322,7 @@
     <ClCompile Include="Source\HgmApp\HgmBT\HgmBT.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp" />
+    <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp" />
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp" />

@@ -24,8 +24,7 @@ namespace HgmApplication {
 
 		void WifiTaskInit();
 	public:
-		
-
+		WiFiClass* wifi;
 		HgmTCP* hgmTcp = nullptr;
 
 		HgmWiFi(bool flag);

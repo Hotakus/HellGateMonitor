@@ -119,10 +119,10 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_obj_align(prevCheckLabel, LV_ALIGN_CENTER, 0, 10);
     lv_label_set_recolor(prevCheckLabel, true);
 
-    vTaskDelay(500);
+    vTaskDelay(700);
 
     // For test
-    HgmComponent com;
+    /*HgmComponent com;
     com.curStatus = true;
     com.waitStatus = true;
 
@@ -148,17 +148,9 @@ void HgmGUI::HgmSetupUI::Begin()
     this->ComponentControl(&com);
     vTaskDelay(1000);
 
-    this->ComponentInitDone();
+    this->ComponentInitDone();*/
 
-    
 
-    
-
-    /* Wait the initialized progress done */
-    /*while (!initFlag)
-        vTaskDelay(100);*/
-
-    
 
 }
 
@@ -232,7 +224,6 @@ static void SetupCheckTask(void* params)
             continue;
 
         switch (component->type) {
-
         case HGM_COMPONENT_BT: {
             prevText = " ";
             curText = "Check BT...";
@@ -273,22 +264,22 @@ static void SetupCheckTask(void* params)
         }
         lv_label_set_text(prevCheckLabel, prevText.c_str());
         lv_label_set_text(curCheckLabel, curText.c_str());
-
         if (component->type == HGM_COMPONENT_DONE)
             continue;
-
 
         // If the curStatus != true, then loop to wait the waitStatus
         // If the waitStatus == true, component initialization is OK
         // If they both are false, then component initialization is failed
-        if (component->curStatus != true) {
+        if (!component->curStatus) {
             String tmp = curText + failed;
             lv_label_set_text(curCheckLabel, tmp.c_str());
-            // Check the status of the component.
-            while (component->waitStatus != true) {
-                vTaskDelay(10);
-            }
         }
+
+        // Check the wait status of the component.
+        while (!component->waitStatus)
+            vTaskDelay(50);
+
+        vTaskDelay(100);
 
         progress += (HGM_COMPONENT_NULL - 1) * 1000 / (HGM_COMPONENT_NULL - 1);
         lv_bar_set_value(pb, progress, LV_ANIM_ON);

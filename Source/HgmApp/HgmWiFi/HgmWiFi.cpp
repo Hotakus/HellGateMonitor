@@ -15,7 +15,7 @@ using namespace HgmApplication;
 
 static bool wifiSwitch;		// To control the WiFi's on/off
 
-static WiFiClass wifi = WiFi;
+static WiFiClass _wifi = WiFi;
 static char* _ssid = NULL;
 static char* _password = NULL;
 
@@ -27,6 +27,8 @@ static void wifiControlTask(void* params);
 
 HgmWiFi::HgmWiFi(bool flag)
 {
+    this->wifi = &_wifi;
+
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
     this->hgmTcp->Begin();
@@ -36,6 +38,8 @@ HgmWiFi::HgmWiFi(char* ssid, char* password)
 {
     _ssid = ssid;
     _password = password;
+
+    this->wifi = &_wifi;
 
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
@@ -58,22 +62,15 @@ HgmWiFi::~HgmWiFi()
  */
 void HgmApplication::HgmWiFi::ConfigWiFi(char* ssid, char* password)
 {
-    
-    this->Stop();
-    vTaskDelay(2 * 1000);
-
     _ssid = ssid;
     _password = password;
     this->ssid = ssid;
     this->password = password;
-    
-    this->Begin();
-    vTaskDelay(2 * 1000);
 }
 
 
 /**
- * @brief Use to open or close wifi.
+ * @brief Use to open or close _wifi.
  * @param sw
  */
 void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
@@ -85,7 +82,7 @@ void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
             sw ? "Open wifi" : "Close wifi"
         );
     } else {
-        Serial.println("Switch the wifi on/off failed.");
+        Serial.println("Switch the _wifi on/off failed.");
     }
 }
 
@@ -180,9 +177,9 @@ static void wifiControlTask(void* params)
 
         if (sw == true) {
             if (wifiCheckTaskHandle == NULL) {
-                wifi.mode(WIFI_USE_MODE);
-                wifi.begin(_ssid, _password);
-                wifi.setTxPower(WIFI_POWER_15dBm);
+                _wifi.mode(WIFI_USE_MODE);
+                _wifi.begin(_ssid, _password);
+                _wifi.setTxPower(WIFI_POWER_15dBm);
                 xTaskCreatePinnedToCore(
                     wifiCheckTask,
                     "wifiCheckTask",
@@ -197,10 +194,10 @@ static void wifiControlTask(void* params)
                 Serial.println("WiFi open already.");
             }
         } else {
+            _wifi.mode(WIFI_OFF);
+            _wifi.disconnect();
+            _wifi.setSleep(true);
             if (wifiCheckTaskHandle) {
-                wifi.mode(WIFI_OFF);
-                wifi.disconnect();
-                wifi.setSleep(true);
                 vTaskDelete(wifiCheckTaskHandle);
                 wifiCheckTaskHandle = NULL;
                 Serial.println("WiFi close.");
@@ -226,13 +223,13 @@ static void wifiCheckTask(void* params)
             vTaskDelay(2000);
             continue;
         }
-        if (wifi.status() != WL_CONNECTED) {
+        if (_wifi.status() != WL_CONNECTED) {
             cnt += 1;
             if (cnt == 20) {
                 cnt = 0;
-                wifi.disconnect();
-                wifi.mode(WIFI_USE_MODE);
-                wifi.begin(_ssid, _password);
+                _wifi.disconnect();
+                _wifi.mode(WIFI_USE_MODE);
+                _wifi.begin(_ssid, _password);
             }
             Serial.print(".");
             vTaskDelay(500);

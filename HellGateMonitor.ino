@@ -139,13 +139,41 @@ void setup()
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    //hgmLvgl->HgmLvglUIBegin();
+    HgmComponent component;
     hgmSetupUI = new HgmSetupUI();
     hgmSetupUI->Begin();
 
-    /*hgmApp = new HgmApp(true);
+    hgmApp = new HgmApp(true);
+    hgmApp->Stop();
+    vTaskDelay(100);
+
+    // Open bluetooth
+    component.type = HGM_COMPONENT_BT;
+    component.curStatus = true;
+    component.waitStatus = false;
+    hgmSetupUI->ComponentControl(&component);
+    hgmApp->BeginBT();
+    while (!hgmApp->hgmBT->bs->isReady())
+        vTaskDelay(100);
+    component.waitStatus = true;
+
+    vTaskDelay(200);
+
+    // Check config file
     HgmSC hgmSC;
     hgmSC.Begin();
+    // Check WiFi
+    component.type = HGM_COMPONENT_WIFI;
+    component.curStatus = true;
+    component.waitStatus = false;
+    hgmSetupUI->ComponentControl(&component);
+    hgmApp->hgmWifi->Begin();
+    while (!hgmApp->hgmWifi->wifi->isConnected())
+        vTaskDelay(50);
+    component.waitStatus = true;
+
+
+    /*
 
     BiliInfoRecv bili;
     bili.SetUID("341974201");
@@ -201,9 +229,6 @@ void setup()
     lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
     lv_anim_start(&anim1);*/
 
-    /*  hgmApp->StopBT();
-      vTaskDelay(200);
-      hgmApp->BeginBT();*/
 }
 
 void loop()

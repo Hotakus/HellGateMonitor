@@ -219,13 +219,16 @@ static void BluetoothCheckTask(void* params)
                 );
             }
         } else {
+            _bs->disconnect();
+            _bs->end();
             if (bluetoothListeningTaskHandle) {
-                Serial.println("BT stop listening ...");
-                _bs->disconnect();
-                _bs->end();
                 vTaskDelete(bluetoothListeningTaskHandle);
                 bluetoothListeningTaskHandle = NULL;
+                Serial.println("BT stop ...");
+            } else {
+                Serial.println("BT stop already");
             }
+
         }
     }
 }

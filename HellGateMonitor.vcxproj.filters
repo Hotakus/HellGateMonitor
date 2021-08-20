@@ -416,6 +416,9 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -878,6 +881,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\k12x8_8px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
