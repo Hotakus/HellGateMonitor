@@ -11,17 +11,26 @@
 #define HELLGATEMONITOR_TIMEINFO_H
 
 #include <Arduino.h>
-
+#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include <ESP32Time.h>
 
 namespace HgmApplication {
+
+#define NET_TIME_GAP	(3600U)	// Get the time per one hour
+
 	class TimeInfo
 	{
+	private:
+
 	public:
+		ESP32Time rtc;
+
 		TimeInfo();
 		~TimeInfo();
 
-	private:
+		void Begin();
 
+		static int GetNetTime(struct tm* timeStruct);
 	};
 
 };

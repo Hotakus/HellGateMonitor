@@ -276,8 +276,16 @@ static void SetupCheckTask(void* params)
         }
 
         // Check the wait status of the component.
-        while (!component->waitStatus)
-            vTaskDelay(50);
+        uint16_t timeout = 1000;
+        while (!component->waitStatus && --timeout) {
+            if ((timeout <= 500) && (timeout % 50 == 0)) {
+                String tmp = curText + failed + "(" + String(timeout / 50) + ")";
+                lv_label_set_text(curCheckLabel, tmp.c_str());
+            }
+            vTaskDelay(20);
+        }
+        if (!component->waitStatus)
+            continue;
 
         vTaskDelay(100);
 

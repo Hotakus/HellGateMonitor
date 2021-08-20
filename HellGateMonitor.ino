@@ -24,6 +24,7 @@
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 #include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "Source/HgmApp/TimeInfo/TimeInfo.h"
 
 #define SCREEN_BK_PIN   32
 
@@ -42,6 +43,7 @@ using namespace HgmApplication;
 extern HgmApp* hgmApp;
 extern HgmLvgl* hgmLvgl;
 HgmSetupUI* hgmSetupUI;
+TimeInfo ti;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -144,7 +146,9 @@ void setup()
     hgmSetupUI->Begin();
 
     hgmApp = new HgmApp(true);
-    hgmApp->Stop();
+
+    // Stop BT and WiFi.
+    hgmApp->Stop();             
     vTaskDelay(100);
 
     // Open bluetooth
@@ -171,11 +175,15 @@ void setup()
     while (!hgmApp->hgmWifi->wifi->isConnected())
         vTaskDelay(50);
     component.waitStatus = true;
+    vTaskDelay(300);
+
+    
+    ti.Begin();
+
+    
 
 
-    /*
-
-    BiliInfoRecv bili;
+    /* BiliInfoRecv bili;
     bili.SetUID("341974201");
     bili.GetBasicInfo();
     bili.GetFollower();
@@ -233,5 +241,5 @@ void setup()
 
 void loop()
 {
-
+    vTaskDelay(3600 * 24);
 }

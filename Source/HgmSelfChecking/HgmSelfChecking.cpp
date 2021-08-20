@@ -129,12 +129,7 @@ void HGM::HgmSC::Begin()
 
             ssid = doc["ssid"].as<String>();
             password = doc["password"].as<String>();
-
-            Serial.println(ssid);
-            Serial.println(password);
-            //hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
             hgmApp->hgmWifi->ConfigWiFi((char*)ssid.c_str(), (char*)password.c_str());
-            //hgmApp->hgmWifi->OpenWiFi();
 
             file.close();
             vTaskDelay(200);
@@ -153,10 +148,8 @@ static void WiFiBTConfig(File* file)
     hgmSetupUI->ComponentControl(&component);
 
     Serial.println("Waiting the BT config WiFi...");
-    while (!WiFi.isConnected()) {
-        // TODO: LVGL Show
+    while (!WiFi.isConnected()) 
         vTaskDelay(50);
-    }
     component.waitStatus = true;
 
     // If WiFi is connected, then save the correct SSID and password
