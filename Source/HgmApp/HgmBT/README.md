@@ -74,6 +74,7 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 
 
 <br>
+
 **普通数据接收** （DataType == (M-1)）  
 **“M”** 即命令最大个数，即倒数第二个Datatype
 
