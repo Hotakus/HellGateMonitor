@@ -16,6 +16,7 @@
 #include "../HgmApp/HgmWiFi/HgmWiFi.h"
 #include "HgmSelfChecking.h"
 #include "../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../HgmApp/WeatherInfo/WeatherInfo.h"
 
 using namespace HgmApplication;
 using namespace HgmGUI;
@@ -24,10 +25,11 @@ using namespace fs;
 
 extern HgmApp* hgmApp;
 extern HgmSetupUI* hgmSetupUI;
+static HgmComponent component;
 
 String ssid;
 String password;
-static HgmComponent component;
+
 
 static void WiFiBTConfig(File *file);
 
@@ -39,7 +41,6 @@ HgmSC::HgmSC()
 HgmSC::~HgmSC()
 {
     // TODO:
-    SPIFFS.end();
 }
 
 void HGM::HgmSC::Begin()
@@ -134,7 +135,11 @@ void HGM::HgmSC::Begin()
             file.close();
             vTaskDelay(200);
         }
-        
+    }
+
+    // weather config file
+    if (!SPIFFS.exists(WEATHER_CONFIG_FILE_PATH)) {
+
     }
 
     this->CheckFlag = true;

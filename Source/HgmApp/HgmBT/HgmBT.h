@@ -18,12 +18,14 @@ namespace HgmApplication {
 	typedef enum HgmBTPackMethod
 	{
 		// Received method
-		HGM_BT_PACK_METHOD_WIFI_CONF,
+		HGM_BT_PACK_METHOD_WIFI_CONF,		// (0) wifi config
+		HGM_BT_PACK_METHOD_WIFI_CLOSE,		// (1) wifi close
+		HGM_BT_PACK_METHOD_WEATHER_CONF,	// (2) weather config
 
 		// Send method
 		HGM_BT_PACK_METHOD_OK,
-		HGM_BT_PACK_METHOD_NORMAL,
 
+		HGM_BT_PACK_METHOD_NORMAL,
 		HGM_BT_PACK_METHOD_NULL,
 	};
 
@@ -50,6 +52,9 @@ namespace HgmApplication {
 		static void ReceiveDataPack(String& dataToSave, HgmBTPackMethod *method);
 	};
 };
+
+
+
 
 #ifdef __cplusplus
 extern "C" {

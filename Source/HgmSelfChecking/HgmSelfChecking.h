@@ -27,6 +27,7 @@ namespace HGM {
 		~HgmSC();
 
 		void Begin();
+
 	};
 };
 

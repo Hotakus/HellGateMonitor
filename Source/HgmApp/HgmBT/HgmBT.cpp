@@ -12,8 +12,11 @@
 #include <BluetoothSerial.h>
 #include "HgmBT.h"
 #include "../HgmApp.h"
+#include "../WeatherInfo/WeatherInfo.h"
 
 using namespace HgmApplication;
+
+extern HgmApp* hgmApp;
 
 static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;
@@ -21,7 +24,7 @@ static BluetoothSerial* _bs = NULL;
 
 static char* name = nullptr;
 
-static void BluetoothCheckTask(void* params);
+static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
 /**
@@ -47,8 +50,8 @@ HgmBT::~HgmBT()
 void HgmApplication::HgmBT::BluetoothTaskInit()
 {
     xTaskCreatePinnedToCore(
-        BluetoothCheckTask,
-        "BluetoothCheckTask",
+        BluetoothControlTask,
+        "BluetoothControlTask",
         2048,
         NULL,
         9,
@@ -76,6 +79,11 @@ void HgmApplication::HgmBT::Stop()
 
 
 
+static void BeginWiFiWithConfig(String& ssid, String& password)
+{
+    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
+}
+
 /**
  * @brief Pack the raw data as a data frame via designated method..
  * @param dataToPack
@@ -84,8 +92,6 @@ void HgmApplication::HgmBT::Stop()
  */
 String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod method)
 {
-    // TODO:
-    // { "Header": "Hgm", "DataType": "WiFiConfigInfo", "Data": { "ssid": "xxx", "password": "xxx" } }
     StaticJsonDocument<512> hgmPack;
     String tmp;
     JsonObject Data;
@@ -96,12 +102,12 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
     switch (method) {
     case HGM_BT_PACK_METHOD_OK: {
         // TODO:
-        hgmPack["DataType"] = "status";
+        hgmPack["DataType"] = "3";
         hgmPack["Data"] = "ok";
         break;
     }
     case HGM_BT_PACK_METHOD_NORMAL: {
-        hgmPack["DataType"] = "normal";
+        hgmPack["DataType"] = "4";
         hgmPack["Data"] = dataToPack.c_str();
     }
     default:
@@ -112,12 +118,6 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
     return tmp;
 }
 
-
-static void BeginWiFiWithConfig(String& ssid, String& password)
-{
-    extern HgmApp* hgmApp;
-    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
-}
 
 /**
  * @brief Send the data that is packed.
@@ -137,10 +137,10 @@ void HgmApplication::HgmBT::SendDatePack(String& rawData, HgmBTPackMethod method
  */
 void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod* method)
 {
-    DynamicJsonDocument rawPack(512);
-
     if (!_bs->available())
         return;
+
+    DynamicJsonDocument rawPack(1024);
 
     // Receive raw pack
     while (_bs->available()) {
@@ -160,18 +160,56 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     // Match DataType
     HgmBTPackMethod DataType = rawPack["DataType"];
     switch (DataType) {
-
     case HGM_BT_PACK_METHOD_WIFI_CONF: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CONF;
+        
+        // { "Header": "Hgm", "DataType": "0", "Data": { "ssid": "xxx", "password": "xxx" } }
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
 
+        hgmApp->StopWiFi();
+        vTaskDelay(300);
         BeginWiFiWithConfig(_ssid, _password);
+        // TODO: save the ssid and password to SPIFFS
 
         Serial.println("WiFi had been config via bluetooth.");
         return;
+    }
+    case HGM_BT_PACK_METHOD_WIFI_CLOSE: {
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_WIFI_CLOSE;
+        // TODO: wait for test
+
+        hgmApp->StopWiFi();
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        return;
+    }
+    case HGM_BT_PACK_METHOD_WEATHER_CONF: {
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_WEATHER_CONF;
+        // TODO: wait for test
+
+        String adm = rawPack["Data"]["adm"];
+        String adm2 = rawPack["Data"]["adm2"];
+        String location = rawPack["Data"]["location"];
+        String lat = rawPack["Data"]["lat"];
+        String lon = rawPack["Data"]["lon"];
+
+        WeatherInfo::SetWeatherConfig(adm, adm2, location, lat, lon);
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        return;
+    }
+    case HGM_BT_PACK_METHOD_NORMAL: {
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_NORMAL;
+
+        Serial.printf("BT Get (%d) : %s\n", rawPack["Data"].as<String>().length(), rawPack["Data"].as<String>().c_str());
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
     }
     case HGM_BT_PACK_METHOD_OK: {
         // TODO:
@@ -194,7 +232,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
  * @brief To control BT behavior.
  * @param params
  */
-static void BluetoothCheckTask(void* params)
+static void BluetoothControlTask(void* params)
 {
     static TaskHandle_t bluetoothListeningTaskHandle = NULL;
     static bool sw = false;
@@ -211,7 +249,7 @@ static void BluetoothCheckTask(void* params)
                 xTaskCreatePinnedToCore(
                     BluetoothListeningTask,
                     "bluetoothListeningTask",
-                    2048,
+                    4096,
                     NULL,
                     10,
                     &bluetoothListeningTaskHandle,

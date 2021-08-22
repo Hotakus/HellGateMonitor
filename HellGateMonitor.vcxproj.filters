@@ -419,6 +419,9 @@
     <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\WeatherInfo\WeatherInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -884,6 +887,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

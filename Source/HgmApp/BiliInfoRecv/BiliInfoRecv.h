@@ -27,7 +27,7 @@ namespace HgmApplication {
 
         static int GetFollower();
         static void GetBasicInfo();
-        static void GetUserFaceImg(uint16_t imgWidth = 64, uint16_t imgHeight = 64);
+        static int GetUserFaceImg(uint16_t imgWidth = 64, uint16_t imgHeight = 64);
         static uint8_t* GetUserFaceImgBuf(size_t* imgSize);
     };
 };

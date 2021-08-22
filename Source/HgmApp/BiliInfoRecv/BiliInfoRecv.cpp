@@ -113,15 +113,16 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 }
 
 /**
- * @brief Get user face image from UID. 
+ * @brief Get user face image from UID.
  * @param imgWidth
  * @param imgHeight
+ * @return Error code
  */
-void HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
-{ 
+int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
+{
     if (!userFaceImgUrl) {
         Serial.println("The URL of the user's face has not been get. please run \"GetBasicInfo()\"");
-        return;
+        return -1;
     }
 
     String width = String(imgWidth) + "w";
@@ -129,13 +130,10 @@ void HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t im
     String imgUrl = userFaceImgUrl + "@" + width + "_" + height + "_1o" + ".jpg";    // get the face image URL with the designated size
     Serial.println(imgUrl);
 
-    _httpClient->begin(imgUrl);
-    int code = _httpClient->GET();
+    int code = -1;
 
-    if (code != 200) {
-        Serial.printf("Get user's face image error. (%d)\n", code);
-        return;
-    }
+    _httpClient->begin(imgUrl);
+    code = _httpClient->GET();
 
     WiFiClient* client = _httpClient->getStreamPtr();
     if (client->available()) {
@@ -149,13 +147,13 @@ void HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t im
         if (!userFaceImgBuf) {
             Serial.println("Face image buffer allocated failed.");
             _httpClient->end();
-            return;
+            return -1;
         }
 
         if (client->readBytes(userFaceImgBuf, size) != size) {
             Serial.println("Face image buffer save failed.");
             _httpClient->end();
-            return;
+            return -1;
         }
         Serial.println("Face image get done.");
     } else {

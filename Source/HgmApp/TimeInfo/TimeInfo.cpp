@@ -69,8 +69,6 @@ void HgmApplication::TimeInfo::Begin()
 		&netTimeTaskHandle,
 		1
 	);
-
-	Serial.printf("asdadaddadsadasdas %d\n", ret);
 }
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
