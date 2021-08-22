@@ -13,6 +13,7 @@
 #include "HgmBT.h"
 #include "../HgmApp.h"
 #include "../WeatherInfo/WeatherInfo.h"
+#include "../BiliInfoRecv/BiliInfoRecv.h"
 
 using namespace HgmApplication;
 
@@ -107,7 +108,7 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
         break;
     }
     case HGM_BT_PACK_METHOD_NORMAL: {
-        hgmPack["DataType"] = "4";
+        hgmPack["DataType"] = String(HGM_BT_PACK_METHOD_NULL - 1);
         hgmPack["Data"] = dataToPack.c_str();
     }
     default:
@@ -163,7 +164,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     case HGM_BT_PACK_METHOD_WIFI_CONF: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CONF;
-        
+
         // { "Header": "Hgm", "DataType": "0", "Data": { "ssid": "xxx", "password": "xxx" } }
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
@@ -206,6 +207,16 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return;
     }
+    case HGM_BT_PACK_METHOD_BILIBILI_CONF: {
+        dataToSave = String(HGM_BT_PACK_METHOD_NULL);
+        *method = HGM_BT_PACK_METHOD_BILIBILI_CONF;
+        
+        BiliInfoRecv::SetUID(rawPack["Data"]["uid"].as<String>());
+        // TODO: perfect
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        return;
+    }
     case HGM_BT_PACK_METHOD_NORMAL: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_NORMAL;
@@ -215,9 +226,16 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
     }
     case HGM_BT_PACK_METHOD_OK: {
-        // TODO:
+        // TODO: test
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_OK;
+        return;
+    }
+    case HGM_BT_PACK_METHOD_GET_M: {
+        // TODO: test
+        dataToSave = String(HGM_BT_PACK_METHOD_NULL);
+        *method = HGM_BT_PACK_METHOD_GET_M;
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_NORMAL);
         return;
     }
     default:

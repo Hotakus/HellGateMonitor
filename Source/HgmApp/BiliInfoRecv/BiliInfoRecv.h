@@ -22,8 +22,8 @@ namespace HgmApplication {
         BiliInfoRecv();
         ~BiliInfoRecv();
 
-        void SetUID(String uid);
-        void GetUID(String& uid);
+        static void SetUID(String uid);
+        static void GetUID(String& uid);
 
         static int GetFollower();
         static void GetBasicInfo();

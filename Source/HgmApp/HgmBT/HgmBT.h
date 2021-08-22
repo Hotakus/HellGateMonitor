@@ -21,12 +21,17 @@ namespace HgmApplication {
 		HGM_BT_PACK_METHOD_WIFI_CONF,		// (0) wifi config
 		HGM_BT_PACK_METHOD_WIFI_CLOSE,		// (1) wifi close
 		HGM_BT_PACK_METHOD_WEATHER_CONF,	// (2) weather config
+		HGM_BT_PACK_METHOD_BILIBILI_CONF,	// (3) bilibili config
 
 		// Send method
-		HGM_BT_PACK_METHOD_OK,
+		HGM_BT_PACK_METHOD_OK,				// (4) ok 
+		HGM_BT_PACK_METHOD_GET_M,			// (5) get max length of the "HgmBTPackMethod"
 
-		HGM_BT_PACK_METHOD_NORMAL,
-		HGM_BT_PACK_METHOD_NULL,
+		/* Add new method in here */
+
+
+		HGM_BT_PACK_METHOD_NORMAL,			// (M-1)
+		HGM_BT_PACK_METHOD_NULL,			// (M)
 	};
 
 	class HgmBT
