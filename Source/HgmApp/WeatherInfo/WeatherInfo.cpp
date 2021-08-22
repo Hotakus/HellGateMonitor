@@ -59,13 +59,30 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig(File* file)
     }
 }
 
-void HgmApplication::WeatherInfo::SetWeatherConfig(String& adm, String& adm2, String& location, String& latitude, String& longitude)
+void HgmApplication::WeatherInfo::SetAppKey(String& key)
+{
+}
+
+void HgmApplication::WeatherInfo::SetWeatherConfig(String& id)
+{
+    Serial.println(id);
+}
+
+void HgmApplication::WeatherInfo::SetWeatherConfig(String& adm, String& adm2, String& location)
 {
     Serial.println(adm);
     Serial.println(adm2);
     Serial.println(location);
+}
+
+void HgmApplication::WeatherInfo::SetWeatherConfig(String& latitude, String& longitude)
+{
     Serial.println(latitude);
     Serial.println(longitude);
+}
+
+void HgmApplication::WeatherInfo::GetWeatherConfig(String& id)
+{
 }
 
 void HgmApplication::WeatherInfo::GetWeatherConfig(String& adm, String& adm2, String& location)

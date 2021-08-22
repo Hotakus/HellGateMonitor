@@ -190,13 +190,18 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WEATHER_CONF;
 
+        String id = rawPack["Data"]["id"];
         String adm = rawPack["Data"]["adm"];
         String adm2 = rawPack["Data"]["adm2"];
         String location = rawPack["Data"]["location"];
         String lat = rawPack["Data"]["lat"];
         String lon = rawPack["Data"]["lon"];
+        String appKey = rawPack["Data"]["key"];
 
-        WeatherInfo::SetWeatherConfig(adm, adm2, location, lat, lon);
+        WeatherInfo::SetAppKey(appKey);
+        WeatherInfo::SetWeatherConfig(id);
+        WeatherInfo::SetWeatherConfig(adm, adm2, location);
+        WeatherInfo::SetWeatherConfig(lat, lon);
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return;

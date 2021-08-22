@@ -30,9 +30,13 @@ namespace HgmApplication {
 
 		static bool CheckWeatherconfig(File* file);
 
+		static void SetAppKey(String& key);
 		// two method to set the location info
-		static void SetWeatherConfig(String& adm, String& adm2, String& location, String& latitude, String& longitude);
+		static void SetWeatherConfig(String& id);
+		static void SetWeatherConfig(String& adm, String& adm2, String& location);
+		static void SetWeatherConfig(String& latitude, String& longitude);
 		// two method to get the location info
+		static void GetWeatherConfig(String& id);
 		static void GetWeatherConfig(String& adm, String& adm2, String& location);
 		static void GetWeatherConfig(String& latitude, String& longitude);
 	};
