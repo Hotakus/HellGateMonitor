@@ -180,7 +180,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     case HGM_BT_PACK_METHOD_WIFI_CLOSE: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CLOSE;
-        // TODO: wait for test
 
         hgmApp->StopWiFi();
 
@@ -190,7 +189,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     case HGM_BT_PACK_METHOD_WEATHER_CONF: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WEATHER_CONF;
-        // TODO: wait for test
 
         String adm = rawPack["Data"]["adm"];
         String adm2 = rawPack["Data"]["adm2"];

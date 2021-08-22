@@ -23,10 +23,9 @@
 > LDO芯片:&emsp;XC6210B332，700mA  
 > 屏幕: &emsp; &emsp; 1.14英寸 135x240分辨率IPS  
 > 锂电池:&emsp; &nbsp; 700mAh  
-> 
-> LVGL: &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;V8.1.0 dev
+>
 
-从硬件上看，ESP32系列只要支持PSRAM，则代码通用。 
+从硬件上看，ESP32系列只要支持**PSRAM**，则代码通用。 
 
 ---
 ## 基本功能：
@@ -65,11 +64,11 @@ git clone --recurse-submodules https://github.com/Hotakus/HellGateMonitor.git
 ![HellGateMonitor](Image/SourceStruct.png)  
 LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
 另外，由于此项目使用的是Arduino平台，所以在使用此项目前，你应该先安装指定库：
-* ArduinoJson （解析/打包JSON数据）
-* TFT_eSPI （屏幕驱动库）
-* TJpg_Decoder（JPG解码库）
-* MPU6050_light （MPU6050 轻量库）  
-* ESP32Time （本地RTC库）  
+* **ArduinoJson** （解析/打包JSON数据）
+* **TFT_eSPI** （屏幕驱动库）
+* **TJpg_Decoder**（JPG解码库）
+* **MPU6050_light** （MPU6050 轻量库）  
+* **ESP32Time** （本地RTC库）  
 
 另外，你应该在Arduino的 File-->preferences中 添加乐鑫的ESP32板包：
 ```shell
@@ -120,10 +119,16 @@ TODO：
 
 ---
 
+## HGM的首次上电启动流程（<font color=red>重要</font>）：
+HGM的上电时需要对各个功能组件进行检查，总共有6个需要检查的功能组件：
 
+- 蓝牙（用于HGM的控制和配置等）
+- 配置文件（首次启动没有任何配置文件，所以首次运行到这里就会failed，下文会说怎么配置）
+- WiFi（HGM的各个功能基本依赖于此，所以配置文件非常重要）
+- Time（基本时钟矫正，非必须，如果WiFi无法访问网络，则跳过）
+- 
 
-
-
+---
 
 
 
