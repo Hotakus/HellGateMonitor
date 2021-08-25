@@ -9,7 +9,6 @@
 *******************************************************************/
 
 #include <Arduino.h>
-#include "HgmWiFiUI.h"
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "HgmFramework.h"
 
