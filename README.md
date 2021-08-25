@@ -9,6 +9,10 @@
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 
 
+<p align="center"> 
+<img src="Image/HellGateMonitor.png"/>
+</p>
+
 ![HellGateMonitor](Image/HellGateMonitor.png)
 
 ---
