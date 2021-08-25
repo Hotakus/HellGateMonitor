@@ -167,6 +167,7 @@ void setup()
 	// Check config file
 	HgmSC hgmSC;
 	hgmSC.Begin();
+
 	// Check WiFi
 	component.type = HGM_COMPONENT_WIFI;
 	component.curStatus = true;
@@ -249,6 +250,7 @@ void setup()
 	Serial.println(ESP.getFlashChipSize());
 	Serial.println(ESP.getFlashChipSpeed());
 	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	Serial.println(ESP.getSketchSize());
 }
 
 void loop()

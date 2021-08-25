@@ -47,12 +47,12 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
   "DataType": "2",
   "Data": {
     "id": "101010300",
+    "key": "xxxxxxxxxxxxxxx",
     "adm": "Beijing",
     "adm2": "Beijing",
     "location": "Chaoyang",
     "lat": "39.92149",
-    "lon": "116.48641",
-    "key": "xxxxxxxxxxxxxxx"
+    "lon": "116.48641"
   }
 }
 ```
@@ -68,10 +68,10 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
   }
 }
 ```
+
 <br>
 
 #### 中间可以添加更多命令........
-
 
 <br>
 

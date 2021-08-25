@@ -204,6 +204,8 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         WeatherInfo::SetWeatherConfig(adm, adm2, location);
         WeatherInfo::SetWeatherConfig(lat, lon);
 
+        WeatherInfo::SetWeatherConfig();
+
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return;
     }

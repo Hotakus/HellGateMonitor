@@ -119,9 +119,6 @@ void HGM::HgmSC::Begin()
                 file.close();
                 file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
                 WiFiBTConfig(&file);
-                file.close();
-                this->CheckFlag = true;
-                return;
             }
             component.type = HGM_COMPONENT_CONFIG_FILE;
             component.curStatus = true;
@@ -135,11 +132,6 @@ void HGM::HgmSC::Begin()
             file.close();
             vTaskDelay(200);
         }
-    }
-
-    // weather config file
-    if (!SPIFFS.exists(WEATHER_CONFIG_FILE_PATH)) {
-
     }
 
     this->CheckFlag = true;
@@ -167,3 +159,5 @@ static void WiFiBTConfig(File* file)
     file->write((const uint8_t*)tmp.c_str(), tmp.length());
 
 }
+
+
