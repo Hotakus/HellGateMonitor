@@ -5,9 +5,8 @@
 [![LICENSE](https://img.shields.io/github/license/Hotakus/HellGateMonitor?label=LICENSE&logo=GNU&style=flat-square)](./LICENSE)
 [![BiliBili](https://img.shields.io/badge/Kicad-硬件原理图-yellow?style=flat-square&logo=Files)](Hardware)
 [![BiliBili](https://img.shields.io/badge/BiliBili-视频介绍-blue?style=flat-square&logo=Bilibili)](https://space.bilibili.com/341974201)
-[![BiliBili](https://img.shields.io/badge/BiliBili-我的空间-red?style=flat-square&logo=Bilibili)](https://space.bilibili.com/341974201)
+[![BiliBili](https://img.shields.io/badge/GitHub-我的主页-teal?style=flat-square&logo=Github)](https://visualstudio.microsoft.com/zh-hans/vs/)
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
-
 
 <p align="center"> 
 <img src="Image/HellGateMonitor.png"/>
@@ -24,10 +23,12 @@
 > USB串口:&emsp;CP2104    
 > LDO芯片:&emsp;XC6210B332，700mA  
 > 屏幕: &emsp; &emsp; 1.14英寸 135x240分辨率IPS  
-> 锂电池:&emsp; &nbsp; 700mAh  
->
-
+> 锂电池:&emsp; &nbsp; 700mAh 3.7V  
+>   
 从硬件上看，ESP32系列只要支持**PSRAM**，则代码通用。 
+
+## GUI
+[**LittleVGL v8.1.0 dev**](https://github.com/lvgl/lvgl)
 
 ---
 ## 基本功能：
@@ -152,6 +153,10 @@ A：TODO
 
 ---
 
+## 后话：
+如果有人看到这的话，可以点赞点星星支持一下我，感谢！
+
+---
 
 <br>
 <br>
