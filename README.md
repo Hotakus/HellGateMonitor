@@ -13,8 +13,6 @@
 <img src="Image/HellGateMonitor.png"/>
 </p>
 
-![HellGateMonitor](Image/HellGateMonitor.png)
-
 ---
 
 ## 基本信息：

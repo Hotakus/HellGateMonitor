@@ -96,9 +96,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 void setup()
 {
 	Serial.begin(115200);
-	delay(10);
 
-	size_t codeSize = ESP.getSketchSize();
 	Serial.printf("\n****************** Hell Gate Monitor ******************\n");
 	Serial.printf("           ___           ___           ___               \n");
 	Serial.printf("          /\\__\\         /\\  \\         /\\__\\        \n");
@@ -116,8 +114,8 @@ void setup()
 	Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
 	Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(),
 	              lv_version_info());
-	Serial.printf("Firmware : V%d.%d.%d %s %0.2f MiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
-	              HGM_VERSION_INFO, codeSize / 1024.0 / 1024.0);
+	Serial.printf("Firmware : V%d.%d.%d %s\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
+	              HGM_VERSION_INFO);
 	Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
 	Serial.printf("********************************************************\n");
 
@@ -152,7 +150,7 @@ void setup()
 
 	// Stop BT and WiFi.
 	hgmApp->Stop();
-	vTaskDelay(300);
+	vTaskDelay(200);
 
 	// Open bluetooth
 	component.type = HGM_COMPONENT_BT;
@@ -161,7 +159,7 @@ void setup()
 	hgmSetupUI->ComponentControl(&component);
 	hgmApp->BeginBT();
 	while (!hgmApp->hgmBT->bs->isReady())
-		vTaskDelay(100);
+		vTaskDelay(10);
 	component.waitStatus = true;
 
 	vTaskDelay(200);
@@ -178,21 +176,14 @@ void setup()
 	while (!hgmApp->hgmWifi->wifi->isConnected())
 		vTaskDelay(50);
 	component.waitStatus = true;
-	vTaskDelay(300);
+	vTaskDelay(200);
 
 	// Check time
 	ti.Begin();
-	vTaskDelay(300);
+	vTaskDelay(200);
 
 	// Check weather component
-	Serial.println(ESP.getSdkVersion());
-	Serial.println(ESP.getChipCores());
-	Serial.println(ESP.getChipModel());
-	Serial.println(ESP.getCpuFreqMHz());
-	Serial.println(ESP.getFlashChipSize());
-	Serial.println(ESP.getFlashChipSpeed());
-	Serial.println(Wire1.getClock());
-	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	
 
 
 
@@ -250,6 +241,14 @@ void setup()
 	//lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
 	//lv_anim_start(&anim1);
 
+
+	Serial.println(ESP.getSdkVersion());
+	Serial.println(ESP.getChipCores());
+	Serial.println(ESP.getChipModel());
+	Serial.println(ESP.getCpuFreqMHz());
+	Serial.println(ESP.getFlashChipSize());
+	Serial.println(ESP.getFlashChipSpeed());
+	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 }
 
 void loop()
