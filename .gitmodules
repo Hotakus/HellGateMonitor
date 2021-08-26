@@ -1,4 +1,0 @@
-[submodule "Source/LvglSrc/lvgl"]
-	path = Source/LvglSrc/lvgl
-	url = git@github.com:lvgl/lvgl.git
-    update = merge
