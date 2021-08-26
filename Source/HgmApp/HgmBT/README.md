@@ -110,9 +110,9 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 OK（DataType == 4）
 
 ```json
- {
+{
   "Header": "Hgm",
-  "DataType": "3",
+  "DataType": "4",
   "Data": "ok"
 }
 ```
