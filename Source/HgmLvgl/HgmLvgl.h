@@ -16,8 +16,9 @@
 #include "HgmGUI/HgmFramework.h"
 
 namespace HGM {
-#define HGM_MONITOR_WIDTH  240
-#define HGM_MONITOR_HEIGHT 135
+#define HGM_MONITOR_WIDTH	240
+#define HGM_MONITOR_HEIGHT	135
+#define HGM_LVGL_TICK		5
 
 	class HgmLvgl
 	{
@@ -30,7 +31,6 @@ namespace HGM {
 
 		xTaskHandle hgmLvglTaskHandle;
 		xTaskHandle hgmLvglTickHandle;
-		int16_t lvTick = 5;
 
 		void HgmLvglDispInit();
 		void HgmLvglIndevInit();

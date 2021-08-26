@@ -43,12 +43,15 @@ HgmLvgl::~HgmLvgl()
 
 
 /* public function */
+/**
+ * @brief HGM LVGL begin.
+ */
 void HGM::HgmLvgl::HgmLvglBegin()
 {
     /* LCD init */
     _lcd->begin();
     _lcd->setRotation(1);
-    _lcd->fillScreen(TFT_YELLOW);
+    _lcd->fillScreen(TFT_BLACK);
 
     /* Hgm Control init */
     this->hcl->HgmControlBegin();
@@ -69,7 +72,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         HgmLvglTask,
         "HgmLvglTask",
         4096,
-        &this->lvTick,
+        NULL,
         8,
         &this->hgmLvglTaskHandle,
         1
@@ -78,7 +81,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         HgmLvglTick,
         "HgmLvglTick",
         1024,
-        &this->lvTick,
+        NULL,
         10,
         &this->hgmLvglTickHandle,
         1
@@ -105,10 +108,9 @@ void HGM::HgmLvgl::HgmLvglUIBegin()
 /* private function */
 void HGM::HgmLvgl::HgmLvglTask(void* params)
 {
-    uint16_t tick = *(uint16_t*)params;
     while (true) {
         lv_timer_handler(); /* let the GUI do its work */
-        vTaskDelay(tick);		// use FreeRTOS
+        vTaskDelay(HGM_LVGL_TICK);
     }
 }
 
@@ -116,8 +118,8 @@ void HGM::HgmLvgl::HgmLvglTick(void* params)
 {
     uint16_t tick = *(uint16_t*)params;
     while (true) {
-        lv_tick_inc(tick);
-        vTaskDelay(tick);
+        lv_tick_inc(HGM_LVGL_TICK);
+        vTaskDelay(HGM_LVGL_TICK);
     }
 }
 
@@ -134,6 +136,7 @@ void HGM::HgmLvgl::HgmLvglDispInit()
 {
     lv_port_disp_init(_width, _height, true);
 }
+
 void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
@@ -143,7 +146,7 @@ void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* ar
     _lcd->setAddrWindow(area->x1, area->y1, w, h);
     _lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
     _lcd->endWrite();
-
+    
     lv_disp_flush_ready(disp_drv);
 }
 
