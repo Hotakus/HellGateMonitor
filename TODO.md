@@ -1,1 +1,1 @@
-﻿[x] asdasd
+﻿*[ ] Optimize the background's file size

@@ -65,6 +65,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
 
     /* Create All basic UI */
     // this->HgmLvglUIBegin();
+    // lv_img_set_src(img, &testbg);
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
 
     /* Create the basic tasks */

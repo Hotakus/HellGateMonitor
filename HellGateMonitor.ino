@@ -150,39 +150,39 @@ void setup()
 	hgmApp = new HgmApp(true);
 
 	// Stop BT and WiFi.
-	hgmApp->Stop();
-	vTaskDelay(200);
+	//hgmApp->Stop();
+	//vTaskDelay(200);
 
-	// Open bluetooth
-	component.type = HGM_COMPONENT_BT;
-	component.curStatus = true;
-	component.waitStatus = false;
-	hgmSetupUI->ComponentControl(&component);
-	hgmApp->BeginBT();
-	while (!hgmApp->hgmBT->bs->isReady())
-		vTaskDelay(10);
-	component.waitStatus = true;
+	//// Open bluetooth
+	//component.type = HGM_COMPONENT_BT;
+	//component.curStatus = true;
+	//component.waitStatus = false;
+	//hgmSetupUI->ComponentControl(&component);
+	//hgmApp->BeginBT();
+	//while (!hgmApp->hgmBT->bs->isReady())
+	//	vTaskDelay(10);
+	//component.waitStatus = true;
 
-	vTaskDelay(200);
+	//vTaskDelay(200);
 
-	// Check config file
-	HgmSC hgmSC;
-	hgmSC.Begin();
+	//// Check config file
+	//HgmSC hgmSC;
+	//hgmSC.Begin();
 
-	// Check WiFi
-	component.type = HGM_COMPONENT_WIFI;
-	component.curStatus = true;
-	component.waitStatus = false;
-	hgmSetupUI->ComponentControl(&component);
-	hgmApp->hgmWifi->Begin();
-	while (!hgmApp->hgmWifi->wifi->isConnected())
-		vTaskDelay(50);
-	component.waitStatus = true;
-	vTaskDelay(200);
+	//// Check WiFi
+	//component.type = HGM_COMPONENT_WIFI;
+	//component.curStatus = true;
+	//component.waitStatus = false;
+	//hgmSetupUI->ComponentControl(&component);
+	//hgmApp->hgmWifi->Begin();
+	//while (!hgmApp->hgmWifi->wifi->isConnected())
+	//	vTaskDelay(50);
+	//component.waitStatus = true;
+	//vTaskDelay(200);
 
-	// Check time
-	ti.Begin();
-	vTaskDelay(200);
+	//// Check time
+	//ti.Begin();
+	//vTaskDelay(200);
 
 	// Check weather component
 	
