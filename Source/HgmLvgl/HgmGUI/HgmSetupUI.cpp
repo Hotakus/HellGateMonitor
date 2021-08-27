@@ -83,15 +83,15 @@ void HgmGUI::HgmSetupUI::Begin()
 
     lv_obj_t* imgbtn = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
-    lv_obj_align(imgbtn, LV_ALIGN_LEFT_MID, -97, 0);
-    lv_obj_set_width(imgbtn, 100);
+    lv_obj_align(imgbtn, LV_ALIGN_LEFT_MID, -0, 0);
+    lv_obj_set_width(imgbtn, 30);
 
     lv_anim_t logoAnim;
     lv_anim_init(&logoAnim);
     lv_anim_set_var(&logoAnim, imgbtn);
-    lv_anim_set_values(&logoAnim, -97, 0);
+    lv_anim_set_values(&logoAnim, 0, 120);
     lv_anim_set_time(&logoAnim, 2000);
-    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)anim_cb);
+    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_width);
     lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
     lv_anim_start(&logoAnim);
 
