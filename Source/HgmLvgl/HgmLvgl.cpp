@@ -53,6 +53,11 @@ void HGM::HgmLvgl::HgmLvglBegin()
     _lcd->setRotation(1);
     _lcd->fillScreen(TFT_BLACK);
 
+#if HGM_LVGL_USE_DMA == 1
+    _lcd->setSwapBytes(true);
+    _lcd->initDMA();
+#endif
+
     /* Hgm Control init */
     this->hcl->HgmControlBegin();
     Serial.printf("0x%X\n", this->hcl->imu->whoAmI());
@@ -74,9 +79,9 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTask",
         4096,
         NULL,
-        8,
+        10,
         &this->hgmLvglTaskHandle,
-        1
+        0
     );
     xTaskCreatePinnedToCore(
         HgmLvglTick,
@@ -138,16 +143,33 @@ void HGM::HgmLvgl::HgmLvglDispInit()
     lv_port_disp_init(_width, _height, true);
 }
 
+
+
+#if HGM_LVGL_USE_DMA == 1
+// uint16_t  dmaBuffer1[HGM_MONITOR_WIDTH * 10]; // Toggle buffer for 16*16 MCU block, 512bytes
+// uint16_t  dmaBuffer2[HGM_MONITOR_WIDTH * 10]; // Toggle buffer for 16*16 MCU block, 512bytes
+// uint16_t* dmaBufferPtr = dmaBuffer1;
+static bool dmaBufferSel = 0;
+#endif
+
 void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
 
     _lcd->startWrite();
+#if HGM_LVGL_USE_DMA != 1
     _lcd->setAddrWindow(area->x1, area->y1, w, h);
     _lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
+#else
+    //if (dmaBufferSel) dmaBufferPtr = dmaBuffer2;
+    //else dmaBufferPtr = dmaBuffer1;
+    //dmaBufferSel = !dmaBufferSel;               // Toggle buffer selection
+    _lcd->pushImageDMA(area->x1, area->y1, w, h, (uint16_t*)disp_drv->draw_buf->buf_act);
+    //while (_lcd->dmaBusy());
+#endif
     _lcd->endWrite();
-    
+
     lv_disp_flush_ready(disp_drv);
 }
 

@@ -42,23 +42,23 @@ void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 #if BUF_METHOD == 0
 	/* Example for 1) */
 	static lv_disp_draw_buf_t draw_buf_dsc_1;
-	static lv_color_t buf_1[HGM_MONITOR_WIDTH * 10];
-	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * 10);   /*Initialize the display buffer*/
+	static lv_color_t buf_1[HGM_MONITOR_WIDTH * 50];
+	lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * 50);   /*Initialize the display buffer*/
 	/*Set a display buffer*/
 	disp_drv.draw_buf = &draw_buf_dsc_1;
 #elif BUF_METHOD == 1
 	/* Example for 2) */
 	static lv_disp_draw_buf_t draw_buf_dsc_2;
-	static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 5];
-	static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 5];
-	lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, _width * 5);
+	static lv_color_t buf_2_1[HGM_MONITOR_WIDTH * 10];
+	static lv_color_t buf_2_2[HGM_MONITOR_WIDTH * 10];
+	lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, _width * 10);
 	disp_drv.draw_buf = &draw_buf_dsc_2;
 #elif BUF_METHOD == 2
 	/* Example for 3) also set disp_drv.full_refresh = 1 below */
 	static lv_disp_draw_buf_t draw_buf_dsc_3;
-	static lv_color_t* buf_3_1 = (lv_color_t*)heap_caps_calloc(_width * _height, 2, MALLOC_CAP_SPIRAM);
-	static lv_color_t* buf_3_2 = (lv_color_t*)heap_caps_calloc(_width * _height, 2, MALLOC_CAP_SPIRAM);
-	lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2, _width * _height);   /*Initialize the display buffer*/
+	static lv_color_t* buf_3_1[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT];
+	static lv_color_t* buf_3_2[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT];
+	lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2, HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT);   /*Initialize the display buffer*/
 	disp_drv.full_refresh = 1;
 	disp_drv.draw_buf = &draw_buf_dsc_3;
 #endif // 0
