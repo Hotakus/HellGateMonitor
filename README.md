@@ -16,12 +16,12 @@
 
 ## 基本信息：
 
-> 主控: &emsp; &emsp; ESP32-PICO-D4，240Mhz，4MB Flash，512KB RAM  
-> PSRAM: &emsp;ESP-PSRAM64，8MB SPI RAM  
-> 电源IC: &emsp; &nbsp;BQ25896  
+> 主控: &emsp; &emsp; ESP32-PICO-D4 (240Mhz，4MB Flash，512KB RAM )  
+> PSRAM: &emsp;ESP-PSRAM64 (8MB SPI RAM)   
+> 电源管理:&emsp;IP5109  
 > IMU: &emsp; &emsp; &nbsp;MPU6050  
 > USB串口:&emsp;CP2104    
-> LDO芯片:&emsp;XC6210B332，700mA  
+> LDO芯片:&emsp;XC6210B332 700mA   
 > 屏幕: &emsp; &emsp; 1.14英寸 135x240分辨率IPS  
 > 锂电池:&emsp; &nbsp; 700mAh 3.7V  
 >   
