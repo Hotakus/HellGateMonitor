@@ -28,7 +28,7 @@
 从硬件上看，ESP32系列只要支持**PSRAM**，则代码通用。 
 
 ## GUI
-[**LittleVGL v8.1.0 dev**](https://github.com/lvgl/lvgl)
+[**LittleVGL**](https://github.com/lvgl/lvgl)
 
 ---
 ## 基本功能：

@@ -19,6 +19,10 @@ LV_IMG_DECLARE(testbg);
 LV_IMG_DECLARE(HGMBG);
 LV_IMG_DECLARE(HGM_LOGO);
 
+LV_IMG_DECLARE(book_left);
+LV_IMG_DECLARE(book_mid);
+LV_IMG_DECLARE(book_right);
+
 // background's buffer type
 typedef uint16_t(*_bg_t)[HGM_MONITOR_HEIGHT];
 static uint16_t* BackgroundBuf = NULL;  // background's buffer
@@ -67,9 +71,24 @@ void HgmGUI::HgmSetupUI::Begin()
 {
     // TODO: Use JPG format background
     // Set the bg for lv_scr_act()
-    //lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
-    lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
+    lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
+    //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
     lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
+    
+
+    lv_obj_t* imgbtn = lv_imgbtn_create(lv_scr_act());
+    lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
+    lv_obj_align(imgbtn, LV_ALIGN_LEFT_MID, -97, 0);
+    lv_obj_set_size(imgbtn, 97, 128);
+
+    lv_anim_t logoAnim;
+    lv_anim_init(&logoAnim);
+    lv_anim_set_var(&logoAnim, imgbtn);
+    lv_anim_set_values(&logoAnim, -97, 0);
+    lv_anim_set_time(&logoAnim, 1000);
+    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&logoAnim, lv_anim_path_overshoot);
+    lv_anim_start(&logoAnim);
 
     // logo
     //logo = lv_img_create(lv_scr_act());
