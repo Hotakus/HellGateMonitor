@@ -19,6 +19,10 @@ namespace HGM {
 #define HGM_MONITOR_WIDTH	240
 #define HGM_MONITOR_HEIGHT	135
 #define HGM_LVGL_TICK		2
+
+// TODO: Alter the parallel screen 
+
+// Don't use DMA, it will be error and is not better than the Non-DMA(normal SPI)
 #define HGM_LVGL_USE_DMA	0
 
 	class HgmLvgl
