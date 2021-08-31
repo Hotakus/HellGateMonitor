@@ -78,7 +78,6 @@ static void anim_cb(void* obj, int32_t val)
 void HgmGUI::HgmSetupUI::Begin()
 {
     // Set the bg for lv_scr_act()
-    //lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
     //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
     lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
 
@@ -105,6 +104,20 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_anim_start(&logoAnim);
 
     vTaskDelay(2000);
+
+    lv_anim_set_var(&logoAnim, imgbtn);
+    lv_anim_set_values(&logoAnim, 234, 97);
+    lv_anim_set_time(&logoAnim, 1000);
+    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_width);
+    lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
+    lv_anim_start(&logoAnim);
+
+    lv_anim_set_var(&logoAnim, imgbtn);
+    lv_anim_set_values(&logoAnim, 0, -69);
+    lv_anim_set_time(&logoAnim, 1000);
+    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
+    lv_anim_start(&logoAnim);
 
     // logo
     //logo = lv_img_create(lv_scr_act());
