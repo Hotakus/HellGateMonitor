@@ -874,9 +874,6 @@
     <ClCompile Include="Source\LvglSrc\HGM_LOGO.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\HGMBG.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -902,6 +899,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\book_right.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\bg_left.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\bg_mid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\bg_right.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

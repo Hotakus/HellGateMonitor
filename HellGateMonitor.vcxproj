@@ -331,10 +331,12 @@
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp" />
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp" />
+    <ClCompile Include="Source\LvglSrc\bg_left.c" />
+    <ClCompile Include="Source\LvglSrc\bg_mid.c" />
+    <ClCompile Include="Source\LvglSrc\bg_right.c" />
     <ClCompile Include="Source\LvglSrc\book_left.c" />
     <ClCompile Include="Source\LvglSrc\book_mid.c" />
     <ClCompile Include="Source\LvglSrc\book_right.c" />
-    <ClCompile Include="Source\LvglSrc\HGMBG.c" />
     <ClCompile Include="Source\LvglSrc\HGM_LOGO.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_10px.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_8px.c" />
