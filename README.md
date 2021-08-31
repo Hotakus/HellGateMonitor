@@ -1,6 +1,8 @@
 # Hell Gate Monitor（HGM）
 ### 微型的MC风格多功能无线监控副屏（开发中）  
 
+### [项目当前待实现目标](TODO.md)
+
 ---
 [![LICENSE](https://img.shields.io/github/license/Hotakus/HellGateMonitor?label=LICENSE&logo=GNU&style=flat-square)](./LICENSE)
 [![BiliBili](https://img.shields.io/badge/Kicad-硬件原理图-yellow?style=flat-square&logo=Files)](Hardware)
