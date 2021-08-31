@@ -1,5 +1,5 @@
 # Hell Gate Monitor（HGM）
-### 微型的MC风格多功能无线监控副屏  
+### 微型的MC风格多功能无线监控副屏（开发中）  
 
 ---
 [![LICENSE](https://img.shields.io/github/license/Hotakus/HellGateMonitor?label=LICENSE&logo=GNU&style=flat-square)](./LICENSE)
