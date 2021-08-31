@@ -50,11 +50,12 @@ void HgmGUI::HgmTwUI::Begin()
     lv_anim_t anim_book;
     lv_anim_init(&anim_book);
     lv_anim_set_var(&anim_book, book);
-    lv_anim_set_values(&anim_book, -97, 0);
+    lv_anim_set_values(&anim_book, -97, 2);
     lv_anim_set_early_apply(&anim_book, false);
     lv_anim_set_exec_cb(&anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_path_cb(&anim_book, lv_anim_path_ease_in_out);
     lv_anim_set_time(&anim_book, 700);
+
 
     // anim_tw
     lv_anim_t anim_tu;
@@ -86,7 +87,6 @@ void HgmGUI::HgmTwUI::Begin()
     lv_anim_timeline_add(at, 700, &anim_tu);
     lv_anim_timeline_add(at, 700, &anim_td);
     lv_anim_timeline_add(at, 1700, &anim_tw_expand);
-    // lv_anim_timeline_add(at, 400, &a6);
     lv_anim_timeline_start(at);
 }
 
