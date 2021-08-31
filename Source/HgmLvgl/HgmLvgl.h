@@ -18,7 +18,7 @@
 namespace HGM {
 #define HGM_MONITOR_WIDTH	240
 #define HGM_MONITOR_HEIGHT	135
-#define HGM_LVGL_TICK		2
+#define HGM_LVGL_TICK		5
 
 // TODO: Alter the parallel screen 
 

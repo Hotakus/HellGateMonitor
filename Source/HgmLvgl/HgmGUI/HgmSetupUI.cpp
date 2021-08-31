@@ -16,6 +16,7 @@ using namespace HgmGUI;
 using namespace HGM;
 
 LV_IMG_DECLARE(testbg);
+LV_IMG_DECLARE(HGMBG);
 LV_IMG_DECLARE(HGM_LOGO);
 
 LV_IMG_DECLARE(book_left);
@@ -81,43 +82,32 @@ void HgmGUI::HgmSetupUI::Begin()
     //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
     lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
 
+    //lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
     lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
     lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_width(bg, 240);
 
-    vTaskDelay(0);
+    vTaskDelay(200);
 
     // TODO: test
     lv_obj_t* imgbtn = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(imgbtn, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
-    lv_obj_align(imgbtn, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(imgbtn, LV_ALIGN_LEFT_MID, -97, 0);
     lv_obj_set_width(imgbtn, 97);
 
     lv_anim_t logoAnim;
     lv_anim_init(&logoAnim);
     lv_anim_set_var(&logoAnim, imgbtn);
-    lv_anim_set_values(&logoAnim, 97, 234);
-    lv_anim_set_time(&logoAnim, 1000);
-    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_width);
-    lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
-    lv_anim_start(&logoAnim);
-
-    vTaskDelay(2000);
-
-    lv_anim_set_var(&logoAnim, imgbtn);
-    lv_anim_set_values(&logoAnim, 234, 97);
-    lv_anim_set_time(&logoAnim, 1000);
-    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_width);
-    lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
-    lv_anim_start(&logoAnim);
-
-    lv_anim_set_var(&logoAnim, imgbtn);
-    lv_anim_set_values(&logoAnim, 0, -69);
+    lv_anim_set_values(&logoAnim, -97, 2);
     lv_anim_set_time(&logoAnim, 1000);
     lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(&logoAnim, lv_anim_path_linear);
+    lv_anim_set_path_cb(&logoAnim, lv_anim_path_ease_in_out);
+    lv_anim_set_playback_time(&logoAnim, 1000);
+    lv_anim_set_playback_delay(&logoAnim, 1000);
+    lv_anim_set_repeat_count(&logoAnim, LV_ANIM_REPEAT_INFINITE);
     lv_anim_start(&logoAnim);
+
 
     // logo
     //logo = lv_img_create(lv_scr_act());
