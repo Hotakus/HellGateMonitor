@@ -18,7 +18,7 @@
 using namespace HGM;
 using namespace HgmGUI;
 
-HgmLvgl* hgmLvgl = new HgmLvgl(135, 240);
+HgmLvgl* hgmLvgl = new HgmLvgl(HGM_MONITOR_HEIGHT, HGM_MONITOR_WIDTH);
 
 static TFT_eSPI* _lcd = nullptr;
 
@@ -69,8 +69,6 @@ void HGM::HgmLvgl::HgmLvglBegin()
     // this->HgmLvglFsInit();
 
     /* Create All basic UI */
-    // this->HgmLvglUIBegin();
-    // lv_img_set_src(img, &testbg);
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
 
     /* Create the basic tasks */

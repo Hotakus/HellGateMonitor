@@ -253,6 +253,10 @@ void setup()
 	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 	Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 	Serial.println(ESP.getSketchSize());
+
+
+	hgmLvgl->HgmLvglUIBegin();
+
 }
 
 void loop()

@@ -11,22 +11,27 @@
 #include <Arduino.h>
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "HgmFramework.h"
-
+#include "HgmTwUI.h"
 
 using namespace HgmGUI;
-
 
 lv_obj_t* hgmFwTabview;
 lv_obj_t* hgmTabList[TAB_NUMBER];
 
+HgmTwUI* hgmTwUI = NULL;
+
+
+
 HgmFramework::HgmFramework()
 {
 	/* Create All UI */
+	hgmTwUI = new HgmTwUI();
 }
 
 HgmFramework::~HgmFramework()
 {
 	/* Remove All UI */
+	delete hgmTwUI;
 }
 
 
@@ -35,13 +40,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-	hgmFwTabview = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 5);
-
-	for (uint8_t i = 0; i < TAB_NUMBER; i++) {
-		hgmTabList[i] = lv_tabview_add_tab(hgmFwTabview, " ");
-	}
-
 	/* ui init */
-	
+	hgmTwUI->Begin();
 
 }

@@ -42,8 +42,8 @@ void lv_port_disp_init(int16_t width, int16_t height, bool hwSwap)
 #if BUF_METHOD == 0
     /* Example for 1) */
     static lv_disp_draw_buf_t draw_buf_dsc_1;
-    static lv_color_t buf_1[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT / 2];
-    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT / 2);   /*Initialize the display buffer*/
+    static lv_color_t buf_1[HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT / 4];
+    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT / 4);   /*Initialize the display buffer*/
     /*Set a display buffer*/
     disp_drv.draw_buf = &draw_buf_dsc_1;
 #elif BUF_METHOD == 1
