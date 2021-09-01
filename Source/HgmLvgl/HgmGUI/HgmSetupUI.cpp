@@ -82,13 +82,13 @@ static void anim_cb(void* obj, int32_t val)
 void HgmGUI::HgmSetupUI::Begin()
 {
     // Set the bg for lv_scr_act()
-    lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
+    //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
     //lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
 
-    // lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
-    // lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
-    // lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
-    // lv_obj_set_width(bg, 240);
+    lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
+    lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
+    lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_width(bg, 240);
 
 
     // logo

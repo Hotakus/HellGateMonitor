@@ -37,6 +37,7 @@ static String _lon = "";
 
 File _file;
 
+
 static QueueHandle_t WCMsgBox;
 static TaskHandle_t WCTaskHandle;
 static void WCTask(void* params);
@@ -81,18 +82,18 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
         Serial.printf("Can't find the config file for the weather component.\n");
         WeatherConfig();
     } else {
-        file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-        if (!file.size()) {
+        _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+        if (!_file.size()) {
             Serial.printf("Weather config file is null.\n");
             WeatherConfig();
         } else {
-            file.close();
+            _file.close();
 
             Serial.printf("Found the weather config file.\n");
             String tmp;
             DynamicJsonDocument doc(1024);
-            file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-            tmp = file.readString();
+            _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+            tmp = _file.readString();
             deserializeJson(doc, tmp);
 
             Serial.println(tmp);
@@ -100,8 +101,8 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
             String str = "Weather";
             String header = doc["Header"];
             if (header.compareTo(str) != 0) {
-                file.close();
-                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
+                _file.close();
+                _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
                 WeatherConfig();
             }
 
@@ -118,7 +119,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
             component.waitStatus = true;
             hgmSetupUI->ComponentControl(&component);
 
-            file.close();
+            _file.close();
             configFlag = true;
 
             vTaskDelay(200);
@@ -143,7 +144,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
 void HgmApplication::WeatherInfo::SetWeatherConfig()
 {
     // TODO: Send msg
-    file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
+    _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
 
     String wi;
     DynamicJsonDocument doc(1024);
@@ -156,9 +157,9 @@ void HgmApplication::WeatherInfo::SetWeatherConfig()
     doc["data"]["lon"] = _lon;
     serializeJson(doc, wi);
 
-    file.write(wi);
+    _file.write((const uint8_t*)wi.c_str(), wi.length());
 
-    file.close();
+    _file.close();
     configFlag = true;
 }
 
