@@ -255,7 +255,7 @@ void setup()
 	Serial.println(ESP.getSketchSize());
 
 
-	hgmLvgl->HgmLvglUIBegin();
+	//hgmLvgl->HgmLvglUIBegin();
 
 }
 
