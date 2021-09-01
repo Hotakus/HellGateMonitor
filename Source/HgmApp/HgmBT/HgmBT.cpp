@@ -309,6 +309,7 @@ static void BluetoothListeningTask(void* params)
         if (!_bs->connected()) {
             flag = false;
             vTaskDelay(1000);
+            continue;
         }
 
         if (_bs->available()) {
