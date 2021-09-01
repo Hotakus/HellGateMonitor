@@ -60,7 +60,7 @@ void HgmGUI::HgmTwUI::Begin()
     // anim_tw
     lv_anim_t anim_tu;
     lv_anim_init(&anim_tu);
-    lv_anim_set_var(&anim_tu, tw_weather);
+    lv_anim_set_var(&anim_tu, tw_time);
     lv_anim_set_values(&anim_tu, -132, 103);
     lv_anim_set_exec_cb(&anim_tu, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_path_cb(&anim_tu, lv_anim_path_ease_in_out);
@@ -68,8 +68,8 @@ void HgmGUI::HgmTwUI::Begin()
 
     lv_anim_t anim_td;
     lv_anim_init(&anim_td);
-    lv_anim_set_var(&anim_td, tw_time);
-    lv_anim_set_values(&anim_td, -132, 103);
+    lv_anim_set_var(&anim_td, tw_weather);
+    lv_anim_set_values(&anim_td, -132, 104);
     lv_anim_set_exec_cb(&anim_td, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_path_cb(&anim_td, lv_anim_path_ease_in_out);
     lv_anim_set_time(&anim_td, 1000);
