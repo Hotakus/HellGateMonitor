@@ -25,7 +25,8 @@ extern HgmApp* hgmApp;
 extern HgmSetupUI* hgmSetupUI;
 static HgmComponent component;
 
-static String weatherAPI = "";
+static String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now";
+static String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d";
 
 static String _id = "";
 static String _key = "";
@@ -34,6 +35,8 @@ static String _adm2 = "";
 static String _location = "";
 static String _lat = "";
 static String _lon = "";
+
+static StaticJsonDocument<2048> doc;
 
 File _file;
 
@@ -48,7 +51,6 @@ WeatherInfo::WeatherInfo()
 {
     // TODO: Create a task to loop to get the weather
     WCMsgBox = xQueueCreate(1, sizeof(int));
-
 }
 
 WeatherInfo::~WeatherInfo()
@@ -61,6 +63,20 @@ void HgmApplication::WeatherInfo::Begin()
 }
 
 
+static void _get()
+{
+    _id = doc["data"]["id"].as<String>();
+    _key = doc["data"]["key"].as<String>();
+    _adm = doc["data"]["adm"].as<String>();
+    _adm2 = doc["data"]["adm2"].as<String>();
+    _location = doc["data"]["location"].as<String>();
+    _lat = doc["data"]["lat"].as<String>();
+    _lon = doc["data"]["lon"].as<String>();
+
+    component.curStatus = true;
+    component.waitStatus = true;
+}
+
 static void WeatherConfig()
 {
     component.type = HGM_COMPONENT_WEATHER;
@@ -71,10 +87,10 @@ static void WeatherConfig()
     Serial.println("Waiting the Weather config...");
     while (configFlag != true)
         vTaskDelay(5);
-    component.curStatus = true;
-    component.waitStatus = true;
 
+    _get();
 }
+
 
 bool HgmApplication::WeatherInfo::CheckWeatherconfig()
 {
@@ -84,6 +100,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
     } else {
         _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
         if (!_file.size()) {
+            _file.close();
             Serial.printf("Weather config file is null.\n");
             WeatherConfig();
         } else {
@@ -91,37 +108,22 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
 
             Serial.printf("Found the weather config file.\n");
             String tmp;
-            DynamicJsonDocument doc(1024);
             _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
             tmp = _file.readString();
-            deserializeJson(doc, tmp);
+            _file.close();
 
+            deserializeJson(doc, tmp);
             Serial.println(tmp);
 
             String str = "Weather";
             String header = doc["Header"];
             if (header.compareTo(str) != 0) {
-                _file.close();
-                _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
                 WeatherConfig();
+            } else {
+                _get();
             }
-
-            _id = doc["data"]["id"].as<String>();
-            _key = doc["data"]["key"].as<String>();
-            _adm = doc["data"]["adm"].as<String>();
-            _adm2 = doc["data"]["adm2"].as<String>();
-            _location = doc["data"]["location"].as<String>();
-            _lat = doc["data"]["lat"].as<String>();
-            _lon = doc["data"]["lon"].as<String>();
-
-            component.type = HGM_COMPONENT_WEATHER;
-            component.curStatus = true;
-            component.waitStatus = true;
-            hgmSetupUI->ComponentControl(&component);
-
-            _file.close();
+            
             configFlag = true;
-
             vTaskDelay(200);
         }
     }
@@ -147,7 +149,6 @@ void HgmApplication::WeatherInfo::SetWeatherConfig()
     _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
 
     String wi;
-    DynamicJsonDocument doc(1024);
     doc["data"]["id"] = _id;
     doc["data"]["key"] = _key;
     doc["data"]["adm"] = _adm;
@@ -215,6 +216,12 @@ void HgmApplication::WeatherInfo::GetWeatherConfig(String& latitude, String& lon
     longitude = _lon;
 }
 
+void HgmApplication::WeatherInfo::GetWeather()
+{
+    // TODO:
+    Serial.println("Get weather...");
+}
+
 
 static void WCTask(void* params)
 {
@@ -222,7 +229,7 @@ static void WCTask(void* params)
     while (true) {
         //xQueueReceive(WCMsgBox, &tmp, portMAX_DELAY);
 
-
+        WeatherInfo::GetWeather();
 
         vTaskDelay(WEATHER_GET_GAP);
     }

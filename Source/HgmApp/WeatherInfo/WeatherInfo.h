@@ -18,7 +18,7 @@ using namespace fs;
 
 namespace HgmApplication {
 #define WEATHER_CONFIG_FILE_PATH "/weather.conf"
-#define WEATHER_GET_GAP (4800)	// 1:30
+#define WEATHER_GET_GAP (1800)	// 30 min
 	class WeatherInfo
 	{
 	private:
@@ -41,6 +41,8 @@ namespace HgmApplication {
 		static void GetWeatherConfig(String& id);
 		static void GetWeatherConfig(String& adm, String& adm2, String& location);
 		static void GetWeatherConfig(String& latitude, String& longitude);
+
+		static void GetWeather();
 	};
 
 
