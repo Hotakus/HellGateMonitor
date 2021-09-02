@@ -147,45 +147,46 @@ void setup()
 	HgmComponent component;
 	hgmSetupUI = new HgmSetupUI();
 	hgmSetupUI->Begin();
-
+	
 	hgmApp = new HgmApp(true);
+	hgmApp->Stop();	// Stop BT and WiFi.
+	vTaskDelay(500);
+	
+	// Open bluetooth
+	component.type = HGM_COMPONENT_BT;
+	component.curStatus = true;
+	component.waitStatus = false;
+	hgmSetupUI->ComponentControl(&component);
+	hgmApp->BeginBT();
+	while (!hgmApp->hgmBT->bs->isReady())
+		vTaskDelay(10);
+	component.waitStatus = true;
+	
+	vTaskDelay(200);
+	
+	// Check config file
+	HgmSC hgmSC;
+	hgmSC.Begin();
+	 
+	vTaskDelay(200);
+	
+	// Check WiFi
+	component.type = HGM_COMPONENT_WIFI;
+	component.curStatus = true;
+	component.waitStatus = false;
+	hgmSetupUI->ComponentControl(&component);
+	hgmApp->hgmWifi->Begin();
+	while (!hgmApp->hgmWifi->wifi->isConnected())
+		vTaskDelay(50);
+	component.waitStatus = true;
+	vTaskDelay(200);
 
-	// // Stop BT and WiFi.
-	// hgmApp->Stop();
-	// vTaskDelay(200);
-	// 
-	// // Open bluetooth
-	// component.type = HGM_COMPONENT_BT;
-	// component.curStatus = true;
-	// component.waitStatus = false;
-	// hgmSetupUI->ComponentControl(&component);
-	// hgmApp->BeginBT();
-	// while (!hgmApp->hgmBT->bs->isReady())
-	// 	vTaskDelay(10);
-	// component.waitStatus = true;
-	// 
-	// vTaskDelay(200);
-	// 
-	// // Check config file
-	// HgmSC hgmSC;
-	// hgmSC.Begin();
-	// 
-	// // Check WiFi
-	// component.type = HGM_COMPONENT_WIFI;
-	// component.curStatus = true;
-	// component.waitStatus = false;
-	// hgmSetupUI->ComponentControl(&component);
-	// hgmApp->hgmWifi->Begin();
-	// while (!hgmApp->hgmWifi->wifi->isConnected())
-	// 	vTaskDelay(50);
-	// component.waitStatus = true;
-	// vTaskDelay(200);
-	// 
-	// // Check time
-	// ti.Begin();
-	// vTaskDelay(200);
-	// 
-	// // Check weather component
+	// Check time
+	ti.Begin();
+	vTaskDelay(200);
+
+	
+	// Check weather component
 	// 
 	// 
 	// 
@@ -244,17 +245,17 @@ void setup()
 	// lv_anim_start(&anim1);
 
 
-	Serial.println(ESP.getSdkVersion());
-	Serial.println(ESP.getChipCores());
-	Serial.println(ESP.getChipModel());
-	Serial.println(ESP.getCpuFreqMHz());
-	Serial.println(ESP.getFlashChipSize());
-	Serial.println(ESP.getFlashChipSpeed());
+	// // TODO: Use task to run
+	// Serial.println(ESP.getSdkVersion());
+	// Serial.println(ESP.getChipCores());
+	// Serial.println(ESP.getChipModel());
+	// Serial.println(ESP.getCpuFreqMHz());
+	// Serial.println(ESP.getFlashChipSize());
+	// Serial.println(ESP.getFlashChipSpeed());
 	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-	Serial.println(ESP.getSketchSize());
-
-
+	// Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+	// Serial.println(ESP.getSketchSize());
+	// 
 	hgmLvgl->HgmLvglUIBegin();
 
 }

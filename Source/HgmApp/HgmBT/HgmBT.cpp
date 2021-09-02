@@ -318,6 +318,6 @@ static void BluetoothListeningTask(void* params)
             HgmBT::ReceiveDataPack(str, &method);
         }
 
-        vTaskDelay(50);
+        vTaskDelay(100);
     }
 }

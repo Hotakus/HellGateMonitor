@@ -77,9 +77,9 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTask",
         4096,
         NULL,
-        10,
+        9,
         &this->hgmLvglTaskHandle,
-        0
+        1
     );
     xTaskCreatePinnedToCore(
         HgmLvglTick,

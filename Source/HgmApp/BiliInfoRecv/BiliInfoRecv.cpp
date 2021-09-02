@@ -84,7 +84,7 @@ int HgmApplication::BiliInfoRecv::GetFollower()
 void HgmApplication::BiliInfoRecv::GetBasicInfo()
 {
     String url = basicInfoAPI + _uid;
-    StaticJsonDocument<4096> userInfo;
+    StaticJsonDocument<2048> userInfo;
 
     _httpClient->end();
     vTaskDelay(100);
@@ -92,15 +92,19 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     int code = _httpClient->GET();
 
     if (code != 200) {
-        Serial.printf("HTTP code : %d", code);
+        Serial.printf("%s HTTP code : %d", __func__, code);
         _httpClient->end();
         return;
     }
-    String recv = _httpClient->getString();
-    deserializeJson(userInfo, recv);
+    WiFiClient* wc = _httpClient->getStreamPtr();
+    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(wc->available() + 1, 1, MALLOC_CAP_SPIRAM);
+    recvBuf[wc->available()] = '\0';
+    recvBuf = (uint8_t*)_httpClient->getString().c_str();
+    deserializeJson(userInfo, recvBuf);
+    heap_caps_free(recvBuf);
 
     if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
-        Serial.printf("Get user info is no correct : %s", userInfo["data"]["mid"].as<String>().c_str());
+        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
         _httpClient->end();
         return;
     }

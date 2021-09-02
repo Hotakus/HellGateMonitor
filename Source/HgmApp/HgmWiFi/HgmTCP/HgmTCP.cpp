@@ -142,7 +142,7 @@ static void TcpControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
-                    2048,
+                    3072,
                     NULL,
                     10,
                     &tcpServerTaskHandle,
@@ -209,14 +209,15 @@ static void TcpServerListeningTask(void* params)
         while (wc.connected()) {
             if (wc.available()) {
                 // TODO: Analyze HGM data pack
-
-                uint8_t buf[512] = {0};
+                uint8_t *buf = (uint8_t*)heap_caps_calloc(wc.available() + 1,  1, MALLOC_CAP_SPIRAM);
+                buf[wc.available()] = '\0';
                 wc.read(buf, wc.available());
                 Serial.print(wc.remoteIP());
                 Serial.print(" -> ");
                 Serial.printf("%s\n", buf);
+                heap_caps_free(buf);
             }
-            vTaskDelay(50);
+            vTaskDelay(100);
         }
 
 

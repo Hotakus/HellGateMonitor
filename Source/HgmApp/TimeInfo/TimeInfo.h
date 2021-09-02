@@ -16,7 +16,7 @@
 
 namespace HgmApplication {
 
-#define NET_TIME_GAP	(3600U)	// Get the time per one hour
+#define NET_TIME_GAP	(3600U * 1000U)	// Get the time per one hour
 
 	class TimeInfo
 	{

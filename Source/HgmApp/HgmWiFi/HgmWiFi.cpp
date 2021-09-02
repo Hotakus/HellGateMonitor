@@ -111,13 +111,18 @@ void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
  */
 void HgmApplication::HgmWiFi::Begin()
 {
-
-    if (!_ssid || !_password) {
-        Serial.println("SSID or Password has not been given. \n WiFi begin failed. \n");
-        return;
-    }
-
     this->OpenWiFi();
+
+    // _wifi.mode(WIFI_STA);
+    // _wifi.setSleep(true); //关闭STA模式下wifi休眠，提高响应速度
+    // _wifi.begin("trisuborn", "12345678");
+    // while (_wifi.status() != WL_CONNECTED) {
+    // 	vTaskDelay(500);
+    // 	Serial.print(".");
+    // }
+    // Serial.println("Connected");
+    // Serial.print("IP Address:");
+    // Serial.println(_wifi.localIP());
 
     this->OpenTCP(true, true);          // Open TCP Server
     this->OpenTCP(true, false);         // Open TCP client
@@ -156,7 +161,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
         "wifiControlTask",
         2048,
         NULL,
-        10,
+        5,
         &wifiControlTaskHandle,
         1
     );
@@ -178,8 +183,15 @@ static void wifiControlTask(void* params)
         if (sw == true) {
             if (wifiCheckTaskHandle == NULL) {
                 _wifi.mode(WIFI_USE_MODE);
-                _wifi.begin(_ssid, _password);
+                _wifi.setSleep(true);
+                _wifi.setAutoReconnect(true);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
+                _wifi.begin(_ssid, _password);
+                while (_wifi.status() != WL_CONNECTED) {
+                    vTaskDelay(500);
+                    Serial.print(".");
+                }
+
                 xTaskCreatePinnedToCore(
                     wifiCheckTask,
                     "wifiCheckTask",
@@ -189,6 +201,7 @@ static void wifiControlTask(void* params)
                     &wifiCheckTaskHandle,
                     1
                 );
+
                 Serial.println("WiFi open.");
             } else {
                 Serial.println("WiFi open already.");
@@ -196,7 +209,6 @@ static void wifiControlTask(void* params)
         } else {
             _wifi.mode(WIFI_OFF);
             _wifi.disconnect();
-            _wifi.setSleep(true);
             if (wifiCheckTaskHandle) {
                 vTaskDelete(wifiCheckTaskHandle);
                 wifiCheckTaskHandle = NULL;
@@ -224,18 +236,11 @@ static void wifiCheckTask(void* params)
             continue;
         }
         if (_wifi.status() != WL_CONNECTED) {
-            cnt += 1;
-            if (cnt == 20) {
-                cnt = 0;
-                _wifi.disconnect();
-                _wifi.mode(WIFI_USE_MODE);
-                _wifi.begin(_ssid, _password);
-            }
-            Serial.print(".");
+            Serial.print(".-");
             vTaskDelay(500);
+            flag = false;
             continue;
         }
-        cnt = 0;
 
         if (!flag) {
             Serial.println("");

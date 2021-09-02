@@ -18,7 +18,7 @@ using namespace fs;
 
 namespace HgmApplication {
 #define WEATHER_CONFIG_FILE_PATH "/weather.conf"
-#define WEATHER_GET_GAP (1800)	// 30 min
+#define WEATHER_GET_GAP (1800U * 1000U)	// 30 min
 	class WeatherInfo
 	{
 	private:

@@ -48,7 +48,6 @@ void HGM::HgmSC::Begin()
     uint8_t i = 0;
     uint8_t timeout = 10;
     File file;
-
     
     component.type = HGM_COMPONENT_CONFIG_FILE;
 
