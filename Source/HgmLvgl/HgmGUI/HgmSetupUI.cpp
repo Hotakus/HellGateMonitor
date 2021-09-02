@@ -86,57 +86,57 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_obj_set_width(bg, 240);
     lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
 
-    // logo
-    logo = lv_img_create(lv_scr_act());
-    lv_img_set_src(logo, &HGM_LOGO);
-    lv_obj_align(logo, LV_ALIGN_TOP_MID, 0, -32);
-    lv_anim_t logoAnim;
-    lv_anim_init(&logoAnim);
-    lv_anim_set_var(&logoAnim, logo);
-    lv_anim_set_values(&logoAnim, -32, 25);
-    lv_anim_set_time(&logoAnim, 700);
-    lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
-    lv_anim_set_path_cb(&logoAnim, lv_anim_path_overshoot);
-    lv_anim_start(&logoAnim);
-    
-    vTaskDelay(400);
-    
-    // progress bar
-    pb = lv_bar_create(lv_scr_act());
-    lv_obj_set_size(pb, 135, 5);
-    lv_bar_set_range(pb, 0, ((HGM_COMPONENT_NULL - 1) * 1000));
-    lv_obj_set_style_anim_time(pb, 70, 0);
-    lv_obj_align(pb, LV_ALIGN_BOTTOM_MID, 0, 20);
-    lv_bar_set_start_value(pb, 0, LV_ANIM_OFF);
-    lv_obj_set_style_bg_color(pb, lv_color_make(0xb5, 0xb5, 0xb5), 0);
-    lv_obj_set_style_bg_color(pb, lv_color_make(0x48, 0x68, 0x17), LV_PART_INDICATOR);
-    lv_anim_t pdAnim;
-    lv_anim_init(&pdAnim);
-    lv_anim_set_var(&pdAnim, pb);
-    lv_anim_set_values(&pdAnim, 20, -30);
-    lv_anim_set_time(&pdAnim, 500);
-    lv_anim_set_exec_cb(&pdAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
-    lv_anim_set_path_cb(&pdAnim, lv_anim_path_overshoot);
-    lv_anim_start(&pdAnim);
-    
-    // progress label
-    lv_style_init(&clStyle);
-    lv_style_set_text_font(&clStyle, &k12x8_8px);
-    lv_style_set_text_color(&clStyle, lv_color_make(0xFF, 0xFF, 0xFF));
-    
-    curCheckLabel = lv_label_create(lv_scr_act());
-    lv_label_set_text(curCheckLabel, " ");
-    lv_obj_add_style(curCheckLabel, &clStyle, 0);
-    lv_obj_align(curCheckLabel, LV_ALIGN_CENTER, 0, 20);
-    lv_label_set_recolor(curCheckLabel, true);
-    prevCheckLabel = lv_label_create(lv_scr_act());
-    lv_label_set_text(prevCheckLabel, " ");
-    lv_obj_set_style_opa(prevCheckLabel, LV_OPA_30, 0);
-    lv_obj_add_style(prevCheckLabel, &clStyle, 0);
-    lv_obj_align(prevCheckLabel, LV_ALIGN_CENTER, 0, 10);
-    lv_label_set_recolor(prevCheckLabel, true);
-    
-    vTaskDelay(700);
+    // // logo
+    // logo = lv_img_create(lv_scr_act());
+    // lv_img_set_src(logo, &HGM_LOGO);
+    // lv_obj_align(logo, LV_ALIGN_TOP_MID, 0, -32);
+    // lv_anim_t logoAnim;
+    // lv_anim_init(&logoAnim);
+    // lv_anim_set_var(&logoAnim, logo);
+    // lv_anim_set_values(&logoAnim, -32, 25);
+    // lv_anim_set_time(&logoAnim, 700);
+    // lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
+    // lv_anim_set_path_cb(&logoAnim, lv_anim_path_overshoot);
+    // lv_anim_start(&logoAnim);
+    // 
+    // vTaskDelay(400);
+    // 
+    // // progress bar
+    // pb = lv_bar_create(lv_scr_act());
+    // lv_obj_set_size(pb, 135, 5);
+    // lv_bar_set_range(pb, 0, ((HGM_COMPONENT_NULL - 1) * 1000));
+    // lv_obj_set_style_anim_time(pb, 70, 0);
+    // lv_obj_align(pb, LV_ALIGN_BOTTOM_MID, 0, 20);
+    // lv_bar_set_start_value(pb, 0, LV_ANIM_OFF);
+    // lv_obj_set_style_bg_color(pb, lv_color_make(0xb5, 0xb5, 0xb5), 0);
+    // lv_obj_set_style_bg_color(pb, lv_color_make(0x48, 0x68, 0x17), LV_PART_INDICATOR);
+    // lv_anim_t pdAnim;
+    // lv_anim_init(&pdAnim);
+    // lv_anim_set_var(&pdAnim, pb);
+    // lv_anim_set_values(&pdAnim, 20, -30);
+    // lv_anim_set_time(&pdAnim, 500);
+    // lv_anim_set_exec_cb(&pdAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
+    // lv_anim_set_path_cb(&pdAnim, lv_anim_path_overshoot);
+    // lv_anim_start(&pdAnim);
+    // 
+    // // progress label
+    // lv_style_init(&clStyle);
+    // lv_style_set_text_font(&clStyle, &k12x8_8px);
+    // lv_style_set_text_color(&clStyle, lv_color_make(0xFF, 0xFF, 0xFF));
+    // 
+    // curCheckLabel = lv_label_create(lv_scr_act());
+    // lv_label_set_text(curCheckLabel, " ");
+    // lv_obj_add_style(curCheckLabel, &clStyle, 0);
+    // lv_obj_align(curCheckLabel, LV_ALIGN_CENTER, 0, 20);
+    // lv_label_set_recolor(curCheckLabel, true);
+    // prevCheckLabel = lv_label_create(lv_scr_act());
+    // lv_label_set_text(prevCheckLabel, " ");
+    // lv_obj_set_style_opa(prevCheckLabel, LV_OPA_30, 0);
+    // lv_obj_add_style(prevCheckLabel, &clStyle, 0);
+    // lv_obj_align(prevCheckLabel, LV_ALIGN_CENTER, 0, 10);
+    // lv_label_set_recolor(prevCheckLabel, true);
+    // 
+    // vTaskDelay(700);
 
     // For test
     /*HgmComponent com;

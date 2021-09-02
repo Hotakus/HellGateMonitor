@@ -155,97 +155,97 @@ void setup()
 	xSemaphoreGive(wbs);
 
 	hgmApp = new HgmApp(true);
-	hgmApp->Stop();	// Stop BT and WiFi.
-	vTaskDelay(500);
-	
-	// Open bluetooth
-	component.type = HGM_COMPONENT_BT;
-	component.curStatus = true;
-	component.waitStatus = false;
-	hgmSetupUI->ComponentControl(&component);
-	hgmApp->BeginBT();
-	while (!hgmApp->hgmBT->bs->isReady())
-		vTaskDelay(10);
-	component.waitStatus = true;
-	
-	vTaskDelay(200);
-	
-	// Check config file
-	HgmSC hgmSC;
-	hgmSC.Begin();
-	 
-	vTaskDelay(200);
-	
-	// Check WiFi
-	component.type = HGM_COMPONENT_WIFI;
-	component.curStatus = true;
-	component.waitStatus = false;
-	hgmSetupUI->ComponentControl(&component);
-	hgmApp->hgmWifi->Begin();
-	while (!hgmApp->hgmWifi->wifi->isConnected())
-		vTaskDelay(50);
-	component.waitStatus = true;
-	vTaskDelay(200);
-
-	// Check time
-	ti.Begin();
-	vTaskDelay(200);
-
-	
-	// TODO: Check weather component
-
-
-	// Check bilibili component
-	BiliInfoRecv bili;
-	bili.SetUID("341974201");
-	bili.GetBasicInfo();
-	bili.GetFollower();
-	bili.GetUserFaceImg();
-	uint8_t* face;
-	size_t size = 0;
-	face = bili.GetUserFaceImgBuf(&size);
-	Serial.printf("%x\n", face);
-
-	faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
-	TJpgDec.setJpgScale(1);
-	TJpgDec.setSwapBytes(false);
-	TJpgDec.setCallback(tft_output);
-
-	uint32_t t = millis();
-	uint16_t w = 0, h = 0;
-	TJpgDec.getJpgSize(&w, &h, face, size);
-	Serial.print("Width = ");
-	Serial.print(w);
-	Serial.print(", height = ");
-	Serial.println(h);
-	TJpgDec.drawJpg(0, 0, face, size);
-	
-	hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
-
-	t = millis() - t;
-	Serial.print(t); Serial.println(" ms");
-
-	vTaskDelay(1000);
-
-	lv_obj_t* img2 = lv_img_create(lv_scr_act());
-	static lv_img_dsc_t face_dsc;
-	face_dsc.header.always_zero = 0;
-	face_dsc.header.w = 64;
-	face_dsc.header.h = 64;
-	face_dsc.data_size = 4096 * 2;
-	face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-	face_dsc.data = (uint8_t*)faceBuf;
-	lv_img_set_src(img2, &face_dsc);
-	lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
-	
-	lv_anim_t anim1;
-	lv_anim_init(&anim1);
-	lv_anim_set_var(&anim1, img2);
-	lv_anim_set_values(&anim1, 0, 100);
-	lv_anim_set_time(&anim1, 1000);
-	lv_anim_set_exec_cb(&anim1, (lv_anim_exec_xcb_t)lv_obj_set_x);
-	lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
-	lv_anim_start(&anim1);
+	// hgmApp->Stop();	// Stop BT and WiFi.
+	// vTaskDelay(500);
+	// 
+	// // Open bluetooth
+	// component.type = HGM_COMPONENT_BT;
+	// component.curStatus = true;
+	// component.waitStatus = false;
+	// hgmSetupUI->ComponentControl(&component);
+	// hgmApp->BeginBT();
+	// while (!hgmApp->hgmBT->bs->isReady())
+	// 	vTaskDelay(10);
+	// component.waitStatus = true;
+	// 
+	// vTaskDelay(200);
+	// 
+	// // Check config file
+	// HgmSC hgmSC;
+	// hgmSC.Begin();
+	//  
+	// vTaskDelay(200);
+	// 
+	// // Check WiFi
+	// component.type = HGM_COMPONENT_WIFI;
+	// component.curStatus = true;
+	// component.waitStatus = false;
+	// hgmSetupUI->ComponentControl(&component);
+	// hgmApp->hgmWifi->Begin();
+	// while (!hgmApp->hgmWifi->wifi->isConnected())
+	// 	vTaskDelay(50);
+	// component.waitStatus = true;
+	// vTaskDelay(200);
+	// 
+	// // Check time
+	// ti.Begin();
+	// vTaskDelay(200);
+	// 
+	// 
+	// // TODO: Check weather component
+	// 
+	// 
+	// // Check bilibili component
+	// BiliInfoRecv bili;
+	// bili.SetUID("341974201");
+	// bili.GetBasicInfo();
+	// bili.GetFollower();
+	// bili.GetUserFaceImg();
+	// uint8_t* face;
+	// size_t size = 0;
+	// face = bili.GetUserFaceImgBuf(&size);
+	// Serial.printf("%x\n", face);
+	// 
+	// faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
+	// TJpgDec.setJpgScale(1);
+	// TJpgDec.setSwapBytes(false);
+	// TJpgDec.setCallback(tft_output);
+	// 
+	// uint32_t t = millis();
+	// uint16_t w = 0, h = 0;
+	// TJpgDec.getJpgSize(&w, &h, face, size);
+	// Serial.print("Width = ");
+	// Serial.print(w);
+	// Serial.print(", height = ");
+	// Serial.println(h);
+	// TJpgDec.drawJpg(0, 0, face, size);
+	// 
+	// hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
+	// 
+	// t = millis() - t;
+	// Serial.print(t); Serial.println(" ms");
+	// 
+	// vTaskDelay(1000);
+	// 
+	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
+	// static lv_img_dsc_t face_dsc;
+	// face_dsc.header.always_zero = 0;
+	// face_dsc.header.w = 64;
+	// face_dsc.header.h = 64;
+	// face_dsc.data_size = 4096 * 2;
+	// face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+	// face_dsc.data = (uint8_t*)faceBuf;
+	// lv_img_set_src(img2, &face_dsc);
+	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
+	// 
+	// lv_anim_t anim1;
+	// lv_anim_init(&anim1);
+	// lv_anim_set_var(&anim1, img2);
+	// lv_anim_set_values(&anim1, 0, 100);
+	// lv_anim_set_time(&anim1, 1000);
+	// lv_anim_set_exec_cb(&anim1, (lv_anim_exec_xcb_t)lv_obj_set_x);
+	// lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
+	// lv_anim_start(&anim1);
 
 
 	// // TODO: Use task to run
@@ -257,7 +257,7 @@ void setup()
 	// Serial.println(ESP.getFlashChipSpeed());
 	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 	// Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-	// Serial.println(ESP.getSketchSize());
+	Serial.println(ESP.getSketchSize());
 	// 
 	hgmLvgl->HgmLvglUIBegin();
 
