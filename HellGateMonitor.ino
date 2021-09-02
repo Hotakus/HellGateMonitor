@@ -50,6 +50,8 @@ TimeInfo ti;
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
 
+SemaphoreHandle_t wbs;
+
 // Show the init progress task
 static void backlightControl(void *params)
 {
@@ -148,21 +150,25 @@ void setup()
 	hgmSetupUI = new HgmSetupUI();
 	hgmSetupUI->Begin();
 	
+	// Semaphore for BT and WiFi
+	wbs = xSemaphoreCreateBinary();
+	xSemaphoreGive(wbs);
+
 	hgmApp = new HgmApp(true);
 	hgmApp->Stop();	// Stop BT and WiFi.
 	vTaskDelay(500);
 	
-	// // Open bluetooth
-	// component.type = HGM_COMPONENT_BT;
-	// component.curStatus = true;
-	// component.waitStatus = false;
-	// hgmSetupUI->ComponentControl(&component);
-	// hgmApp->BeginBT();
-	// while (!hgmApp->hgmBT->bs->isReady())
-	// 	vTaskDelay(10);
-	// component.waitStatus = true;
-	// 
-	// vTaskDelay(200);
+	// Open bluetooth
+	component.type = HGM_COMPONENT_BT;
+	component.curStatus = true;
+	component.waitStatus = false;
+	hgmSetupUI->ComponentControl(&component);
+	hgmApp->BeginBT();
+	while (!hgmApp->hgmBT->bs->isReady())
+		vTaskDelay(10);
+	component.waitStatus = true;
+	
+	vTaskDelay(200);
 	
 	// Check config file
 	HgmSC hgmSC;

@@ -15,6 +15,8 @@ using namespace HgmApplication;
 
 #define SERVER_DEFAULT_PORT 20
 
+extern SemaphoreHandle_t wbs;
+
 static WiFiClass wifi = WiFi;
 static WiFiServer _wifiServer;
 static WiFiClient _wifiClient;
@@ -134,7 +136,7 @@ static void TcpControlTask(void* params)
             tcpOk = false;
             continue;
         }
-
+        
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
             if (tcpServerTaskHandle == NULL) {
@@ -207,6 +209,7 @@ static void TcpServerListeningTask(void* params)
         Serial.printf("A client has connected into server.\n");
 
         while (wc.connected()) {
+            xSemaphoreTake(wbs, portMAX_DELAY);
             if (wc.available()) {
                 // TODO: Analyze HGM data pack
                 uint8_t *buf = (uint8_t*)heap_caps_calloc(wc.available() + 1,  1, MALLOC_CAP_SPIRAM);
@@ -217,6 +220,7 @@ static void TcpServerListeningTask(void* params)
                 Serial.printf("%s\n", buf);
                 heap_caps_free(buf);
             }
+            xSemaphoreGive(wbs);
             vTaskDelay(100);
         }
 

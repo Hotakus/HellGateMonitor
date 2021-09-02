@@ -50,6 +50,7 @@ HgmApp::~HgmApp()
  */
 void HgmApplication::HgmApp::Begin()
 {
+
     this->BeginWiFi();
     this->BeginBT();
 }

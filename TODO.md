@@ -5,4 +5,4 @@
 * [ ] feat the screen projection
 * [ ] perf the BT module
 * [ ] perf the time info class API
-* [ ] fix the bug that BT and WiFi can't run meantime(add a semaphore)
+* [x] fix the bug that BT and WiFi can't run meantime(add a semaphore)

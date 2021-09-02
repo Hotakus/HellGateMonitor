@@ -18,6 +18,7 @@
 using namespace HgmApplication;
 
 extern HgmApp* hgmApp;
+extern SemaphoreHandle_t wbs;
 
 static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;
@@ -312,11 +313,13 @@ static void BluetoothListeningTask(void* params)
             continue;
         }
 
+        xSemaphoreTake(wbs, portMAX_DELAY);
         if (_bs->available()) {
             String str;
             HgmBTPackMethod method;
             HgmBT::ReceiveDataPack(str, &method);
         }
+        xSemaphoreGive(wbs);
 
         vTaskDelay(100);
     }
