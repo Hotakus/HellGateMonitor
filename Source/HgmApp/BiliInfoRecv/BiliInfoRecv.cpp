@@ -86,8 +86,8 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     String url = basicInfoAPI + _uid;
     StaticJsonDocument<2048> userInfo;
 
-    _httpClient->end();
-    vTaskDelay(100);
+    Serial.println(url);
+
     _httpClient->begin(url);
     int code = _httpClient->GET();
 
@@ -96,10 +96,17 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
         _httpClient->end();
         return;
     }
+
+    // while (_httpClient->getStreamPtr()->available())
+    // {
+    //     Serial.print((char)_httpClient->getStreamPtr()->read());
+    // }
+
     WiFiClient* wc = _httpClient->getStreamPtr();
-    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(wc->available() + 1, 1, MALLOC_CAP_SPIRAM);
-    recvBuf[wc->available()] = '\0';
-    recvBuf = (uint8_t*)_httpClient->getString().c_str();
+    size_t size = wc->available();
+    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
+    recvBuf[size] = '\0';
+    wc->readBytes(recvBuf, size);
     deserializeJson(userInfo, recvBuf);
     heap_caps_free(recvBuf);
 
