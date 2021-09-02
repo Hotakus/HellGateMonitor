@@ -5,3 +5,4 @@
 * [ ] feat the screen projection
 * [ ] perf the code
 * [ ] perf the BT module
+* [ ] perf the time info class API
