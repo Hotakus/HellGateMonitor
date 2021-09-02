@@ -189,7 +189,8 @@ static void wifiControlTask(void* params)
                 _wifi.begin(_ssid, _password);
                 while (_wifi.status() != WL_CONNECTED) {
                     vTaskDelay(500);
-                    Serial.print(".");
+                    Serial.print(".#");
+                    Serial.println(_wifi.status());
                 }
 
                 xTaskCreatePinnedToCore(
@@ -207,8 +208,6 @@ static void wifiControlTask(void* params)
                 Serial.println("WiFi open already.");
             }
         } else {
-            _wifi.mode(WIFI_OFF);
-            _wifi.disconnect();
             if (wifiCheckTaskHandle) {
                 vTaskDelete(wifiCheckTaskHandle);
                 wifiCheckTaskHandle = NULL;
@@ -216,6 +215,9 @@ static void wifiControlTask(void* params)
             } else {
                 Serial.println("WiFi close already.");
             }
+
+            _wifi.disconnect();
+            _wifi.mode(WIFI_OFF);
         }
     }
 }
@@ -237,6 +239,7 @@ static void wifiCheckTask(void* params)
         }
         if (_wifi.status() != WL_CONNECTED) {
             Serial.print(".-");
+            Serial.println(_wifi.status());
             vTaskDelay(500);
             flag = false;
             continue;

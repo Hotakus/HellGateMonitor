@@ -124,22 +124,12 @@ static void TcpControlTask(void* params)
         if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
             continue;
         }
-
-        for (uint8_t i = 0; i < checkTime; ++i) {
-            if (!wifi.isConnected()) {
-                Serial.print(".");
-                vTaskDelay(500);
-            }
-        }
-        if (!wifi.isConnected()) {
-            Serial.println("");
-            tcpOk = false;
-            continue;
-        }
         
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
             if (tcpServerTaskHandle == NULL) {
+                while (!wifi.isConnected())
+                    vTaskDelay(100);
                 _wifiServer.begin(SERVER_DEFAULT_PORT);
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
@@ -158,6 +148,8 @@ static void TcpControlTask(void* params)
             break;
         case TCP_BEGIN_CLIENT:         // client begin
             // TODO: If there is not any other app that use client handle
+            while (!wifi.isConnected())
+                vTaskDelay(100);
 
             Serial.printf("TCP Client begin\n");
             break;
@@ -212,16 +204,17 @@ static void TcpServerListeningTask(void* params)
             xSemaphoreTake(wbs, portMAX_DELAY);
             if (wc.available()) {
                 // TODO: Analyze HGM data pack
-                uint8_t *buf = (uint8_t*)heap_caps_calloc(wc.available() + 1,  1, MALLOC_CAP_SPIRAM);
+                size_t size = wc.available();
+                uint8_t *buf = (uint8_t*)heap_caps_calloc(size + 1,  1, MALLOC_CAP_SPIRAM);
                 buf[wc.available()] = '\0';
-                wc.read(buf, wc.available());
+                wc.read(buf, size);
                 Serial.print(wc.remoteIP());
                 Serial.print(" -> ");
                 Serial.printf("%s\n", buf);
                 heap_caps_free(buf);
             }
             xSemaphoreGive(wbs);
-            vTaskDelay(100);
+            vTaskDelay(10);
         }
 
 

@@ -10,12 +10,14 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
+#include <SPIFFS.h>
 #include "HgmBT.h"
 #include "../HgmApp.h"
 #include "../WeatherInfo/WeatherInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 
 using namespace HgmApplication;
+using namespace fs;
 
 extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
@@ -172,9 +174,21 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
 
         hgmApp->StopWiFi();
-        vTaskDelay(300);
+        vTaskDelay(500);
         BeginWiFiWithConfig(_ssid, _password);
-        // TODO: save the ssid and password to SPIFFS
+        while (!hgmApp->hgmWifi->wifi->isConnected()) {
+            vTaskDelay(50);
+        }
+
+        File file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
+        StaticJsonDocument<128> doc;
+        String tmp;
+        doc["Header"] = "WiFi";
+        doc["ssid"] = HgmWiFi::GetSSID();
+        doc["password"] = HgmWiFi::GetPassword();
+        serializeJson(doc, tmp);
+        file.write((const uint8_t*)tmp.c_str(), tmp.length());
+        file.close();
 
         Serial.println("WiFi had been config via bluetooth.");
         return;
@@ -213,7 +227,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     case HGM_BT_PACK_METHOD_BILIBILI_CONF: {
         dataToSave = String(HGM_BT_PACK_METHOD_NULL);
         *method = HGM_BT_PACK_METHOD_BILIBILI_CONF;
-        
+
         BiliInfoRecv::SetUID(rawPack["Data"]["uid"].as<String>());
         // TODO: perfect
 
@@ -321,6 +335,6 @@ static void BluetoothListeningTask(void* params)
         }
         xSemaphoreGive(wbs);
 
-        vTaskDelay(100);
+        vTaskDelay(10);
     }
 }
