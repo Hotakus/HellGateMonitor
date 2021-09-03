@@ -342,6 +342,9 @@
     <ClCompile Include="Source\LvglSrc\HGMBG.c" />
     <ClCompile Include="Source\LvglSrc\HGM_LOGO.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_10px.c" />
+    <ClCompile Include="Source\LvglSrc\k12x8_14px_time.c" />
+    <ClCompile Include="Source\LvglSrc\k12x8_16px_time.c" />
+    <ClCompile Include="Source\LvglSrc\k12x8_24px_time.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_8px.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_event.c" />

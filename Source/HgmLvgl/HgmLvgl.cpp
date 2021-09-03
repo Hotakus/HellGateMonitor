@@ -75,9 +75,9 @@ void HGM::HgmLvgl::HgmLvglBegin()
     xTaskCreatePinnedToCore(
         HgmLvglTask,
         "HgmLvglTask",
-        4096,
+        2256,
         NULL,
-        9,
+        10,
         &this->hgmLvglTaskHandle,
         1
     );
@@ -88,17 +88,17 @@ void HGM::HgmLvgl::HgmLvglBegin()
         NULL,
         10,
         &this->hgmLvglTickHandle,
-        1
+        0
     );
-    xTaskCreatePinnedToCore(
-        HgmControlCheckTask,
-        "HgmControlCheckTask",
-        2048,
-        this,
-        5,
-        &this->hgmControlHandle,
-        1
-    );
+    // xTaskCreatePinnedToCore(
+    //     HgmControlCheckTask,
+    //     "HgmControlCheckTask",
+    //     2048,
+    //     this,
+    //     5,
+    //     &this->hgmControlHandle,
+    //     1
+    // );
 }
 
 /**

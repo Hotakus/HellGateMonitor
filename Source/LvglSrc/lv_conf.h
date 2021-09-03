@@ -45,7 +45,7 @@
 #define LV_MEM_CUSTOM      0
 #if LV_MEM_CUSTOM == 0
 /*Size of the memory available for `lv_mem_alloc()` in bytes (>= 2kB)*/
-#  define LV_MEM_SIZE    (12U * 1024U)          /*[bytes]*/
+#  define LV_MEM_SIZE    (10U * 1024U)          /*[bytes]*/
 
 /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
 #  define LV_MEM_ADR          0     /*0: unused*/
@@ -385,7 +385,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_ARC          1
 
-#define LV_USE_ANIMIMG	    1
+#define LV_USE_ANIMIMG	    0
 
 #define LV_USE_BAR          1
 
@@ -397,7 +397,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_CHECKBOX     1
 
-#define LV_USE_DROPDOWN     1   /*Requires: lv_label*/
+#define LV_USE_DROPDOWN     0   /*Requires: lv_label*/
 
 #define LV_USE_IMG          1   /*Requires: lv_label*/
 
@@ -409,14 +409,14 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_LINE         1
 
-#define LV_USE_ROLLER       1   /*Requires: lv_label*/
+#define LV_USE_ROLLER       0   /*Requires: lv_label*/
 #if LV_USE_ROLLER
 #  define LV_ROLLER_INF_PAGES       7   /*Number of extra "pages" when the roller is infinite*/
 #endif
 
 #define LV_USE_SLIDER       1   /*Requires: lv_bar*/
 
-#define LV_USE_SWITCH    1
+#define LV_USE_SWITCH    0
 
 #define LV_USE_TEXTAREA   1     /*Requires: lv_label*/
 #if LV_USE_TEXTAREA != 0

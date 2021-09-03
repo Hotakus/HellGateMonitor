@@ -186,6 +186,7 @@ static void wifiControlTask(void* params)
                 _wifi.setSleep(true);
                 _wifi.setAutoReconnect(true);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
+                Serial.printf("%s %s\n", _ssid, _password);
                 _wifi.begin(_ssid, _password);
                 while (_wifi.status() != WL_CONNECTED) {
                     vTaskDelay(500);
@@ -193,10 +194,16 @@ static void wifiControlTask(void* params)
                     Serial.println(_wifi.status());
                 }
 
+                Serial.println("\nWiFi Connected");
+                Serial.print("Local IP Address: ");
+                Serial.println(WiFi.localIP());
+                Serial.print("RSSI : ");
+                Serial.println(WiFi.RSSI());
+
                 xTaskCreatePinnedToCore(
                     wifiCheckTask,
                     "wifiCheckTask",
-                    2048,
+                    1024,
                     NULL,
                     7,
                     &wifiCheckTaskHandle,
