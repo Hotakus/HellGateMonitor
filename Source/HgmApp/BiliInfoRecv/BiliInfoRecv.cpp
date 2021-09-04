@@ -30,6 +30,7 @@ extern HgmApp* hgmApp;
 extern HgmLvgl* hgmLvgl;
 extern HgmSetupUI* hgmSetupUI;
 
+BiliInfoRecv bili;
 
 HTTPClient* _httpClient = nullptr;
 
@@ -51,6 +52,7 @@ static HgmComponent component;
 static bool getFlag = false;
 static bool configFlag = false;
 
+// TODO: add task
 TaskHandle_t biliTaskHandle;
 static void biliTask(void* params);
 
@@ -122,6 +124,16 @@ void HgmApplication::BiliInfoRecv::Begin()
         }
     }
 
+    xTaskCreatePinnedToCore(
+        biliTask,
+        "biliTask",
+        2512,
+        NULL,
+        5,
+        &biliTaskHandle,
+        1
+    );
+
 }
 
 /**
@@ -143,56 +155,8 @@ void HgmApplication::BiliInfoRecv::GetUID(String& uid)
     uid = _uid;
 }
 
-/**
- * @brief Get basic bilibili user info.
- */
-void HgmApplication::BiliInfoRecv::GetBasicInfo()
-{
-    String url = basicInfoAPI + _uid;
 
-    Serial.println(url);
-
-    _httpClient->begin(url);
-    int code = _httpClient->GET();
-
-    if (code != 200) {
-        Serial.printf("%s HTTP code : %d", __func__, code);
-        _httpClient->end();
-        getFlag = false;
-        return;
-    }
-
-    WiFiClient* wc = _httpClient->getStreamPtr();
-    size_t size = wc->available();
-    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
-    recvBuf[size] = '\0';
-    wc->readBytes(recvBuf, size);
-
-    StaticJsonDocument<2048> userInfo; 
-    deserializeJson(userInfo, recvBuf);
-    heap_caps_free(recvBuf);
-
-    if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
-        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
-        _httpClient->end();
-        getFlag = false;
-        return;
-    }
-
-    userName = userInfo["data"]["name"].as<String>();
-    userLevel = userInfo["data"]["level"].as<uint8_t>();
-    userFaceImgUrl = userInfo["data"]["face"].as<String>();
-
-    _httpClient->end();
-
-    getFlag = true;
-}
-
-/**
- * @brief Get followers.
- * @return user's fans.
- */
-int HgmApplication::BiliInfoRecv::GetFollower()
+static int _GetFollower() 
 {
     String url = statAPI + _uid;
     StaticJsonDocument<512> userInfo;
@@ -213,6 +177,22 @@ int HgmApplication::BiliInfoRecv::GetFollower()
     _httpClient->end();
     return userFans;
 }
+
+/**
+ * @brief Get followers.
+ * @return user's fans.
+ */
+size_t HgmApplication::BiliInfoRecv::GetFollower()
+{
+    return userFans;
+}
+
+
+uint8_t HgmApplication::BiliInfoRecv::GetLevel()
+{
+    return userLevel;
+}
+
 
 typedef uint16_t(*_fb_t)[64];
 static bool _DecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
@@ -319,17 +299,75 @@ uint8_t* HgmApplication::BiliInfoRecv::GetUserFaceImgBuf(size_t* imgSize)
     return userFaceImgBuf;
 }
 
+void* HgmApplication::BiliInfoRecv::GetUserFaceBitmap()
+{
+    return userFaceBitmap;
+}
+
+
+/**
+ * @brief Get basic bilibili user info.
+ */
+void HgmApplication::BiliInfoRecv::GetBasicInfo()
+{
+    String url = basicInfoAPI + _uid;
+
+    Serial.println(url);
+
+    _httpClient->begin(url);
+    int code = _httpClient->GET();
+
+    if (code != 200) {
+        Serial.printf("%s HTTP code : %d", __func__, code);
+        _httpClient->end();
+        getFlag = false;
+        return;
+    }
+
+    WiFiClient* wc = _httpClient->getStreamPtr();
+    size_t size = wc->available();
+    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
+    recvBuf[size] = '\0';
+    wc->readBytes(recvBuf, size);
+
+    DynamicJsonDocument userInfo(2048);
+    deserializeJson(userInfo, recvBuf);
+    heap_caps_free(recvBuf);
+
+    if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
+        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
+        _httpClient->end();
+        getFlag = false;
+        return;
+    }
+
+    userName = userInfo["data"]["name"].as<String>();
+    userLevel = userInfo["data"]["level"].as<uint8_t>();
+    userFaceImgUrl = userInfo["data"]["face"].as<String>();
+
+    _httpClient->end();
+
+    _GetFollower();
+
+    getFlag = true;
+}
 
 static void biliTask(void* params)
 {
+    extern SemaphoreHandle_t wbs;
+
     while (true) {
-        if (!WiFi.isConnected()) {
+        if (!WiFi.isConnected() || !configFlag) {
             vTaskDelay(1000);
             continue;
         }
 
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        bili.GetBasicInfo();
+        bili.GetUserFaceImg();
+        xSemaphoreGive(wbs);
 
-
-        vTaskDelay(BILI_GET_GAP);
+        //vTaskDelay(BILI_GET_GAP);
+        vTaskDelay(2000);
     }
 }

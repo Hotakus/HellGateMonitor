@@ -149,12 +149,13 @@ void HgmGUI::HgmTwUI::Begin()
     size_t _t = lv_anim_timeline_start(at);
     vTaskDelay(_t);
 
-    // TODO: Show clock img per 
-    showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-
-    vTaskDelay(510);
 
     // TODO: add animation
+    // TODO: Show clock img per 
+    showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
+    
+    vTaskDelay(510);
+
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 }

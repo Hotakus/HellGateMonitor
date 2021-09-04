@@ -47,9 +47,10 @@ using namespace fs;
 
 extern HgmApp *hgmApp;
 extern HgmLvgl *hgmLvgl;
+extern BiliInfoRecv bili;
 HgmSetupUI *hgmSetupUI;
 TimeInfo ti;
-BiliInfoRecv bili;
+
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -180,8 +181,8 @@ void setup()
 	
 	// Check bilibili component
 	bili.Begin();
-	bili.GetBasicInfo();
-	bili.GetUserFaceImg();
+	// bili.GetBasicInfo();
+	// bili.GetUserFaceImg();
 
 	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
 	// static lv_img_dsc_t face_dsc;
@@ -218,5 +219,12 @@ void setup()
 
 void loop()
 {
-	vTaskDelay(24 * 3600 * 1000);  // loop per one day
+	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
+	// vTaskList(task_buf);
+	// Serial.printf("%s\n", task_buf);
+	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+	// heap_caps_free(task_buf);
+	// vTaskDelay(1000);
+	
+	// vTaskDelay(24 * 3600 * 1000);  // loop per one day
 }

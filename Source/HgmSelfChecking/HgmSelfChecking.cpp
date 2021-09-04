@@ -112,16 +112,19 @@ void HGM::HgmSC::Begin()
                 WiFiBTConfig();
                 file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
             }
+            file.close();
+
+            ssid = doc["ssid"].as<String>();
+            password = doc["password"].as<String>();
+            if ((!ssid.compareTo("null") || !password.compareTo("null")) || (!ssid || !password))
+                WiFiBTConfig();
+            hgmApp->hgmWifi->ConfigWiFi(ssid, password);
+
             component.type = HGM_COMPONENT_CONFIG_FILE;
             component.curStatus = true;
             component.waitStatus = true;
             hgmSetupUI->ComponentControl(&component);
 
-            ssid = doc["ssid"].as<String>();
-            password = doc["password"].as<String>();
-            hgmApp->hgmWifi->ConfigWiFi(ssid, password);
-
-            file.close();
             vTaskDelay(200);
         }
     }

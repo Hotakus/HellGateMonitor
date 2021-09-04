@@ -30,6 +30,8 @@ static TaskHandle_t netTimeTaskHandle;
 static QueueHandle_t netTimeMsgBox;
 static void netTimeTask(void* params);
 
+static HgmComponent component;
+
 extern HgmSetupUI *hgmSetupUI;
 
 TimeInfo::TimeInfo()
@@ -46,7 +48,6 @@ TimeInfo::~TimeInfo()
 
 void HgmApplication::TimeInfo::Begin()
 {
-	HgmComponent component;
 	uint8_t timeout = 50;
 
 	component.type = HGM_COMPONENT_NET_TIME;
