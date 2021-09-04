@@ -51,13 +51,9 @@ Bluetooth 和 Wi-Fi TCP 与上位机通信的数据包格式为本人规定的�
 
 ## 项目克隆：
 项目使用了 __子模块__，clone 时要加 __--recurse-submodules__  
-一、需要为你的Github账号配置 SSH key（方法请百度）
+需要为你的Github账号配置 SSH key（方法请百度）
 ```shell
 git clone --recurse-submodules git@github.com:Hotakus/HellGateMonitor.git
-```
-二、不需要配置 SSH key
-```shell
-git clone --recurse-submodules https://github.com/Hotakus/HellGateMonitor.git
 ```
 
 ---
