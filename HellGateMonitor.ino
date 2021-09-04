@@ -78,27 +78,6 @@ static void backlightControl(void *params)
 	}
 }
 
-typedef uint16_t(*_fb_t)[64];
-static uint16_t *faceBuf = NULL;
-
-bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
-{
-	// 强制为二维数组
-	uint16_t(*_faceBuf)[64] = (_fb_t) faceBuf;
-
-	size_t pos = 0;
-	for (size_t _h = 0; _h < h; _h++) {
-		for (size_t _w = 0; _w < w; _w++) {
-			// 字序交替赋值
-			//_faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
-			_faceBuf[y + _h][x + _w] = bitmap[pos];
-			pos++;
-		}
-	}
-
-	return 1;
-}
-
 
 void setup()
 {
@@ -159,7 +138,8 @@ void setup()
 
 	hgmApp = new HgmApp(true);
 	hgmApp->Stop();	// Stop BT and WiFi.
-	vTaskDelay(500);
+	while (hgmApp->hgmWifi->wifi->isConnected() || hgmApp->hgmBT->bs->isReady()) // wait to close
+		vTaskDelay(10);
 	
 	// Open bluetooth
 	component.type = HGM_COMPONENT_BT;
@@ -194,41 +174,15 @@ void setup()
 	ti.Begin();
 	vTaskDelay(200);
 
-	// // TODO: Check weather component
-	// 
-	// 
-	// // Check bilibili component
-	// BiliInfoRecv bili;
-	// bili.SetUID("341974201");
-	// bili.GetBasicInfo();
-	// bili.GetFollower();
-	// bili.GetUserFaceImg();
-	// uint8_t* face;
-	// size_t size = 0;
-	// face = bili.GetUserFaceImgBuf(&size);
-	// Serial.printf("%x\n", face);
-	// 
-	// faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
-	// TJpgDec.setJpgScale(1);
-	// TJpgDec.setSwapBytes(false);
-	// TJpgDec.setCallback(tft_output);
-	// 
-	// uint32_t t = millis();
-	// uint16_t w = 0, h = 0;
-	// TJpgDec.getJpgSize(&w, &h, face, size);
-	// Serial.print("Width = ");
-	// Serial.print(w);
-	// Serial.print(", height = ");
-	// Serial.println(h);
-	// TJpgDec.drawJpg(0, 0, face, size);
-	// 
-	// hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
-	// 
-	// t = millis() - t;
-	// Serial.print(t); Serial.println(" ms");
-	// 
-	// vTaskDelay(1000);
-	// 
+	// TODO: Check weather component
+	
+	
+	// Check bilibili component
+	BiliInfoRecv bili;
+	bili.Begin();
+	bili.GetBasicInfo();
+	bili.GetUserFaceImg();
+
 	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
 	// static lv_img_dsc_t face_dsc;
 	// face_dsc.header.always_zero = 0;
@@ -239,42 +193,30 @@ void setup()
 	// face_dsc.data = (uint8_t*)faceBuf;
 	// lv_img_set_src(img2, &face_dsc);
 	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
-	
-	// lv_anim_t anim1;
-	// lv_anim_init(&anim1);
-	// lv_anim_set_var(&anim1, img2);
-	// lv_anim_set_values(&anim1, 0, 100);
-	// lv_anim_set_time(&anim1, 1000);
-	// lv_anim_set_exec_cb(&anim1, (lv_anim_exec_xcb_t)lv_obj_set_x);
-	// lv_anim_set_path_cb(&anim1, lv_anim_path_overshoot);
-	// lv_anim_start(&anim1);
 
 
 	delete hgmSetupUI;
-
 	
-	// // TODO: Use task to run
-	// Serial.println(ESP.getSdkVersion());
-	// Serial.println(ESP.getChipCores());
-	// Serial.println(ESP.getChipModel());
-	// Serial.println(ESP.getCpuFreqMHz());
-	// Serial.println(ESP.getFlashChipSize());
-	// Serial.println(ESP.getFlashChipSpeed());
-	//Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	//// Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-	//Serial.println(ESP.getSketchSize());
+	// TODO: Use task to run
+	Serial.println(ESP.getSdkVersion());
+	Serial.println(ESP.getChipCores());
+	Serial.println(ESP.getChipModel());
+	Serial.println(ESP.getCpuFreqMHz());
+	Serial.println(ESP.getFlashChipSize());
+	Serial.println(ESP.getFlashChipSpeed());
+	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	Serial.println(ESP.getSketchSize());
 
-	//hgmLvgl->HgmLvglUIBegin();
+	hgmLvgl->HgmLvglUIBegin();
 
+	char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
+	vTaskList(task_buf);
+	Serial.printf("%s\n", task_buf);
+	Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+	heap_caps_free(task_buf);
 }
 
 void loop()
 {
-	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-	// vTaskList(task_buf);
-	// Serial.printf("%s\n", task_buf);
-	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-	// heap_caps_free(task_buf);
-
-	vTaskDelay(1000);  // loop per one day
+	vTaskDelay(24 * 3600 * 1000);  // loop per one day
 }

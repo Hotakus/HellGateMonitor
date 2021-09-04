@@ -7,18 +7,19 @@
  * @date 2021/8/13 5:08
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
-#include <Arduino.h>
-#include <SPIFFS.h>
-#include <ArduinoJson.h>
-#include <BluetoothSerial.h>
 #include "HgmBT.h"
 #include "../HgmApp.h"
 #include "../WeatherInfo/WeatherInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 
+#include <Arduino.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
+#include <BluetoothSerial.h>
+
+
 using namespace fs;
 using namespace HgmApplication;
-
 
 extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
@@ -170,7 +171,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CONF;
 
-        // { "Header": "Hgm", "DataType": "0", "Data": { "ssid": "xxx", "password": "xxx" } }
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
 
@@ -191,10 +191,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
 
         File file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
         file.write((const uint8_t*)tmp.c_str(), tmp.length());
-        file.close();
-
-        file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-        Serial.println(file.readString());
         file.close();
 
         Serial.println("WiFi had been config via bluetooth.");
@@ -232,11 +228,24 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         return;
     }
     case HGM_BT_PACK_METHOD_BILIBILI_CONF: {
-        dataToSave = String(HGM_BT_PACK_METHOD_NULL);
+        dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_BILIBILI_CONF;
 
-        BiliInfoRecv::SetUID(rawPack["Data"]["uid"].as<String>());
-        // TODO: perfect
+        String _uid = rawPack["Data"]["uid"];
+
+        BiliInfoRecv::SetUID(_uid);
+
+        DynamicJsonDocument doc(256);
+        String tmp;
+        doc["Header"] = "bilibili";
+        doc["Data"]["uid"] = _uid;
+        serializeJson(doc, tmp);
+
+        Serial.printf("BT Bili config : %s\n", tmp.c_str());
+
+        File file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_WRITE);
+        file.write((const uint8_t*)tmp.c_str(), tmp.length());
+        file.close();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return;

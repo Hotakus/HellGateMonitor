@@ -7,16 +7,18 @@
  * @date 2021/8/13 17:57
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
-#include <Arduino.h>
-#include <FS.h>
-#include <SPIFFS.h>
-#include <ArduinoJson.h>
 
 #include "../HgmApp/HgmApp.h"
 #include "../HgmApp/HgmWiFi/HgmWiFi.h"
 #include "HgmSelfChecking.h"
 #include "../HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "../HgmApp/WeatherInfo/WeatherInfo.h"
+
+#include <Arduino.h>
+#include <FS.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
+
 
 using namespace HgmApplication;
 using namespace HgmGUI;

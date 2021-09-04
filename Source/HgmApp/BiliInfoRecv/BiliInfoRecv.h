@@ -14,6 +14,9 @@
 #include <HTTPClient.h>
 
 namespace HgmApplication {
+#define BILI_CONFIG_FILE_PATH "/bilibili.conf"
+#define BILI_GET_GAP (10 * 60 * 1000)   // 10min
+
     class BiliInfoRecv
     {
     private:
@@ -21,6 +24,8 @@ namespace HgmApplication {
     public:
         BiliInfoRecv();
         ~BiliInfoRecv();
+
+        void Begin();
 
         static void SetUID(String uid);
         static void GetUID(String& uid);

@@ -7,14 +7,29 @@
  * @date 2021/8/15 16:33
  * @copyright Copyright (c) 2021/8/15
 *******************************************************************/
+#include "../HgmApp.h"
+#include "../../HgmLvgl/HgmLvgl.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "BiliInfoRecv.h"
 #include <ArduinoJson.h>
 #include <iostream>
+#include <TJpg_Decoder.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
 
+using namespace fs;
+using namespace HgmGUI;
 using namespace HgmApplication;
+using namespace HGM;
+
+extern HgmApp* hgmApp;
+extern HgmLvgl* hgmLvgl;
+extern HgmSetupUI* hgmSetupUI;
+
 
 HTTPClient* _httpClient = nullptr;
 
@@ -28,11 +43,17 @@ static uint8_t userLevel = 0;
 static size_t userFans = 0;
 
 static size_t userFaceImgBufSize = 0;
-static uint8_t* userFaceImgBuf = nullptr;   // default 64 x 64 jpg format
+static uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
+static uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
 
-/* Maybe no effective */
-static size_t userTotalViews = 0;
-static size_t userTotalLikes = 0;
+static HgmComponent component;
+
+static bool getFlag = false;
+static bool configFlag = false;
+
+TaskHandle_t biliTaskHandle;
+static void biliTask(void* params);
+
 
 BiliInfoRecv::BiliInfoRecv()
 {
@@ -44,24 +65,138 @@ BiliInfoRecv::~BiliInfoRecv()
     delete _httpClient;
 }
 
+static void BiliConfig()
+{
+    component.type = HGM_COMPONENT_BILIBILI;
+    component.curStatus = false;
+    component.waitStatus = false;
+    hgmSetupUI->ComponentControl(&component);
+
+    Serial.println("Waiting the BiliBili config...");
+    while (configFlag != true)
+        vTaskDelay(5);
+
+    component.waitStatus = true;
+}
+
+void HgmApplication::BiliInfoRecv::Begin()
+{
+    File file;
+
+    if (!SPIFFS.exists(BILI_CONFIG_FILE_PATH)) {
+        Serial.printf("Can't find the bilibili.conf file, need to config by BT.\n");
+        BiliConfig();
+    } else {
+        file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
+        if (!file.size()) {
+            file.close();
+            Serial.printf("The bilibili.conf file is null, need to config by BT.\n");
+            BiliConfig();
+        } else {
+            Serial.printf("Found the bilibili.conf file.\n");
+            String tmp;
+            DynamicJsonDocument doc(256);
+            file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
+            tmp = file.readString();
+            deserializeJson(doc, tmp);
+
+            Serial.println(tmp);
+
+            String str = "bilibili";
+            String header = doc["Header"];
+            if (header.compareTo(str) != 0) {
+                Serial.printf("BiliBili config file header error, need to config by BT.\n");
+                file.close();
+                BiliConfig();
+                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+            }
+
+            component.type = HGM_COMPONENT_BILIBILI;
+            component.curStatus = true;
+            component.waitStatus = true;
+            hgmSetupUI->ComponentControl(&component);
+
+            this->SetUID(doc["Data"]["uid"]);
+
+            file.close();
+        }
+    }
+
+}
+
+/**
+ * @brief Set UID.
+ * @param uid
+ */
 void HgmApplication::BiliInfoRecv::SetUID(String uid)
 {
     _uid = uid;
+    configFlag = true;
 }
 
+/**
+ * @brief Get UID.
+ * @param uid
+ */
 void HgmApplication::BiliInfoRecv::GetUID(String& uid)
 {
     uid = _uid;
 }
 
+/**
+ * @brief Get basic bilibili user info.
+ */
+void HgmApplication::BiliInfoRecv::GetBasicInfo()
+{
+    String url = basicInfoAPI + _uid;
 
+    Serial.println(url);
+
+    _httpClient->begin(url);
+    int code = _httpClient->GET();
+
+    if (code != 200) {
+        Serial.printf("%s HTTP code : %d", __func__, code);
+        _httpClient->end();
+        getFlag = false;
+        return;
+    }
+
+    WiFiClient* wc = _httpClient->getStreamPtr();
+    size_t size = wc->available();
+    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
+    recvBuf[size] = '\0';
+    wc->readBytes(recvBuf, size);
+
+    StaticJsonDocument<2048> userInfo; 
+    deserializeJson(userInfo, recvBuf);
+    heap_caps_free(recvBuf);
+
+    if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
+        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
+        _httpClient->end();
+        getFlag = false;
+        return;
+    }
+
+    userName = userInfo["data"]["name"].as<String>();
+    userLevel = userInfo["data"]["level"].as<uint8_t>();
+    userFaceImgUrl = userInfo["data"]["face"].as<String>();
+
+    _httpClient->end();
+
+    getFlag = true;
+}
+
+/**
+ * @brief Get followers.
+ * @return user's fans.
+ */
 int HgmApplication::BiliInfoRecv::GetFollower()
 {
     String url = statAPI + _uid;
     StaticJsonDocument<512> userInfo;
 
-    _httpClient->end();
-    vTaskDelay(100);
     _httpClient->begin(url);
     int code = _httpClient->GET();
 
@@ -75,52 +210,54 @@ int HgmApplication::BiliInfoRecv::GetFollower()
 
     userFans = userInfo["data"]["follower"].as<size_t>();
 
-    Serial.printf("Fans : %d\n", userFans);
-
     _httpClient->end();
     return userFans;
 }
 
-void HgmApplication::BiliInfoRecv::GetBasicInfo()
+typedef uint16_t(*_fb_t)[64];
+static bool _DecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
 {
-    String url = basicInfoAPI + _uid;
-    StaticJsonDocument<2048> userInfo;
+    // 强制为二维数组
+    uint16_t(*_faceBuf)[64] = (_fb_t)userFaceBitmap;
 
-    Serial.println(url);
-
-    _httpClient->begin(url);
-    int code = _httpClient->GET();
-
-    if (code != 200) {
-        Serial.printf("%s HTTP code : %d", __func__, code);
-        _httpClient->end();
-        return;
+    size_t pos = 0;
+    for (size_t _h = 0; _h < h; _h++) {
+        for (size_t _w = 0; _w < w; _w++) {
+            // 字序交替赋值
+            //_faceBuf[y + _h][x + _w] = (((bitmap[pos] & 0xFF) << 8) | ((bitmap[pos] >> 8) & 0xFF));
+            _faceBuf[y + _h][x + _w] = bitmap[pos];
+            pos++;
+        }
     }
 
-    // while (_httpClient->getStreamPtr()->available())
-    // {
-    //     Serial.print((char)_httpClient->getStreamPtr()->read());
-    // }
+    return 1;
+}
 
-    WiFiClient* wc = _httpClient->getStreamPtr();
-    size_t size = wc->available();
-    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
-    recvBuf[size] = '\0';
-    wc->readBytes(recvBuf, size);
-    deserializeJson(userInfo, recvBuf);
-    heap_caps_free(recvBuf);
-
-    if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
-        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
-        _httpClient->end();
-        return;
+/**
+ * @brief Decode the JPG user face image and save the bitmap.
+ */
+static void _SaveUserFaceImg()
+{
+    if (!userFaceBitmap) {
+        userFaceBitmap = (uint16_t*)heap_caps_calloc(64 * 64, 2, MALLOC_CAP_SPIRAM);
     }
 
-    userName = userInfo["data"]["name"].as<String>();
-    userFaceImgUrl = userInfo["data"]["face"].as<String>();
-    userLevel = userInfo["data"]["level"].as<uint8_t>();
+    TJpgDec.setJpgScale(1);
+    TJpgDec.setSwapBytes(false);
+    TJpgDec.setCallback(_DecodeCallback);
 
-    _httpClient->end();
+    uint32_t t = millis();
+    uint16_t w = 0, h = 0;
+    TJpgDec.getJpgSize(&w, &h, userFaceImgBuf, userFaceImgBufSize);
+    Serial.printf("Width = %d, height = %d\n", w, h);
+    TJpgDec.drawJpg(0, 0, userFaceImgBuf, userFaceImgBufSize);
+
+    hgmLvgl->lcd->pushImage(0, 0, 64, 64, userFaceBitmap);
+
+    t = millis() - t;
+    Serial.print(t); Serial.println(" ms");
+
+    Serial.printf("User face image was decoded.\n");
 }
 
 /**
@@ -131,7 +268,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
  */
 int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
 {
-    if (!userFaceImgUrl) {
+    if (!userFaceImgUrl || !getFlag) {
         Serial.println("The URL of the user's face has not been get. please run \"GetBasicInfo()\"");
         return -1;
     }
@@ -171,6 +308,8 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
         Serial.println("Face image is null, check image URL.");
     }
 
+    _SaveUserFaceImg();
+
     _httpClient->end();
 }
 
@@ -180,3 +319,17 @@ uint8_t* HgmApplication::BiliInfoRecv::GetUserFaceImgBuf(size_t* imgSize)
     return userFaceImgBuf;
 }
 
+
+static void biliTask(void* params)
+{
+    while (true) {
+        if (!WiFi.isConnected()) {
+            vTaskDelay(1000);
+            continue;
+        }
+
+
+
+        vTaskDelay(BILI_GET_GAP);
+    }
+}

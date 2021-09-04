@@ -238,6 +238,12 @@ static void wifiCheckTask(void* params)
             vTaskDelay(2000);
             continue;
         }
+
+        if (_wifi.status() == WL_IDLE_STATUS) {
+            vTaskDelay(500);
+            continue;
+        }
+
         if (_wifi.status() != WL_CONNECTED) {
             Serial.print(".-");
             Serial.println(_wifi.status());
