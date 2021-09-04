@@ -62,7 +62,7 @@ void HgmApplication::HgmApp::BeginWiFi()
     this->hgmWifi->Begin();
 }
 
-void HgmApplication::HgmApp::BeginWiFiWithConfig(char* ssid, char* password)
+void HgmApplication::HgmApp::BeginWiFiWithConfig(String ssid, String password)
 {
     this->hgmWifi->ConfigWiFi(ssid, password);
     this->hgmWifi->Begin();

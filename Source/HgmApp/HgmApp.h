@@ -33,7 +33,7 @@ namespace HgmApplication {
 		void Begin();
 
 		void BeginWiFi();
-		void BeginWiFiWithConfig(char* ssid, char* password);
+		void BeginWiFiWithConfig(String ssid, String password);
 		void BeginBT();
 
 		void Stop();

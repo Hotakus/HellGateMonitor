@@ -8,16 +8,17 @@
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
 #include <Arduino.h>
+#include <SPIFFS.h>
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
-#include <SPIFFS.h>
 #include "HgmBT.h"
 #include "../HgmApp.h"
 #include "../WeatherInfo/WeatherInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 
-using namespace HgmApplication;
 using namespace fs;
+using namespace HgmApplication;
+
 
 extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
@@ -83,9 +84,10 @@ void HgmApplication::HgmBT::Stop()
 
 
 
-static void BeginWiFiWithConfig(String& ssid, String& password)
+static void BeginWiFiWithConfig(String ssid, String password)
 {
-    hgmApp->BeginWiFiWithConfig((char*)ssid.c_str(), (char*)password.c_str());
+    hgmApp->BeginWiFiWithConfig(ssid, password);
+
 }
 
 /**
@@ -171,23 +173,28 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         // { "Header": "Hgm", "DataType": "0", "Data": { "ssid": "xxx", "password": "xxx" } }
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
+
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
 
         hgmApp->StopWiFi();
         vTaskDelay(500);
         BeginWiFiWithConfig(_ssid, _password);
-        while (!hgmApp->hgmWifi->wifi->isConnected()) {
-            vTaskDelay(50);
-        }
 
-        File file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
-        StaticJsonDocument<128> doc;
+        DynamicJsonDocument doc(256);
         String tmp;
         doc["Header"] = "WiFi";
         doc["ssid"] = HgmWiFi::GetSSID();
         doc["password"] = HgmWiFi::GetPassword();
         serializeJson(doc, tmp);
+
+        Serial.println(tmp);
+
+        File file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
         file.write((const uint8_t*)tmp.c_str(), tmp.length());
+        file.close();
+
+        file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+        Serial.println(file.readString());
         file.close();
 
         Serial.println("WiFi had been config via bluetooth.");
@@ -287,7 +294,7 @@ static void BluetoothControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     BluetoothListeningTask,
                     "bluetoothListeningTask",
-                    4096,
+                    3072,
                     NULL,
                     10,
                     &bluetoothListeningTaskHandle,

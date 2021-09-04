@@ -134,7 +134,7 @@ static void TcpControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
-                    3072,
+                    2048,
                     NULL,
                     10,
                     &tcpServerTaskHandle,

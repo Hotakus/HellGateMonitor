@@ -146,7 +146,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
 void HgmApplication::WeatherInfo::SetWeatherConfig()
 {
     // TODO: Send msg
-    _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
+    _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_WRITE);
 
     String wi;
     doc["data"]["id"] = _id;

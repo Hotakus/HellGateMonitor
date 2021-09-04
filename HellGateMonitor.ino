@@ -7,6 +7,16 @@
  * @date 2021/8/11 20:19
  * @copyright Copyright (c) 2021/8/11
 *******************************************************************/
+
+/* User include files */
+#include "Source/HgmApp/HgmBT/HgmBT.h"
+#include "Source/HgmApp/HgmApp.h"
+#include "Source/HgmLvgl/HgmLvgl.h"
+#include "Source/HgmSelfChecking/HgmSelfChecking.h"
+#include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "Source/HgmApp/TimeInfo/TimeInfo.h"
+
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 #include <User_Setup.h>
@@ -19,14 +29,6 @@
 #include <SPIFFS.h>
 #include <freertos/FreeRTOSConfig.h>
 
-/* User include files */
-#include "Source/HgmApp/HgmBT/HgmBT.h"
-#include "Source/HgmApp/HgmApp.h"
-#include "Source/HgmLvgl/HgmLvgl.h"
-#include "Source/HgmSelfChecking/HgmSelfChecking.h"
-#include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
-#include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
-#include "Source/HgmApp/TimeInfo/TimeInfo.h"
 
 #define SCREEN_BK_PIN   32
 
@@ -41,6 +43,7 @@
 using namespace HGM;
 using namespace HgmGUI;
 using namespace HgmApplication;
+using namespace fs;
 
 extern HgmApp *hgmApp;
 extern HgmLvgl *hgmLvgl;
@@ -100,7 +103,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 void setup()
 {
 	Serial.begin(115200);
-
+	
 	Serial.printf("\n****************** Hell Gate Monitor ******************\n");
 	Serial.printf("           ___           ___           ___               \n");
 	Serial.printf("          /\\__\\         /\\  \\         /\\__\\        \n");
@@ -190,53 +193,52 @@ void setup()
 	// Check time
 	ti.Begin();
 	vTaskDelay(200);
-	
-	
-	// TODO: Check weather component
-	
-	
-	// Check bilibili component
-	BiliInfoRecv bili;
-	bili.SetUID("341974201");
-	bili.GetBasicInfo();
-	bili.GetFollower();
-	bili.GetUserFaceImg();
-	uint8_t* face;
-	size_t size = 0;
-	face = bili.GetUserFaceImgBuf(&size);
-	Serial.printf("%x\n", face);
-	
-	faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
-	TJpgDec.setJpgScale(1);
-	TJpgDec.setSwapBytes(false);
-	TJpgDec.setCallback(tft_output);
-	
-	uint32_t t = millis();
-	uint16_t w = 0, h = 0;
-	TJpgDec.getJpgSize(&w, &h, face, size);
-	Serial.print("Width = ");
-	Serial.print(w);
-	Serial.print(", height = ");
-	Serial.println(h);
-	TJpgDec.drawJpg(0, 0, face, size);
-	
-	hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
-	
-	t = millis() - t;
-	Serial.print(t); Serial.println(" ms");
-	
-	vTaskDelay(1000);
-	
-	lv_obj_t* img2 = lv_img_create(lv_scr_act());
-	static lv_img_dsc_t face_dsc;
-	face_dsc.header.always_zero = 0;
-	face_dsc.header.w = 64;
-	face_dsc.header.h = 64;
-	face_dsc.data_size = 4096 * 2;
-	face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-	face_dsc.data = (uint8_t*)faceBuf;
-	lv_img_set_src(img2, &face_dsc);
-	lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
+
+	// // TODO: Check weather component
+	// 
+	// 
+	// // Check bilibili component
+	// BiliInfoRecv bili;
+	// bili.SetUID("341974201");
+	// bili.GetBasicInfo();
+	// bili.GetFollower();
+	// bili.GetUserFaceImg();
+	// uint8_t* face;
+	// size_t size = 0;
+	// face = bili.GetUserFaceImgBuf(&size);
+	// Serial.printf("%x\n", face);
+	// 
+	// faceBuf = (uint16_t*)heap_caps_calloc(64*64, 2, MALLOC_CAP_SPIRAM);
+	// TJpgDec.setJpgScale(1);
+	// TJpgDec.setSwapBytes(false);
+	// TJpgDec.setCallback(tft_output);
+	// 
+	// uint32_t t = millis();
+	// uint16_t w = 0, h = 0;
+	// TJpgDec.getJpgSize(&w, &h, face, size);
+	// Serial.print("Width = ");
+	// Serial.print(w);
+	// Serial.print(", height = ");
+	// Serial.println(h);
+	// TJpgDec.drawJpg(0, 0, face, size);
+	// 
+	// hgmLvgl->lcd->pushImage(0, 0, 64, 64, faceBuf);
+	// 
+	// t = millis() - t;
+	// Serial.print(t); Serial.println(" ms");
+	// 
+	// vTaskDelay(1000);
+	// 
+	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
+	// static lv_img_dsc_t face_dsc;
+	// face_dsc.header.always_zero = 0;
+	// face_dsc.header.w = 64;
+	// face_dsc.header.h = 64;
+	// face_dsc.data_size = 4096 * 2;
+	// face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+	// face_dsc.data = (uint8_t*)faceBuf;
+	// lv_img_set_src(img2, &face_dsc);
+	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 	
 	// lv_anim_t anim1;
 	// lv_anim_init(&anim1);
@@ -251,11 +253,6 @@ void setup()
 	delete hgmSetupUI;
 
 	
-	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-	// vTaskList(task_buf);
-	// Serial.printf("%s\n", task_buf);
-	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-
 	// // TODO: Use task to run
 	// Serial.println(ESP.getSdkVersion());
 	// Serial.println(ESP.getChipCores());
@@ -263,15 +260,21 @@ void setup()
 	// Serial.println(ESP.getCpuFreqMHz());
 	// Serial.println(ESP.getFlashChipSize());
 	// Serial.println(ESP.getFlashChipSpeed());
-	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	// Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-	Serial.println(ESP.getSketchSize());
+	//Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	//// Serial.println(heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+	//Serial.println(ESP.getSketchSize());
 
-	hgmLvgl->HgmLvglUIBegin();
+	//hgmLvgl->HgmLvglUIBegin();
 
 }
 
 void loop()
 {
-	vTaskDelay(3600 * 24);  // loop per one day
+	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
+	// vTaskList(task_buf);
+	// Serial.printf("%s\n", task_buf);
+	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+	// heap_caps_free(task_buf);
+
+	vTaskDelay(1000);  // loop per one day
 }

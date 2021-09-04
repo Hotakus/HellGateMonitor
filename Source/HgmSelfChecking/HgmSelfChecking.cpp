@@ -31,7 +31,7 @@ String ssid;
 String password;
 
 
-static void WiFiBTConfig(File *file);
+static void WiFiBTConfig();
 
 HgmSC::HgmSC()
 {
@@ -53,7 +53,7 @@ void HGM::HgmSC::Begin()
 
     /* Delay 500ms for PSRAM */
     delay(500);
-
+    
     Serial.println("SPIFFS beginning...");
     for (i = 0; i < timeout; i++) {
         if (SPIFFS.begin())
@@ -80,10 +80,8 @@ void HGM::HgmSC::Begin()
         // If there isn't config file, show the info to screen and serial. Then use BT to config wifi.
         Serial.println("No WiFi config file be found in spiffs.");
         Serial.println("Open bluetooth to config wifi file and open wifi.");
-        file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
-        WiFiBTConfig(&file);
+        WiFiBTConfig();
         Serial.printf("WiFi config file size : %d\n", file.size());
-        file.close();
     } else {
         // If there is the config file, read and analyze the json content then store to HgmWiFi object.
         // Create mailbox in HgmWiFi, then this function send a mail to trigger wifi config function.
@@ -93,18 +91,11 @@ void HGM::HgmSC::Begin()
         if (!file.size()) {
             Serial.println("WiFi config file is null, start to WiFi config via BT.");
             file.close();
-            file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
-            WiFiBTConfig(&file);
-            file.close();
-
-            file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-            Serial.println(file.readString());
-            file.close();
-            // SPIFFS.remove(WIFI_CONFIG_FILE_PATH); // TODO: delate
+            WiFiBTConfig();
         } else {
             // To open wifi with content that from wifi config file.
             String tmp;
-            StaticJsonDocument<128> doc;
+            DynamicJsonDocument doc(256);
             file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
             tmp = file.readString();
             deserializeJson(doc, tmp);
@@ -116,8 +107,8 @@ void HGM::HgmSC::Begin()
             String header = doc["Header"];
             if (header.compareTo("WiFi") != 0) {
                 file.close();
-                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_WRITE);
-                WiFiBTConfig(&file);
+                WiFiBTConfig();
+                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
             }
             component.type = HGM_COMPONENT_CONFIG_FILE;
             component.curStatus = true;
@@ -126,7 +117,7 @@ void HGM::HgmSC::Begin()
 
             ssid = doc["ssid"].as<String>();
             password = doc["password"].as<String>();
-            hgmApp->hgmWifi->ConfigWiFi((char*)ssid.c_str(), (char*)password.c_str());
+            hgmApp->hgmWifi->ConfigWiFi(ssid, password);
 
             file.close();
             vTaskDelay(200);
@@ -136,7 +127,7 @@ void HGM::HgmSC::Begin()
     this->CheckFlag = true;
 }
 
-static void WiFiBTConfig(File* file)
+static void WiFiBTConfig()
 {
     component.type = HGM_COMPONENT_CONFIG_FILE;
     component.curStatus = false;
@@ -147,16 +138,6 @@ static void WiFiBTConfig(File* file)
     while (!WiFi.isConnected()) 
         vTaskDelay(50);
     component.waitStatus = true;
-
-    // If WiFi is connected, then save the correct SSID and password
-    StaticJsonDocument<128> doc;
-    String tmp;
-    doc["Header"] = "WiFi";
-    doc["ssid"] = HgmWiFi::GetSSID();
-    doc["password"] = HgmWiFi::GetPassword();
-    serializeJson(doc, tmp);
-    file->write((const uint8_t*)tmp.c_str(), tmp.length());
-
 }
 
 

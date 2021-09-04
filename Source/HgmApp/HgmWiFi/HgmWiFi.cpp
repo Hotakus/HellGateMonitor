@@ -16,8 +16,8 @@ using namespace HgmApplication;
 static bool wifiSwitch;		// To control the WiFi's on/off
 
 static WiFiClass _wifi = WiFi;
-static char* _ssid = NULL;
-static char* _password = NULL;
+static String _ssid ;
+static String _password ;
 
 static TaskHandle_t wifiCheckTaskHandle = NULL;
 static TaskHandle_t wifiControlTaskHandle = NULL;
@@ -34,7 +34,7 @@ HgmWiFi::HgmWiFi(bool flag)
     this->hgmTcp->Begin();
 }
 
-HgmWiFi::HgmWiFi(char* ssid, char* password)
+HgmWiFi::HgmWiFi(String ssid, String password)
 {
     _ssid = ssid;
     _password = password;
@@ -60,7 +60,7 @@ HgmWiFi::~HgmWiFi()
  * @param ssid
  * @param password
  */
-void HgmApplication::HgmWiFi::ConfigWiFi(char* ssid, char* password)
+void HgmApplication::HgmWiFi::ConfigWiFi(String ssid, String password)
 {
     _ssid = ssid;
     _password = password;
@@ -68,13 +68,13 @@ void HgmApplication::HgmWiFi::ConfigWiFi(char* ssid, char* password)
     this->password = password;
 }
 
-
 /**
  * @brief Use to open or close _wifi.
  * @param sw
  */
 void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
 {
+    
     wifiSwitch = sw;
     vTaskDelay(10);
     if (xQueueSend(wifiCtlMsgBox, &wifiSwitch, portMAX_DELAY) == pdPASS) {
@@ -186,19 +186,13 @@ static void wifiControlTask(void* params)
                 _wifi.setSleep(true);
                 _wifi.setAutoReconnect(true);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
-                Serial.printf("%s %s\n", _ssid, _password);
-                _wifi.begin(_ssid, _password);
+                Serial.printf("wifiControlTask %s %s\n", _ssid, _password);
+                _wifi.begin(_ssid.c_str(), _password.c_str());
                 while (_wifi.status() != WL_CONNECTED) {
                     vTaskDelay(500);
                     Serial.print(".#");
                     Serial.println(_wifi.status());
                 }
-
-                Serial.println("\nWiFi Connected");
-                Serial.print("Local IP Address: ");
-                Serial.println(WiFi.localIP());
-                Serial.print("RSSI : ");
-                Serial.println(WiFi.RSSI());
 
                 xTaskCreatePinnedToCore(
                     wifiCheckTask,
@@ -255,10 +249,11 @@ static void wifiCheckTask(void* params)
         if (!flag) {
             Serial.println("");
             flag = true;
-            Serial.println("WiFi Connected");
-            Serial.print("IP Address: ");
+
+            Serial.println("\nWiFi Connected");
+            Serial.print("Local IP Address: ");
             Serial.println(WiFi.localIP());
-            Serial.println(WiFi.getTxPower());
+            Serial.print("RSSI : ");
             Serial.println(WiFi.RSSI());
         }
 

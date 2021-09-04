@@ -9,6 +9,8 @@
 *******************************************************************/
 #ifndef HELLGATEMONITOR_HGMBT_H
 #define HELLGATEMONITOR_HGMBT_H
+#include <Arduino.h>
+#include <SPIFFS.h>
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
 
