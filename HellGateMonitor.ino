@@ -49,6 +49,7 @@ extern HgmApp *hgmApp;
 extern HgmLvgl *hgmLvgl;
 HgmSetupUI *hgmSetupUI;
 TimeInfo ti;
+BiliInfoRecv bili;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -178,7 +179,6 @@ void setup()
 	
 	
 	// Check bilibili component
-	BiliInfoRecv bili;
 	bili.Begin();
 	bili.GetBasicInfo();
 	bili.GetUserFaceImg();

@@ -252,7 +252,7 @@ static void _SaveUserFaceImg()
     Serial.printf("Width = %d, height = %d\n", w, h);
     TJpgDec.drawJpg(0, 0, userFaceImgBuf, userFaceImgBufSize);
 
-    hgmLvgl->lcd->pushImage(0, 0, 64, 64, userFaceBitmap);
+    // hgmLvgl->lcd->pushImage(0, 0, 64, 64, userFaceBitmap);
 
     t = millis() - t;
     Serial.print(t); Serial.println(" ms");

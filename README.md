@@ -68,7 +68,7 @@ git clone --recurse-submodules https://github.com/Hotakus/HellGateMonitor.git
 LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
 另外，由于此项目使用的是Arduino平台，所以在使用此项目前，你应该先安装指定库：
 * **ArduinoJson** （解析/打包JSON数据）
-* **TFT_eSPI** （屏幕驱动库）
+* **TFT_eSPI** （屏幕驱动库，需要手动[配置]()）
 * **TJpg_Decoder**（JPG解码库）
 * **MPU6050_light** （MPU6050 轻量库）  
 * **ESP32Time** （本地RTC库）  

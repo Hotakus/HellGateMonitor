@@ -105,9 +105,6 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 	_timeStruct = _rtc->getTimeStruct();
 	timeStruct = &_timeStruct;
 
-	Serial.print("Get time: ");
-	Serial.println(_rtc->getTime("%A, %B %d %Y %H:%M:%S"));
-
 	_httpClient->end();
 	return 0;
 }

@@ -38,10 +38,12 @@ static lv_obj_t* book = NULL;
 static lv_obj_t* main_time_label = NULL;
 static lv_obj_t* date_label = NULL;
 
-lv_anim_t* anim_book = NULL;
-lv_anim_t* anim_t = NULL;
-lv_anim_t* anim_w = NULL;
-lv_anim_t* anim_tw_expand = NULL;
+static lv_anim_t* anim_book = NULL;
+static lv_anim_t* anim_t = NULL;
+static lv_anim_t* anim_w = NULL;
+static lv_anim_t* anim_tw_expand = NULL;
+
+static lv_timer_t* showTimeTimer = NULL;
 
 struct tm time_s;
 
@@ -52,7 +54,7 @@ static void ShowWeather();
 static void ShowBili();
 
 static TaskHandle_t showTaskHandle;
-static void ShowTask(void* params);
+static void ShowTime(lv_timer_t* timer);
 
 HgmTwUI::HgmTwUI()
 {
@@ -89,20 +91,22 @@ void HgmGUI::HgmTwUI::Begin()
     lv_label_set_recolor(main_time_label, true);
     lv_label_set_text(main_time_label, "#59493f --:--#");
     lv_obj_align(main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
+    lv_obj_set_style_opa(main_time_label, LV_OPA_0, 0);
     lv_obj_set_style_text_font(main_time_label, &k12x8_14px_time, 0);
 
     date_label = lv_label_create(tw_time);
     lv_label_set_recolor(date_label, true);
     lv_label_set_text(date_label, "#59493f 2021.08.28 Tue#");
     lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, -6, -5);
+    lv_obj_set_style_opa(date_label, LV_OPA_0, 0);
     lv_obj_set_style_text_font(date_label, &k12x8_8px, 0);
 
 
     /* Animations */
-    anim_book       = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    anim_t          = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    anim_w          = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    anim_tw_expand  = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
 
     // anim_book
     lv_anim_init(anim_book);
@@ -142,24 +146,47 @@ void HgmGUI::HgmTwUI::Begin()
     lv_anim_timeline_add(at, 800, anim_w);
     lv_anim_timeline_add(at, 1800, anim_tw_expand);
 
-    lv_anim_timeline_start(at);
+    size_t _t = lv_anim_timeline_start(at);
+    vTaskDelay(_t);
+
+    // TODO: Show clock img per 
+    showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
+
+    vTaskDelay(510);
+
+    // TODO: add animation
+    lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 }
 
 void HgmGUI::HgmTwUI::Stop()
 {
+
 }
 
 
-
-static void ShowTime()
+static void ShowTime(lv_timer_t* timer)
 {
-    ti.rtc.setTime(0, 1, 1, 1, 1, 2021, 0);
+    static bool secIndicator = true;
+    static char* wd[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+    struct tm _tm = ti.rtc.getTimeStruct();
+    String text1 = "#59493f %02d:%02d#";
+    String text2 = "#59493f %02d %02d#";
 
-    while (true) {
-        time_s = ti.rtc.getTimeStruct();
-        Serial.println(ti.rtc.getTime("%A, %B %d %Y %H:%M:%S"));
-        vTaskDelay(1000);
+    if (secIndicator) {
+        lv_label_set_text_fmt(main_time_label, text1.c_str(), _tm.tm_hour, _tm.tm_min);
+        secIndicator = false;
+    } else {
+        lv_label_set_text_fmt(main_time_label, text2.c_str(), _tm.tm_hour, _tm.tm_min);
+        secIndicator = true;
     }
+
+    lv_label_set_text_fmt(date_label, "#59493f %04d.%02d.%02d %s#",
+        _tm.tm_year + 1900,
+        _tm.tm_mon + 1,
+        _tm.tm_mday,
+        wd[_tm.tm_wday]
+    );
 }
 
 static void ShowWeather()
@@ -172,14 +199,10 @@ static void ShowBili()
 
 }
 
-static void ShowTask(void* params)
+static void ShowTimeTask(void* params)
 {
-    // 1秒显示一次，但数据的校准时间不是一秒一次，具体看各自源码
-    // TW界面退出后删除任务，反之开启
     while (true) {
         ShowTime();
-        ShowWeather();
-        ShowBili();
-        vTaskDelay(1 * 1000);
+        vTaskDelay(500);
     }
 }
