@@ -367,7 +367,7 @@ static void biliTask(void* params)
         bili.GetUserFaceImg();
         xSemaphoreGive(wbs);
 
-        //vTaskDelay(BILI_GET_GAP);
-        vTaskDelay(2000);
+        vTaskDelay(BILI_GET_GAP);
+        //vTaskDelay(2000);
     }
 }
