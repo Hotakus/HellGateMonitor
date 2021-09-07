@@ -34,7 +34,7 @@
 ## 基本功能：
 >通过蓝牙安卓APP进行Hell Gate Monitor 的 __实时控制与WiFi配置等__  
 >通过WiFi对局域网PC进行实时的 __硬件信息监控__ 显示（通过我的另外一个项目 
-> [HGMC]() 后续考虑Linux版本
+> [HGMC](https://github.com/Hotakus/HGMC) 后续考虑Linux版本
 > ）  
 >通过WiFi进行PC的 __屏幕投屏__  
 >通过WiFi进行实时的 __天气与时钟显示__  
@@ -103,11 +103,11 @@ __最后：__
 HGM的上电时需要对各个功能组件进行检查：
 
 - **Bluetooth**（用于HGM的控制和配置等）
-- **Config**（初次启动没有任何配置文件，首次运行会failed，用[HGMA]()配置）
+- **Config**（初次启动没有任何配置文件，首次运行会failed，用 [HGMA](https://github.com/Hotakus/HGMA) 配置）
 - **WiFi**（HGM的各个功能基本依赖于此，非常重要，必须进行配置）
-- **Time**（基本时钟矫正，开启后每12小时矫正一次）
-- **Weather**（天气组件，首次运行会failed，用[HGMA]()配置，每1小时获取一次）
-- **BiliBili**（B站组件，首次运行会failed，用[HGMA]()配置，每1小时获取一次B站信息）
+- **Time**（基本时钟矫正，开启后每24小时矫正一次）
+- **Weather**（天气组件，首次运行会failed，用 [HGMA](https://github.com/Hotakus/HGMA) 配置，每30分钟获取一次）
+- **BiliBili**（B站组件，首次运行会failed，用 [HGMA](https://github.com/Hotakus/HGMA) 配置，每10分钟获取一次B站信息）
 
 
 
@@ -115,26 +115,26 @@ HGM的上电时需要对各个功能组件进行检查：
 
 ## 部分功能上手配置说明：
 ### 1、如何配置并使用局域网PC硬件监控功能（HGM核心功能）
-需要使用我的PC上位机配套项目：[HGMC（TODO）]()   
+需要使用我的PC上位机配套项目： [HGMC](https://github.com/Hotakus/HGMC)    
 要想使用PC硬件监控功能，那么必须要配合上位机实现，
-参考我的另外一个开源项目[HGMC（TODO）]()（PC端硬件监控和HGM投屏管理中心软件），
-使用[HGMC]()对PC进行监控或投屏，监控数据会实时发送给HGM，投屏功能可选择开启。
+参考我的另外一个开源项目 [HGMC](https://github.com/Hotakus/HGMC) （PC端硬件监控和HGM投屏管理中心软件），
+使用 [HGMC](https://github.com/Hotakus/HGMC) 对PC进行监控或投屏，监控数据会实时发送给HGM，投屏功能可选择开启。
 
 ### 2、如何配置并使用天气功能
 天气功能所使用的API为“ [和风天气](https://id.qweather.com) ”提供的API
 ，要想使用天气功能，
 那么你必须去“ [和风天气控制台](https://id.qweather.com/#/login?redirect=https%3A%2F%2Fconsole.qweather.com) ”创建应用，
 然后获得APP key（免费），这个key是天气功能开启的关键，HGM默认不开启天气功能，要想使用天气功能，
-需要获得key后，用[HGMA]()（HGM的安卓配置APP）配置HGM，即可使用。
+需要获得key后，用 [HGMA](https://github.com/Hotakus/HGMA) （HGM的安卓配置APP）配置HGM，即可使用。
 
 ### 3、如何使用安卓APP配置和控制HGM
-需要使用我的安卓APP配套项目：[HGMA（TODO）]()   
+需要使用我的安卓APP配套项目：[HGMA](https://github.com/Hotakus/HGMA)   
+
 **HGMA**可以干什么？
-* 配置WiFi（配置后自动在SPIFFS里生成 **/wifi.conf** 文件，SSID和password）
+* 配置WiFi（配置后自动在SPIFFS里生成 **/wifi.conf** 文件，SSID 和 password）
 * 配置天气API（配置后自动在SPIFFS里生成 **/weather.conf** 文件，包括APP key和天气获取的默认地区等信息）
 * 配置B站信息（配置后自动在SPIFFS里生成 **/bilibili.conf** 文件，即你的B站UID、头像地址等信息）
-* 配置”硬件监控UI“
-* 模拟操控HGM
+* 配置 ”硬件监控UI“ 的布局
 * 提供简单的蓝牙调试功能，不是HGM也能用
 
 配置完成后，以后每次启动HGM都会优先读取SPIFFS的各个配置文件，以后不用再打开HGMA，除非需要二次配置。
