@@ -194,8 +194,6 @@ void setup()
 	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
 
-	delete hgmSetupUI;
-	
 	// TODO: Use task to run
 	Serial.println(ESP.getSdkVersion());
 	Serial.println(ESP.getChipCores());

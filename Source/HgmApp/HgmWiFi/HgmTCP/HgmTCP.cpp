@@ -80,16 +80,15 @@ void HgmApplication::HgmTCP::BeginServer()
 
 void HgmApplication::HgmTCP::StopServer()
 {
+    Serial.println(__func__);
     method = TCP_STOP_SERVER;
     this->tcm = method;
-
-    Serial.println("StopServer 0");
     xQueueSend(beginMsgbox, &method, portMAX_DELAY);
-    Serial.println("StopServer 1");
 }
 
 void HgmApplication::HgmTCP::BeginClient()
 {
+    Serial.println(__func__);
     method = TCP_BEGIN_CLIENT;
     this->tcm = method;
     xQueueSend(beginMsgbox, &method, portMAX_DELAY);
@@ -97,6 +96,7 @@ void HgmApplication::HgmTCP::BeginClient()
 
 void HgmApplication::HgmTCP::StopClient()
 {
+    Serial.println(__func__);
     method = TCP_STOP_CLIENT;
     this->tcm = method;
     xQueueSend(beginMsgbox, &method, portMAX_DELAY);

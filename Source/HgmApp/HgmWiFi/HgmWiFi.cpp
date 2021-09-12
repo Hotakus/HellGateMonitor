@@ -100,9 +100,7 @@ void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
             this->hgmTcp->BeginClient();
     } else {
         if (asServer) {
-            Serial.println("OpenTCP 0");
             this->hgmTcp->StopServer();
-            Serial.println("OpenTCP 1");
         } else
             this->hgmTcp->StopClient();
     }
@@ -124,20 +122,10 @@ void HgmApplication::HgmWiFi::Begin()
  */
 void HgmApplication::HgmWiFi::Stop()
 {
-    char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-    vTaskList(task_buf);
-    Serial.printf("%s\n", task_buf);
-    Serial.printf("func: , Total tasks : %d\n", __func__, uxTaskGetNumberOfTasks());
-    heap_caps_free(task_buf);
-
-    Serial.println("HgmApplication::HgmWiFi::Stop() 0");
     this->OpenTCP(false, true);     // Close server
-    Serial.println("HgmApplication::HgmWiFi::Stop() 1");
     this->OpenTCP(false, false);    // Close client
-    Serial.println("HgmApplication::HgmWiFi::Stop() 2");
 
     this->OpenWiFi(false);
-    Serial.println("HgmApplication::HgmWiFi::Stop() 3");
 }
 
 String HgmApplication::HgmWiFi::GetSSID()
