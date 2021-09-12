@@ -174,8 +174,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
 
-        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
-
         hgmApp->StopWiFi();
         vTaskDelay(500);
         BeginWiFiWithConfig(_ssid, _password);
@@ -194,6 +192,9 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         file.close();
 
         Serial.println("WiFi had been config via bluetooth.");
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+
         return;
     }
     case HGM_BT_PACK_METHOD_WIFI_CLOSE: {
@@ -305,7 +306,7 @@ static void BluetoothControlTask(void* params)
                     "bluetoothListeningTask",
                     3072,
                     NULL,
-                    10,
+                    12,
                     &bluetoothListeningTaskHandle,
                     1
                 );

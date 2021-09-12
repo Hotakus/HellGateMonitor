@@ -13,11 +13,13 @@
 
 using namespace HgmApplication;
 
-static bool wifiSwitch;		// To control the WiFi's on/off
+extern HgmApp* hgmApp;
+
+static bool wifiSwitch = true;		// To control the WiFi's on/off
 
 static WiFiClass _wifi = WiFi;
-static String _ssid ;
-static String _password ;
+static String _ssid;
+static String _password;
 
 static TaskHandle_t wifiCheckTaskHandle = NULL;
 static TaskHandle_t wifiControlTaskHandle = NULL;
@@ -74,9 +76,7 @@ void HgmApplication::HgmWiFi::ConfigWiFi(String ssid, String password)
  */
 void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
 {
-    
     wifiSwitch = sw;
-    vTaskDelay(10);
     if (xQueueSend(wifiCtlMsgBox, &wifiSwitch, portMAX_DELAY) == pdPASS) {
         Serial.println(
             sw ? "Open wifi" : "Close wifi"
@@ -99,9 +99,11 @@ void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
         else
             this->hgmTcp->BeginClient();
     } else {
-        if (asServer)
+        if (asServer) {
+            Serial.println("OpenTCP 0");
             this->hgmTcp->StopServer();
-        else
+            Serial.println("OpenTCP 1");
+        } else
             this->hgmTcp->StopClient();
     }
 }
@@ -113,17 +115,6 @@ void HgmApplication::HgmWiFi::Begin()
 {
     this->OpenWiFi();
 
-    // _wifi.mode(WIFI_STA);
-    // _wifi.setSleep(true); //关闭STA模式下wifi休眠，提高响应速度
-    // _wifi.begin("trisuborn", "12345678");
-    // while (_wifi.status() != WL_CONNECTED) {
-    // 	vTaskDelay(500);
-    // 	Serial.print(".");
-    // }
-    // Serial.println("Connected");
-    // Serial.print("IP Address:");
-    // Serial.println(_wifi.localIP());
-
     this->OpenTCP(true, true);          // Open TCP Server
     this->OpenTCP(true, false);         // Open TCP client
 }
@@ -133,10 +124,20 @@ void HgmApplication::HgmWiFi::Begin()
  */
 void HgmApplication::HgmWiFi::Stop()
 {
+    char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
+    vTaskList(task_buf);
+    Serial.printf("%s\n", task_buf);
+    Serial.printf("func: , Total tasks : %d\n", __func__, uxTaskGetNumberOfTasks());
+    heap_caps_free(task_buf);
+
+    Serial.println("HgmApplication::HgmWiFi::Stop() 0");
     this->OpenTCP(false, true);     // Close server
+    Serial.println("HgmApplication::HgmWiFi::Stop() 1");
     this->OpenTCP(false, false);    // Close client
+    Serial.println("HgmApplication::HgmWiFi::Stop() 2");
 
     this->OpenWiFi(false);
+    Serial.println("HgmApplication::HgmWiFi::Stop() 3");
 }
 
 String HgmApplication::HgmWiFi::GetSSID()
@@ -161,7 +162,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
         "wifiControlTask",
         2048,
         NULL,
-        5,
+        10,
         &wifiControlTaskHandle,
         1
     );
@@ -182,16 +183,29 @@ static void wifiControlTask(void* params)
 
         if (sw == true) {
             if (wifiCheckTaskHandle == NULL) {
+                uint16_t timeout = 10 * 1000;
+
                 _wifi.mode(WIFI_USE_MODE);
                 _wifi.setSleep(true);
-                _wifi.setAutoReconnect(true);
+                _wifi.setAutoReconnect(false);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
                 Serial.printf("wifiControlTask %s %s\n", _ssid, _password);
                 _wifi.begin(_ssid.c_str(), _password.c_str());
-                while (_wifi.status() != WL_CONNECTED) {
+                while (_wifi.status() != WL_CONNECTED && timeout > 0) {
                     vTaskDelay(500);
                     Serial.print(".#");
                     Serial.println(_wifi.status());
+                    timeout -= 500;
+                }
+                if (timeout <= 0) {
+                    Serial.println("WiFi open failed.");
+
+                    hgmApp->hgmWifi->OpenTCP(false, false);
+                    hgmApp->hgmWifi->OpenTCP(false, true);
+
+                    _wifi.disconnect();
+                    _wifi.mode(WIFI_OFF);
+                    continue;
                 }
 
                 xTaskCreatePinnedToCore(
@@ -241,14 +255,6 @@ static void wifiCheckTask(void* params)
 
         if (_wifi.status() == WL_IDLE_STATUS) {
             vTaskDelay(500);
-            continue;
-        }
-
-        if (_wifi.status() != WL_CONNECTED) {
-            Serial.print(".-");
-            Serial.println(_wifi.status());
-            vTaskDelay(500);
-            flag = false;
             continue;
         }
 

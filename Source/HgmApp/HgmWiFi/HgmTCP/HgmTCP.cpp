@@ -34,7 +34,7 @@ HgmTCP::HgmTCP()
 {
     this->wifiServer = wifiServer;
     this->wifiClient = wifiClient;
-    beginMsgbox = xQueueCreate(1, sizeof(TcpControlMethod));
+    beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
 }
 
 HgmTCP::~HgmTCP()
@@ -63,7 +63,7 @@ void HgmApplication::HgmTCP::HgmTcpTaskInit()
         "TcpControlTask",
         2048,
         NULL,
-        5,
+        15,
         &tcpControlTaskHandle,
         1
     );
@@ -82,7 +82,10 @@ void HgmApplication::HgmTCP::StopServer()
 {
     method = TCP_STOP_SERVER;
     this->tcm = method;
+
+    Serial.println("StopServer 0");
     xQueueSend(beginMsgbox, &method, portMAX_DELAY);
+    Serial.println("StopServer 1");
 }
 
 void HgmApplication::HgmTCP::BeginClient()

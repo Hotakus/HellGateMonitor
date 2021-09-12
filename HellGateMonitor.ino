@@ -181,8 +181,6 @@ void setup()
 	
 	// Check bilibili component
 	bili.Begin();
-	// bili.GetBasicInfo();
-	// bili.GetUserFaceImg();
 
 	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
 	// static lv_img_dsc_t face_dsc;
@@ -226,5 +224,5 @@ void loop()
 	// heap_caps_free(task_buf);
 	// vTaskDelay(1000);
 	
-	// vTaskDelay(24 * 3600 * 1000);  // loop per one day
+	vTaskDelay(24 * 3600 * 1000);  // loop per one day
 }
