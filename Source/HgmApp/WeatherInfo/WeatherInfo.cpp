@@ -229,6 +229,11 @@ static void WCTask(void* params)
     while (true) {
         //xQueueReceive(WCMsgBox, &tmp, portMAX_DELAY);
 
+        if (!WiFi.isConnected()) {
+            vTaskDelay(1000);
+            continue;
+        }
+
         WeatherInfo::GetWeather();
 
         vTaskDelay(WEATHER_GET_GAP);

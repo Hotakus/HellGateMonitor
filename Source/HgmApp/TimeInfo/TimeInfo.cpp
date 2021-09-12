@@ -117,6 +117,12 @@ static void netTimeTask(void* params)
 	Serial.println("netTimeTask");
 
 	while (true) {
+
+		if (!WiFi.isConnected()) {
+			vTaskDelay(1000);
+			continue;
+		}
+
 		TimeInfo::GetNetTime(&ts);
 		vTaskDelay(NET_TIME_GAP);
 	}

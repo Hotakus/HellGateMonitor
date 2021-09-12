@@ -193,6 +193,9 @@ void setup()
 	// lv_img_set_src(img2, &face_dsc);
 	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
+	vTaskDelay(200);
+
+	delete hgmSetupUI;
 
 	// TODO: Use task to run
 	Serial.println(ESP.getSdkVersion());
@@ -221,6 +224,9 @@ void loop()
 	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
 	// heap_caps_free(task_buf);
 	// vTaskDelay(1000);
-	
+
+	Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(), 
+		heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	vTaskDelay(2000);
 	vTaskDelay(24 * 3600 * 1000);  // loop per one day
 }
