@@ -147,7 +147,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
     if (!_bs->available())
         return;
 
-    DynamicJsonDocument rawPack(1024);
+    DynamicJsonDocument rawPack(2048);
 
     // Receive raw pack
     while (_bs->available()) {
@@ -162,6 +162,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         Serial.println("Header error. No a valid HGM bluetooth pack");
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_NULL;
+        return;
     }
 
     // Match DataType
@@ -175,7 +176,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         String _password = rawPack["Data"]["password"];
 
         hgmApp->StopWiFi();
-        vTaskDelay(500);
+        vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
 
         DynamicJsonDocument doc(256);
