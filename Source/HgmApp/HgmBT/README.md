@@ -8,14 +8,36 @@ HGM的蓝牙数据包格式(JSON)
 
 |------|数据头标识|数据类型    |数据块      |
 |:----:|:-------:|:--------:|:----------:|
-| __Key__|Header   |DataType  |Data        |
-| __Value__|Hgm  |dt (见下文)|data(见下文)|
+| **Key**|Header   |DataType  |Data        |
+| **Value**|Hgm  |dt (见下文)|data(见下文)|
 
-可以自己添加命令实现更多功能(详见代码)
+可以自己添加命令实现更多功能(详见 [BT代码](./HgmBT.h) )
 
-## JSON数据包例子：
+![](../../../Image/BasicBTCommands.png)
 
-**WiFi配置和开启** （DataType == 0）
+## 数据包例子：
+**获取命令长度M** （DataType == 0）
+```json
+{
+  "Header": "Hgm",
+  "DataType": "6",
+  "Data": ""
+}
+```
+返回长度M
+
+**普通数据接收** （DataType == 1）
+```json
+{
+  "Header": "Hgm",
+  "DataType": "1",
+  "Data": "Hello world! HellGateMonitor!!!"
+}
+```
+
+普通数据模式下，HGM接收后在串口终端输出相应Data信息
+
+**WiFi配置和开启** （DataType == 3）
 
 ```json
 {
@@ -28,7 +50,7 @@ HGM的蓝牙数据包格式(JSON)
 }
 ```
 
-**WiFi关闭** （DataType == 1）
+**WiFi关闭** （DataType == 4）
 
 ```json
 {
@@ -38,7 +60,7 @@ HGM的蓝牙数据包格式(JSON)
 }
 ```
 
-**天气等信息配置** （DataType == 2）  
+**天气等信息配置** （DataType == 5）  
 API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只是使用则不需要了解
 
 ```json
@@ -47,17 +69,17 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
   "DataType": "2",
   "Data": {
     "id": "101010300",
-    "key": "xxxxxxxxxxxxxxx",
     "adm": "Beijing",
     "adm2": "Beijing",
     "location": "Chaoyang",
     "lat": "39.92149",
-    "lon": "116.48641"
+    "lon": "116.48641",
+    "key": "xxxxxxxxxxxxxxx"
   }
 }
 ```
 
-**B站配置** （DataType == 3）
+**B站配置** （DataType == 6）
 
 ```json
 {
@@ -68,15 +90,22 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
   }
 }
 ```
-**获取命令长度M** （DataType == 5）
+**配置硬件监控UI** （DataType == 7）
 ```json
 {
   "Header": "Hgm",
   "DataType": "5",
-  "Data": ""
+  "Data": {
+    "default" : "1",
+    "leftTop" : "CPU",
+    "leftBottom" : "GPU",
+    "rightTop" : "Memory",
+    "rightBottom" : "HardDisk"
+  }
 }
 ```
-返回长度M
+**default** 为 1 代表使用默认配置，为 0 代表使用新配置，并覆写配置文件  
+**Data** 候选有：CPU、GPU、Memory、HardDisk、Network、Fans(风扇)
 
 <br>
 
@@ -84,19 +113,6 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 
 <br>
 
-
-**普通数据接收** （DataType == (M-1)）  
-**“M”** 即命令最大个数，即倒数第二个Datatype
-
-```json
-{
-  "Header": "Hgm",
-  "DataType": "M-1",
-  "Data": "Hello world! HellGateMonitor!!!"
-}
-```
-
-普通数据模式下，HGM接收后在串口终端输出相应Data信息
 
 **空数据包** （DataType == M）
 
@@ -116,13 +132,13 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 
 ---
 
-下位机接收成功或上位机成功都返回给对方一个JSON数据包：  
-OK（DataType == 4）
+下位机接收成功返回给对方一个JSON数据包：  
+OK（DataType == 1）
 
 ```json
 {
   "Header": "Hgm",
-  "DataType": "4",
+  "DataType": "1",
   "Data": "ok"
 }
 ```

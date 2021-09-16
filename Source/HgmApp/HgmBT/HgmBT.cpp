@@ -109,7 +109,7 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
     switch (method) {
     case HGM_BT_PACK_METHOD_OK: {
         // TODO:
-        hgmPack["DataType"] = "3";
+        hgmPack["DataType"] = String(HGM_BT_PACK_METHOD_OK);
         hgmPack["Data"] = "ok";
         break;
     }
@@ -336,6 +336,7 @@ static void BluetoothListeningTask(void* params)
     uint16_t sleepTimes = 1000;
     uint16_t times = 0;
     bool flag = false;
+    String greet = "Hello, I am HellGateMonitor!!";
 
     while (true) {
         // TODO:
@@ -345,6 +346,13 @@ static void BluetoothListeningTask(void* params)
             continue;
         }
 
+        if (!flag) {
+            flag = true;
+            xSemaphoreTake(wbs, portMAX_DELAY);
+            _bs->write((const uint8_t*)greet.c_str(), greet.length());
+            xSemaphoreGive(wbs);
+        }
+        
         xSemaphoreTake(wbs, portMAX_DELAY);
         if (_bs->available()) {
             String str;
@@ -353,6 +361,6 @@ static void BluetoothListeningTask(void* params)
         }
         xSemaphoreGive(wbs);
 
-        vTaskDelay(10);
+        vTaskDelay(50);
     }
 }
