@@ -267,10 +267,19 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         return;
     }
     case HGM_BT_PACK_METHOD_GET_M: {
-        // TODO: test
         dataToSave = String(HGM_BT_PACK_METHOD_NULL);
         *method = HGM_BT_PACK_METHOD_GET_M;
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_NORMAL);
+        return;
+    }
+    case HGM_BT_PACK_METHOD_HWM_CONF: {
+        // TODO: 
+        dataToSave = "null";
+        *method = HGM_BT_PACK_METHOD_HWM_CONF;
+
+
+
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return;
     }
     default:
@@ -339,7 +348,6 @@ static void BluetoothListeningTask(void* params)
     String greet = "Hello, I am HellGateMonitor!!";
 
     while (true) {
-        // TODO:
         if (!_bs->connected()) {
             flag = false;
             vTaskDelay(1000);

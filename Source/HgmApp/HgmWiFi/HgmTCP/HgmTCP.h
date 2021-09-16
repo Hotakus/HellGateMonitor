@@ -13,6 +13,16 @@
 #include <WiFi.h>
 
 namespace HgmApplication {
+#define TCP_PACK_HEADER "HgmTCP"
+    typedef enum HgmTcpPackMethod
+    {
+        // Send method
+        HGM_TCP_PACK_METHOD_HGMC_IDENTIFY,          // (0) Identify TCP client is HGMC or not
+        HGM_TCP_PACK_METHOD_OK,                     // (1) OK
+        HGM_TCP_PACK_METHOD_ERROR,                  // (2) ERROR
+        HGM_TCP_PACK_METHOD_REQUEST_HWI,		    // (3) Request Hardware info from HGMC, it will get hardware info from HGMC according to config params
+
+    };
 
     typedef enum TcpControlMethod
     {

@@ -4,19 +4,19 @@ HGM的蓝牙数据包格式(JSON)
 
 ---
 
-## 下位机接收格式
+## 下位机数据包格式
 
 |------|数据头标识|数据类型    |数据块      |
 |:----:|:-------:|:--------:|:----------:|
 | **Key**|Header   |DataType  |Data        |
-| **Value**|Hgm  |dt (见下文)|data(见下文)|
+| **Value**|HgmBT  |dt (见下文)|data(见下文)|
 
 可以自己添加命令实现更多功能(详见 [BT代码](./HgmBT.h) )
 
 ![](../../../Image/BasicBTCommands.png)
 
 ## 数据包例子：
-**获取命令长度M** （DataType == 0）
+**获取命令长度M（被动）** （DataType == 0）
 ```json
 {
   "Header": "Hgm",
@@ -26,23 +26,23 @@ HGM的蓝牙数据包格式(JSON)
 ```
 返回长度M
 
-**普通数据接收** （DataType == 1）
+**普通数据接收（被动）** （DataType == 3）
 ```json
 {
   "Header": "Hgm",
-  "DataType": "1",
+  "DataType": "3",
   "Data": "Hello world! HellGateMonitor!!!"
 }
 ```
 
 普通数据模式下，HGM接收后在串口终端输出相应Data信息
 
-**WiFi配置和开启** （DataType == 3）
+**WiFi配置和开启（被动）** （DataType == 4）
 
 ```json
 {
   "Header": "Hgm",
-  "DataType": "0",
+  "DataType": "4",
   "Data": {
     "ssid": "xxx",
     "password": "xxx"
@@ -50,23 +50,23 @@ HGM的蓝牙数据包格式(JSON)
 }
 ```
 
-**WiFi关闭** （DataType == 4）
+**WiFi关闭（被动）** （DataType == 5）
 
 ```json
 {
   "Header": "Hgm",
-  "DataType": "1",
+  "DataType": "5",
   "Data": "Any content"
 }
 ```
 
-**天气等信息配置** （DataType == 5）  
+**天气等信息配置（被动）** （DataType == 6）  
 API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只是使用则不需要了解
 
 ```json
 {
   "Header": "Hgm",
-  "DataType": "2",
+  "DataType": "6",
   "Data": {
     "id": "101010300",
     "adm": "Beijing",
@@ -79,24 +79,24 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 }
 ```
 
-**B站配置** （DataType == 6）
+**B站配置（被动）** （DataType == 7）
 
 ```json
 {
   "Header": "Hgm",
-  "DataType": "3",
+  "DataType": "7",
   "Data": {
     "uid": "xxx"
   }
 }
 ```
-**配置硬件监控UI** （DataType == 7）
+**配置硬件监控UI（被动）** （DataType == 8）
 ```json
 {
   "Header": "Hgm",
-  "DataType": "5",
+  "DataType": "8",
   "Data": {
-    "default" : "1",
+    "isDefault" : "1",
     "leftTop" : "CPU",
     "leftBottom" : "GPU",
     "rightTop" : "Memory",
@@ -142,6 +142,17 @@ OK（DataType == 1）
   "Data": "ok"
 }
 ```
+
+ERROR（DataType == 2）
+
+```json
+{
+  "Header": "Hgm",
+  "DataType": "2",
+  "Data": "error"
+}
+```
+
 
 ---
 

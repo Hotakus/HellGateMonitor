@@ -45,7 +45,7 @@ Bluetooth 和 Wi-Fi TCP 与上位机通信的数据包格式为本人规定的�
 ，可通过命令和固件定制，添加更多功能。  
 
 [HGM 的蓝牙JSON数据包格式](./Source/HgmApp/HgmBT/README.md)  
-[HGM 的WiFi TCP JSON数据包格式]
+[HGM 的WiFi TCP JSON数据包格式](./Source/HgmApp/HgmWiFi/HgmTCP/README.md)
 
 ---
 

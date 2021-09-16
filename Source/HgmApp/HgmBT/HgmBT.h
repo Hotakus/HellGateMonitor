@@ -16,19 +16,20 @@
 
 namespace HgmApplication {
 #define BT_DEFAULT_NAME "HellGateMonitorBT"
-#define BT_PACK_HEADER "Hgm"
+#define BT_PACK_HEADER "HgmBT"
 	typedef enum HgmBTPackMethod
 	{
 		HGM_BT_PACK_METHOD_GET_M,			// (0) Get max length of the "HgmBTPackMethod"
 		HGM_BT_PACK_METHOD_OK,				// (1) Ok pack
-		HGM_BT_PACK_METHOD_NORMAL,			// (2) Pack is Normal data
+		HGM_BT_PACK_METHOD_ERROR,    		// (2) Error
+		HGM_BT_PACK_METHOD_NORMAL,			// (3) Pack is Normal data
 
 		// Received method
-		HGM_BT_PACK_METHOD_WIFI_CONF,		// (3) WiFi config
-		HGM_BT_PACK_METHOD_WIFI_CLOSE,		// (4) WiFi close
-		HGM_BT_PACK_METHOD_WEATHER_CONF,	// (5) Weather config
-		HGM_BT_PACK_METHOD_BILIBILI_CONF,	// (6) BiliBili config
-		HGM_BT_PACK_METHOD_HWM_CONF,		// (7) Hardware monitor config
+		HGM_BT_PACK_METHOD_WIFI_CONF,		// (4) WiFi config
+		HGM_BT_PACK_METHOD_WIFI_CLOSE,		// (5) WiFi close
+		HGM_BT_PACK_METHOD_WEATHER_CONF,	// (6) Weather config
+		HGM_BT_PACK_METHOD_BILIBILI_CONF,	// (7) BiliBili config
+		HGM_BT_PACK_METHOD_HWM_CONF,		// (8) Hardware monitor config
 
 
 		/* Add new method in here */
