@@ -7,16 +7,14 @@ HGM的TCP数据包格式(JSON)
 
 
 ## 与HGMC的通信流程
-1. HGM通过同一局域网TCP连接到HGMC后向HGMC发送识别请求
-2. 识别成功则HGMC返回给HGM："HellGateMonitor"
-3. HGM收到正确相应后进入工作模式，等待HGMC的进一步操作
+1. HGM与HGMC通过局域网TCP链接后，HGMC可由用户手动发送识别请求
+2. 识别成功则HGM返回给HGMC："HellGateMonitor"
+3. HGM正确响应后进入工作模式，等待HGMC的进一步操作
 4. 若HGMC打开“普通模式”，则正常进行普通的TCP通信，通信内容会实时显示在HGM串口
 5. 若HGMC打开“HGM模式”，则只接收和响应HGM特定的命令数据包，且不会显示内容到HGM串口
 6. 若断开TCP连接，则自动关闭HGM的“硬件监控”，并等待下一次连接
 7. 若HGM当前不处于硬件监控状态，则只响应普通TCP数据，并实时显示TCP数据到HGM串口 
 8. 若HGM在连接状态且打开硬件监控，HGM默认每2秒向HGMC请求一次硬件数据（不建议小于两秒），连续请求失败次数过多则退出监控模式
-
-
 
 
 ## 下位机数据包格式
@@ -26,8 +24,8 @@ HGM的TCP数据包格式(JSON)
 | **Key**|Header   |DataType  |Data        |
 | **Value**|HgmBT  |dt (见下文)|data(见下文)|
 
-<br>
 
+## 数据包示例
 **识别当前接入设备是否为HGM（被动）** （DataType == 0）
 ```json
 {
@@ -52,9 +50,112 @@ HGM的TCP数据包格式(JSON)
   }
 }
 ```
-1 为请求，0 为略过
+1 为请求，0 为略过  
+请求成功则接收到OK数据包，紧跟着“硬件信息”数据包
 
-
+**硬件信息数据包** （DataType == 4）
+```json
+{
+  "Header": "HgmTCP",
+  "DataType": "4",
+  "Data": {
+    "CPU" : {
+      "name" : "name",
+      "coreCount" : 6,
+      "freq" : {
+        "bus" : 100,
+        "current" : [4300, 4300, 4300, 4300, 4300, 4300]
+      }, 
+      "temp" : {
+        "current" : [51, 50, 51, 50, 51, 50],
+        "max" : 80,
+        "average" : 50.5
+      },
+      "load" : {
+        "total" : 10,
+        "current" : [10, 12, 11, 15, 9, 11]
+      },
+      "power" : {
+        "current" : 55,
+        "max" : 600
+      }
+    },
+    "GPU" : {
+      "name" : "name",
+      "temp" : {
+        "current" : 39,
+        "max" : 42
+      },
+      "freq" : {
+        "core" : {
+          "current" : 300,
+          "max" : 1500
+        },
+        "mem" : {
+          "current" : 405,
+          "max" : 6000
+        }
+      },
+      "load" : {
+        "coreCurrent" : 10,
+        "coreMax" : 20
+      },
+      "mem" : {
+        "free" : 4000,
+        "used" : 2000,
+        "total" : 6000
+      },
+      "power" : {
+        "current" : 17.5,
+        "max" : 34.5
+      }
+    },
+    "Memory" : {
+      "data" : {
+        "free" : 7.9,
+        "used" : 8.0,
+        "total" : 15.9
+      },
+      "load" : {
+        "current" : 50,
+        "max" : 60
+      }
+    },
+    "HardDisk" : {
+      "count" : 3,
+      "data" : [
+        {
+          "name" : "Colorful SL500 512GB DDR (可能为空)",
+          "temp" : {
+            "current" : 40,
+            "max" : 40
+          },
+          "load" : {
+            "current" : 50
+          }
+        },
+        {}, {}
+      ]
+    },
+    "Network" : {
+      "wlan" : {
+        
+      },
+      "ethernet" : {
+        "data" : {
+          "uploaded" : 0.5,
+          "downloaded" : 5
+        },
+        "throughput" : {
+          "upload" : 0.0,
+          "download" : 10000000
+        }
+      }
+    }
+  }
+}
+```
+若发送请求时未请求对应的硬件信息，则对应参数返回空值，若对应参数请求但返回空值，则认为其请求错误
 
 ---
 

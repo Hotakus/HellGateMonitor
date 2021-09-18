@@ -105,7 +105,7 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
 }
 ```
 **default** 为 1 代表使用默认配置，为 0 代表使用新配置，并覆写配置文件  
-**Data** 候选有：CPU、GPU、Memory、HardDisk、Network、Fans(风扇)
+**Data** 候选有：CPU、GPU、Memory、HardDisk、Network
 
 <br>
 
