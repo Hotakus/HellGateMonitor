@@ -1,0 +1,99 @@
+﻿{
+  "Header": "HgmTCP",
+  "DataType": "4",
+  "Data": {
+    "CPU" : {
+      "name" : "name",
+      "coreCount" : 6,
+      "freq" : {
+        "bus" : 100,
+        "current" : [4300, 4300, 4300, 4300, 4300, 4300]
+      },
+      "temp" : {
+        "current" : [51, 50, 51, 50, 51, 50],
+        "max" : 80,
+        "average" : 50.5
+      },
+      "load" : {
+        "total" : 10,
+        "current" : [10, 12, 11, 15, 9, 11]
+      },
+      "power" : {
+        "current" : 55,
+        "max" : 600
+      }
+    },
+    "GPU" : {
+      "name" : "name",
+      "temp" : {
+        "current" : 39,
+        "max" : 42
+      },
+      "freq" : {
+        "core" : {
+          "current" : 300,
+          "max" : 1500
+        },
+        "mem" : {
+          "current" : 405,
+          "max" : 6000
+        }
+      },
+      "load" : {
+        "coreCurrent" : 10,
+        "coreMax" : 20
+      },
+      "mem" : {
+        "free" : 4000,
+        "used" : 2000,
+        "total" : 6000
+      },
+      "power" : {
+        "current" : 17.5,
+        "max" : 34.5
+      }
+    },
+    "Memory" : {
+      "data" : {
+        "free" : 7.9,
+        "used" : 8.0,
+        "total" : 15.9
+      },
+      "load" : {
+        "current" : 50,
+        "max" : 60
+      }
+    },
+    "HardDisk" : {
+      "count" : 3,
+      "data" : [
+        {
+          "name" : "Colorful SL500 512GB DDR (可能为空)",
+          "temp" : {
+            "current" : 40,
+            "max" : 40
+          },
+          "load" : {
+            "current" : 50
+          }
+        },
+        {}, {}
+      ]
+    },
+    "Network" : {
+      "wlan" : {
+
+      },
+      "ethernet" : {
+        "data" : {
+          "uploaded" : 0.5,
+          "downloaded" : 5
+        },
+        "throughput" : {
+          "upload" : 0.0,
+          "download" : 10000000
+        }
+      }
+    }
+  }
+}
