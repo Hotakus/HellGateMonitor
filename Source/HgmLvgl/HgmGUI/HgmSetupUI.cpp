@@ -42,10 +42,10 @@ static bool initFlag = false;
 // progress bar
 static lv_obj_t* pb;
 // LOGO
-lv_obj_t* logo;
+static lv_obj_t* logo;
 // progress label
-lv_obj_t* prevCheckLabel;
-lv_obj_t* curCheckLabel;
+static lv_obj_t* prevCheckLabel;
+static lv_obj_t* curCheckLabel;
 static lv_style_t clStyle;
 
 //
@@ -78,12 +78,12 @@ void HgmGUI::HgmSetupUI::Begin()
 {
     //// Set the bg for lv_scr_act()
     //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
-    //lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
+    lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
 
-    lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
+    /*lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
     lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_width(bg, 240);
+    lv_obj_set_width(bg, 240);*/
     lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
 
     // logo
@@ -98,9 +98,9 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&logoAnim, lv_anim_path_overshoot);
     lv_anim_start(&logoAnim);
-    
+
     vTaskDelay(400);
-    
+
     // progress bar
     pb = lv_bar_create(lv_scr_act());
     lv_obj_set_size(pb, 135, 5);
@@ -118,12 +118,12 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_anim_set_exec_cb(&pdAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&pdAnim, lv_anim_path_overshoot);
     lv_anim_start(&pdAnim);
-    
+
     // progress label
     lv_style_init(&clStyle);
     lv_style_set_text_font(&clStyle, &k12x8_8px);
     lv_style_set_text_color(&clStyle, lv_color_make(0xFF, 0xFF, 0xFF));
-    
+
     curCheckLabel = lv_label_create(lv_scr_act());
     lv_label_set_text(curCheckLabel, " ");
     lv_obj_add_style(curCheckLabel, &clStyle, 0);
@@ -135,7 +135,7 @@ void HgmGUI::HgmSetupUI::Begin()
     lv_obj_add_style(prevCheckLabel, &clStyle, 0);
     lv_obj_align(prevCheckLabel, LV_ALIGN_CENTER, 0, 10);
     lv_label_set_recolor(prevCheckLabel, true);
-    
+
     vTaskDelay(700);
 
     // For test
@@ -183,43 +183,53 @@ void HgmGUI::HgmSetupUI::ComponentInitDone()
     lv_anim_t barAnim;
     lv_anim_init(&barAnim);
     lv_anim_set_values(&barAnim, -30, 50);
-    lv_anim_set_time(&barAnim, 1000);
+    lv_anim_set_time(&barAnim, 700);
     lv_anim_set_exec_cb(&barAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&barAnim, lv_anim_path_overshoot);
     lv_anim_set_var(&barAnim, pb);
-    lv_anim_start(&barAnim);
-    vTaskDelay(100);
 
     /* label out */
     lv_anim_t checkLabelAnim;
     lv_anim_init(&checkLabelAnim);
     lv_anim_set_values(&checkLabelAnim, 20, 100);
-    lv_anim_set_time(&checkLabelAnim, 1000);
+    lv_anim_set_time(&checkLabelAnim, 600);
     lv_anim_set_exec_cb(&checkLabelAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&checkLabelAnim, lv_anim_path_overshoot);
     lv_anim_set_var(&checkLabelAnim, curCheckLabel);
-    lv_anim_start(&checkLabelAnim);
-    vTaskDelay(100);
 
     lv_anim_t checkLabelAnim2;
     lv_anim_init(&checkLabelAnim2);
     lv_anim_set_values(&checkLabelAnim2, 10, 100);
-    lv_anim_set_time(&checkLabelAnim2, 1000);
+    lv_anim_set_time(&checkLabelAnim2, 500);
     lv_anim_set_exec_cb(&checkLabelAnim2, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&checkLabelAnim2, lv_anim_path_overshoot);
     lv_anim_set_var(&checkLabelAnim2, prevCheckLabel);
-    lv_anim_start(&checkLabelAnim2);
-    vTaskDelay(100);
 
     lv_anim_t logoAnim;
     lv_anim_set_var(&logoAnim, logo);
-    lv_anim_set_values(&logoAnim, 25, -32);
+    lv_anim_set_values(&logoAnim, lv_obj_get_y_aligned(logo), -32);
     lv_anim_set_time(&logoAnim, 700);
     lv_anim_set_exec_cb(&logoAnim, (lv_anim_exec_xcb_t)lv_obj_set_y);
     lv_anim_set_path_cb(&logoAnim, lv_anim_path_overshoot);
-    lv_anim_start(&logoAnim);
-    vTaskDelay(200);
+
+    // anim time line
+    lv_anim_timeline_t* at = lv_anim_timeline_create();
+    lv_anim_timeline_add(at, 0, &barAnim);
+    lv_anim_timeline_add(at, 100, &checkLabelAnim);
+    lv_anim_timeline_add(at, 200, &checkLabelAnim2);
+    lv_anim_timeline_add(at, 300, &logoAnim);
+
+    vTaskDelay(lv_anim_timeline_start(at));
+
+    lv_obj_del(logo);
+    lv_obj_del(prevCheckLabel);
+    lv_obj_del(curCheckLabel);
+    lv_obj_del(pb);
+
+    vTaskDelete(setupTaskHandle);
+    vQueueDelete(setupMsgBox);
 }
+
 
 /**
  * @brief Setup check task.

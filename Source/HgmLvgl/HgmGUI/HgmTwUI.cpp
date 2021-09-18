@@ -115,7 +115,7 @@ void HgmGUI::HgmTwUI::Begin()
     lv_anim_set_early_apply(anim_book, false);
     lv_anim_set_exec_cb(anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_path_cb(anim_book, lv_anim_path_ease_in_out);
-    lv_anim_set_time(anim_book, 800);
+    lv_anim_set_time(anim_book, 900);
 
     // anim_tw
     lv_anim_init(anim_t);
@@ -146,8 +146,7 @@ void HgmGUI::HgmTwUI::Begin()
     lv_anim_timeline_add(at, 800, anim_w);
     lv_anim_timeline_add(at, 1800, anim_tw_expand);
 
-    size_t _t = lv_anim_timeline_start(at);
-    vTaskDelay(_t);
+    vTaskDelay(lv_anim_timeline_start(at));
 
 
     // TODO: add animation
@@ -200,10 +199,3 @@ static void ShowBili()
 
 }
 
-static void ShowTimeTask(void* params)
-{
-    while (true) {
-        ShowTime();
-        vTaskDelay(500);
-    }
-}

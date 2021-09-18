@@ -195,25 +195,31 @@ void setup()
 
 	vTaskDelay(200);
 
-	delete hgmSetupUI;
-
-	// TODO: Use task to run
-	Serial.println(ESP.getSdkVersion());
-	Serial.println(ESP.getChipCores());
-	Serial.println(ESP.getChipModel());
-	Serial.println(ESP.getCpuFreqMHz());
-	Serial.println(ESP.getFlashChipSize());
-	Serial.println(ESP.getFlashChipSpeed());
-	Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	Serial.println(ESP.getSketchSize());
+	component.type = HGM_COMPONENT_DONE;
+	component.curStatus = true;
+	component.waitStatus = true;
+	hgmSetupUI->ComponentControl(&component);
+	vTaskDelay(500);
+	hgmSetupUI->ComponentInitDone();
 
 	hgmLvgl->HgmLvglUIBegin();
 
-	char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-	vTaskList(task_buf);
-	Serial.printf("%s\n", task_buf);
-	Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-	heap_caps_free(task_buf);
+	// Serial.println(ESP.getSdkVersion());
+	// Serial.println(ESP.getChipCores());
+	// Serial.println(ESP.getChipModel());
+	// Serial.println(ESP.getCpuFreqMHz());
+	// Serial.println(ESP.getFlashChipSize());
+	// Serial.println(ESP.getFlashChipSpeed());
+	// Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+	// Serial.println(ESP.getSketchSize());
+
+
+	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
+	// vTaskList(task_buf);
+	// Serial.printf("%s\n", task_buf);
+	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+	// heap_caps_free(task_buf);
+
 }
 
 void loop()

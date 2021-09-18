@@ -261,7 +261,6 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
     }
     case HGM_BT_PACK_METHOD_OK: {
-        // TODO: test
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_OK;
         return;
