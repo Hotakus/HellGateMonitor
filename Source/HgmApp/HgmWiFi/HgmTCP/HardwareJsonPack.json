@@ -2,96 +2,155 @@
   "Header": "HgmTCP",
   "DataType": "4",
   "Data": {
-    "CPU" : {
-      "name" : "name",
-      "coreCount" : 6,
-      "freq" : {
-        "bus" : 100,
-        "current" : [4300, 4300, 4300, 4300, 4300, 4300]
+    "CPU": {
+      "name": "Intel Core i7-8700",
+      "coreCount": 6,
+      "freq": {
+        "bus": 99.75,
+        "current": [
+          4289.25,
+          4289.25,
+          4289.25,
+          4289.25,
+          1895.25,
+          1895.25
+        ]
       },
-      "temp" : {
-        "current" : [51, 50, 51, 50, 51, 50],
-        "max" : 80,
-        "average" : 50.5
+      "temp": {
+        "current": [
+          57.0,
+          72.0,
+          68.0,
+          58.0,
+          57.0,
+          57.0
+        ],
+        "max": 72.0,
+        "average": 61.5
       },
-      "load" : {
-        "total" : 10,
-        "current" : [10, 12, 11, 15, 9, 11]
+      "load": {
+        "total": 9.98,
+        "current": [
+          8.72,
+          19.77,
+          4.65,
+          6.4,
+          6.4,
+          13.95
+        ]
       },
-      "power" : {
-        "current" : 55,
-        "max" : 600
+      "power": {
+        "current": 35.06,
+        "max": 35.06
       }
     },
-    "GPU" : {
-      "name" : "name",
-      "temp" : {
-        "current" : 39,
-        "max" : 42
+    "GPU": {
+      "name": "NVIDIA GeForce GTX 1660 Ti",
+      "temp": {
+        "current": 39.0,
+        "max": 39.0
       },
-      "freq" : {
-        "core" : {
-          "current" : 300,
-          "max" : 1500
+      "freq": {
+        "core": {
+          "current": 300.0,
+          "max": 300.0
         },
-        "mem" : {
-          "current" : 405,
-          "max" : 6000
+        "mem": {
+          "current": 405.0,
+          "max": 405.0
         }
       },
-      "load" : {
-        "coreCurrent" : 10,
-        "coreMax" : 20
+      "load": {
+        "coreCurrent": 14.0,
+        "coreMax": 14.0
       },
-      "mem" : {
-        "free" : 4000,
-        "used" : 2000,
-        "total" : 6000
+      "mem": {
+        "free": 4335.0,
+        "used": 1808.0,
+        "total": 6144.0
       },
-      "power" : {
-        "current" : 17.5,
-        "max" : 34.5
+      "power": {
+        "current": 17.96,
+        "max": 18.37
       }
     },
-    "Memory" : {
-      "data" : {
-        "free" : 7.9,
-        "used" : 8.0,
-        "total" : 15.9
+    "Memory": {
+      "data": {
+        "free": 4.09,
+        "used": 11.83,
+        "total": 15.92
       },
-      "load" : {
-        "current" : 50,
-        "max" : 60
+      "load": {
+        "current": 59.72,
+        "max": 59.72
       }
     },
-    "HardDisk" : {
-      "count" : 3,
-      "data" : [
+    "HardDisk": {
+      "count": 3,
+      "data": [
         {
-          "name" : "Colorful SL500 512GB DDR (可能为空)",
-          "temp" : {
-            "current" : 40,
-            "max" : 40
+          "name": "Hard Disk",
+          "temp": {
+            "current": 0.0,
+            "max": 0.0
           },
-          "load" : {
-            "current" : 50
+          "load": {
+            "current": 82.38
+          },
+          "throughput": {
+            "readRate": 179918.4,
+            "writeRate": 768209.4
           }
         },
-        {}, {}
+        {
+          "name": "Colorful SL500 512GB DDR",
+          "temp": {
+            "current": 40.0,
+            "max": 40.0
+          },
+          "load": {
+            "current": 56.54
+          },
+          "throughput": {
+            "readRate": 327728.2,
+            "writeRate": 444176.5
+          }
+        },
+        {
+          "name": "GALAX TA1D0120A",
+          "temp": {
+            "current": 33.0,
+            "max": 33.0
+          },
+          "load": {
+            "current": 66.88
+          },
+          "throughput": {
+            "readRate": 158001.2,
+            "writeRate": 305228.0
+          }
+        }
       ]
     },
-    "Network" : {
-      "wlan" : {
-
-      },
-      "ethernet" : {
-        "data" : {
-          "uploaded" : 0.5,
-          "downloaded" : 5
+    "Network": {
+      "wlan": {
+        "data": {
+          "uploaded": 0.0,
+          "downloaded": 0.01
         },
-        "throughput" : {
-          "upload" : 0.0,
-          "download" : 10000000
+        "throughput": {
+          "upload": 94.29,
+          "download": 94.29
+        }
+      },
+      "ethernet": {
+        "data": {
+          "uploaded": 0.0,
+          "downloaded": 0.0
+        },
+        "throughput": {
+          "upload": 0.0,
+          "download": 0.0
         }
       }
     }
