@@ -184,8 +184,11 @@
       <FileType>CppCode</FileType>
     </ClInclude>
     <ClInclude Include="Source\HgmApp\BiliInfoRecv\BiliInfoRecv.h" />
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.h" />
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.h" />
     <ClInclude Include="Source\HgmApp\HgmApp.h" />
     <ClInclude Include="Source\HgmApp\HgmBT\HgmBT.h" />
+    <ClInclude Include="Source\HgmApp\HgmJsonUtil.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h" />
     <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h" />
@@ -320,8 +323,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmApp\BiliInfoRecv\BiliInfoRecv.cpp" />
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.cpp" />
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.cpp" />
     <ClCompile Include="Source\HgmApp\HgmApp.cpp" />
     <ClCompile Include="Source\HgmApp\HgmBT\HgmBT.cpp" />
+    <ClCompile Include="Source\HgmApp\HgmJsonUtil.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp" />
     <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp" />

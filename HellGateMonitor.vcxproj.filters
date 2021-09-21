@@ -425,6 +425,15 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\HgmJsonUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -932,6 +941,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\k12x8_16px_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HgmJsonUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

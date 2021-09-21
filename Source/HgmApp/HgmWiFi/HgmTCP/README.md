@@ -45,8 +45,7 @@ HGM的TCP数据包格式(JSON)
     "GPU" : "1",
     "Memory" : "1",
     "HardDisk" : "1",
-    "Network" : "0",
-    "Fans" : "0"
+    "Network" : "0"
   }
 }
 ```

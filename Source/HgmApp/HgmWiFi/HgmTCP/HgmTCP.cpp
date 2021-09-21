@@ -10,6 +10,8 @@
 
 #include "HgmTCP.h"
 #include "../../HgmJsonUtil.h"
+#include "../../HardwareInfoRecv/HardwareCpuData.h"
+#include "../../HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -22,6 +24,8 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 #define SERVER_DEFAULT_PORT 20
 
+extern HardwareCpuData hardwareCpuData;
+extern HardwareRequest hardwareRequest;
 extern SemaphoreHandle_t wbs;
 
 static WiFiClass wifi = WiFi;
@@ -34,6 +38,7 @@ static TcpControlMethod tcm;
 
 static String _dataToSave;
 static HgmTcpPackMethod _recvMethod;
+
 
 static TaskHandle_t tcpControlTaskHandle = NULL;
 static QueueHandle_t beginMsgbox = NULL;
@@ -133,8 +138,6 @@ WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
 String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod method)
 {
     DynamicJsonDocument hgmPack(512);
-    String tmp;
-    JsonObject Data;
 
     hgmPack["Header"] = TCP_PACK_HEADER;
     hgmPack["DataType"] = "";
@@ -153,6 +156,11 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
     case HGM_TCP_PACK_METHOD_NORMAL: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_NULL - 1);
         hgmPack["Data"] = dataToPack;
+    }
+    case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
+        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        hgmPack["Data"] = "ok";
+        break;
     }
     default:
         break;
@@ -192,13 +200,11 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     size_t packSize = (wc.available() + 1);
     HotakusDynamicJsonDocument rawPack(packSize + 1024);
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
-
     buf[packSize - 1] = '\0';
     for (size_t i = 0; i < packSize - 1; i++)
         buf[i] = (char)wc.read();
     Serial.printf("%s\n", buf);
     deserializeJson(rawPack, buf);
-
     heap_caps_free(buf);
 
     // Match Header
@@ -225,7 +231,12 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     }
     case HGM_TCP_PACK_METHOD_HWI: {
 
-        Serial.println(rawPack["Data"]["CPU"]["name"].as<String>());
+        // TODO: realize another requests
+        if (hardwareRequest.rCpu)
+            hardwareCpuData.Set(rawPack);
+
+        Serial.println(hardwareCpuData.name);
+        Serial.println(hardwareCpuData.coreFreq[1]);
 
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
