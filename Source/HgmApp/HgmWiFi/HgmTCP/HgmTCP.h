@@ -70,7 +70,7 @@ namespace HgmApplication {
         static String PackRawData(String& dataToPack, HgmTcpPackMethod method);
         /* To send data pack, used by another Hgm App */
         static void SendDatePack(String& rawData, HgmTcpPackMethod method);
-        static HgmTcpPackMethod ReceiveDataPack(String& dataToSave, HgmTcpPackMethod* method);
+        static HgmTcpPackMethod ReceiveDataPack();
     };
 
 

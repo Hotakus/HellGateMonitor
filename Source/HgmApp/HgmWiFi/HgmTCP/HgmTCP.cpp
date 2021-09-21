@@ -172,6 +172,26 @@ void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod meth
     wc.write((uint8_t*)pack.c_str(), pack.length());
 }
 
+
+
+struct HotakusDefaultAllocator {
+    void* allocate(size_t size) {
+        return heap_caps_calloc(1, size, MALLOC_CAP_SPIRAM);
+    }
+
+    void deallocate(void* ptr) {
+        heap_caps_free(ptr);
+    }
+
+    void* reallocate(void* ptr, size_t new_size) {
+        return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
+    }
+};
+
+typedef BasicJsonDocument<HotakusDefaultAllocator> HotakusDynamicJsonDocument;
+
+
+
 /**
  * @brief Receive and analyze the data pack.
  * @param DateToSave Return data that was analyzed
@@ -179,28 +199,32 @@ void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod meth
  *
  * @return if OK return HGM_TCP_PACK_METHOD_OK else HGM_TCP_PACK_METHOD_ERROR
  */
-HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack(String& dataToSave, HgmTcpPackMethod* method)
+HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
 {
-    dataToSave = "";
-
     if (!wc.available())
         return HGM_TCP_PACK_METHOD_ERROR;
 
-    DynamicJsonDocument rawPack(2048);
+    String str = "";
 
     // Receive raw pack
-    while (wc.available())
-        dataToSave.concat((char)wc.read());
-    deserializeJson(rawPack, dataToSave.c_str());
-    Serial.println(dataToSave);
+    size_t packSize = (wc.available() + 1);
+    HotakusDynamicJsonDocument rawPack(packSize + 1024);
+    uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+
+    buf[packSize - 1] = '\0';
+    for (size_t i = 0; i < packSize - 1; i++)
+        buf[i] = (char)wc.read();
+    Serial.printf("%s\n", buf);
+    deserializeJson(rawPack, buf);
+
+    heap_caps_free(buf);
 
     // Match Header
     String Header = rawPack["Header"];
     if (Header.compareTo(TCP_PACK_HEADER)) {
-        dataToSave = "Header error. No a valid HGM TCP pack";
-        Serial.println(dataToSave);
-        *method = HGM_TCP_PACK_METHOD_ERROR;
-        HgmTCP::SendDatePack(dataToSave, *method);
+        String str = "Header error. No a valid HGM TCP pack";
+        Serial.println(str);
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
     }
 
@@ -208,31 +232,26 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack(String& dataToSave, Hgm
     HgmTcpPackMethod DataType = rawPack["DataType"];
     switch (DataType) {
     case HGM_TCP_PACK_METHOD_NORMAL: {
-        dataToSave = "null";
-        *method = HGM_TCP_PACK_METHOD_NORMAL;
 
-        Serial.printf("(TCP %d)%s: %s\n", 
-            rawPack["Data"].as<String>().length(), 
+        Serial.printf("(TCP %d)%s: %s\n",
+            rawPack["Data"].as<String>().length(),
             wc.remoteIP().toString().c_str(),
             rawPack["Data"].as<String>().c_str());
 
-        HgmTCP::SendDatePack(dataToSave, HGM_TCP_PACK_METHOD_OK);
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-        dataToSave = "null";
-        *method = HGM_TCP_PACK_METHOD_HWI;
 
+        Serial.println(rawPack["Data"]["CPU"]["name"].as<String>());
 
-
-        HgmTCP::SendDatePack(dataToSave, HGM_TCP_PACK_METHOD_OK);
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
     }
     default:
-        dataToSave = "DataType error. it's not a valid HGM TCP pack";
-        Serial.println(dataToSave);
-        *method = HGM_TCP_PACK_METHOD_ERROR;
-        HgmTCP::SendDatePack(dataToSave, HGM_TCP_PACK_METHOD_OK);
+        str = "DataType error. it's not a valid HGM TCP pack";
+        Serial.println(str);
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_OK;
     }
 
@@ -331,20 +350,7 @@ static void TcpServerListeningTask(void* params)
 
         while (wc.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
-            //if (wc.available()) {
-                // TODO: Analyze HGM data pack
-                /*size_t size = wc.available();
-                uint8_t *buf = (uint8_t*)heap_caps_calloc(size + 1,  1, MALLOC_CAP_SPIRAM);
-                buf[wc.available()] = '\0';
-                wc.read(buf, size);
-                Serial.print(wc.remoteIP());
-                Serial.print(" -> ");
-                Serial.printf("%s\n", buf);
-                heap_caps_free(buf);*/
-            //}
-
-            HgmTCP::ReceiveDataPack(_dataToSave, &_recvMethod);
-
+            HgmTCP::ReceiveDataPack();
             xSemaphoreGive(wbs);
             vTaskDelay(10);
         }
@@ -353,4 +359,9 @@ static void TcpServerListeningTask(void* params)
     _delay:
         vTaskDelay(500);
     }
+
+
+
+
+
 }
