@@ -12,36 +12,36 @@
           4289.25,
           4289.25,
           4289.25,
-          1895.25,
-          1895.25
+          4289.25,
+          4289.25
         ]
       },
       "temp": {
         "current": [
           57.0,
-          72.0,
-          68.0,
-          58.0,
+          69.0,
           57.0,
-          57.0
+          71.0,
+          57.0,
+          58.0
         ],
-        "max": 72.0,
+        "max": 71.0,
         "average": 61.5
       },
       "load": {
-        "total": 9.98,
+        "total": 10.82,
         "current": [
-          8.72,
-          19.77,
-          4.65,
-          6.4,
-          6.4,
-          13.95
+          6.32,
+          22.41,
+          7.47,
+          7.47,
+          7.47,
+          13.79
         ]
       },
       "power": {
-        "current": 35.06,
-        "max": 35.06
+        "current": 37.98,
+        "max": 37.98
       }
     },
     "GPU": {
@@ -61,35 +61,35 @@
         }
       },
       "load": {
-        "coreCurrent": 14.0,
-        "coreMax": 14.0
+        "coreCurrent": 13.0,
+        "coreMax": 13.0
       },
       "mem": {
-        "free": 4335.0,
-        "used": 1808.0,
+        "free": 4387.0,
+        "used": 1756.0,
         "total": 6144.0
       },
       "power": {
-        "current": 17.96,
-        "max": 18.37
+        "current": 17.53,
+        "max": 18.52
       }
     },
     "Memory": {
       "data": {
-        "free": 4.09,
-        "used": 11.83,
+        "free": 3.7,
+        "used": 12.22,
         "total": 15.92
       },
       "load": {
-        "current": 59.72,
-        "max": 59.72
+        "current": 59.89,
+        "max": 59.89
       }
     },
     "HardDisk": {
       "count": 3,
       "data": [
         {
-          "name": "Hard Disk",
+          "name": "Nameless Hard Disk #0",
           "temp": {
             "current": 0.0,
             "max": 0.0
@@ -98,8 +98,8 @@
             "current": 82.38
           },
           "throughput": {
-            "readRate": 179918.4,
-            "writeRate": 768209.4
+            "readRate": 163629.9,
+            "writeRate": 698642.4
           }
         },
         {
@@ -112,8 +112,8 @@
             "current": 56.54
           },
           "throughput": {
-            "readRate": 327728.2,
-            "writeRate": 444176.5
+            "readRate": 299203.9,
+            "writeRate": 405865.5
           }
         },
         {
@@ -123,11 +123,11 @@
             "max": 33.0
           },
           "load": {
-            "current": 66.88
+            "current": 66.42
           },
           "throughput": {
-            "readRate": 158001.2,
-            "writeRate": 305228.0
+            "readRate": 146117.6,
+            "writeRate": 289192.3
           }
         }
       ]
@@ -139,14 +139,14 @@
           "downloaded": 0.01
         },
         "throughput": {
-          "upload": 94.29,
-          "download": 94.29
+          "upload": 0.0,
+          "download": 0.0
         }
       },
       "ethernet": {
         "data": {
-          "uploaded": 0.0,
-          "downloaded": 0.0
+          "uploaded": 0.05,
+          "downloaded": 0.04
         },
         "throughput": {
           "upload": 0.0,
