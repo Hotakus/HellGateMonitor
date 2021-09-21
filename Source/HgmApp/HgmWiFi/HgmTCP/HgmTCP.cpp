@@ -9,6 +9,7 @@
 *******************************************************************/
 
 #include "HgmTCP.h"
+#include "../../HgmJsonUtil.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -17,6 +18,7 @@
 #include <BluetoothSerial.h>
 
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
 
 #define SERVER_DEFAULT_PORT 20
 
@@ -171,26 +173,6 @@ void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod meth
     String pack = HgmTCP::PackRawData(rawData, method);
     wc.write((uint8_t*)pack.c_str(), pack.length());
 }
-
-
-
-struct HotakusDefaultAllocator {
-    void* allocate(size_t size) {
-        return heap_caps_calloc(1, size, MALLOC_CAP_SPIRAM);
-    }
-
-    void deallocate(void* ptr) {
-        heap_caps_free(ptr);
-    }
-
-    void* reallocate(void* ptr, size_t new_size) {
-        return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
-    }
-};
-
-typedef BasicJsonDocument<HotakusDefaultAllocator> HotakusDynamicJsonDocument;
-
-
 
 /**
  * @brief Receive and analyze the data pack.
