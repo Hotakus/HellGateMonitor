@@ -138,6 +138,7 @@ WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
 String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod method)
 {
     DynamicJsonDocument hgmPack(512);
+    String tmp;
 
     hgmPack["Header"] = TCP_PACK_HEADER;
     hgmPack["DataType"] = "";
@@ -159,7 +160,11 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
-        hgmPack["Data"] = "ok";
+        hgmPack["Data"]["CPU"] = String(hardwareRequest.rCpu);
+        hgmPack["Data"]["GPU"] = String(hardwareRequest.rGpu);
+        hgmPack["Data"]["Memory"] = String(hardwareRequest.rMemory);
+        hgmPack["Data"]["HardDisk"] = String(hardwareRequest.rHardDisk);
+        hgmPack["Data"]["Network"] = String(hardwareRequest.rNetwork);
         break;
     }
     default:
