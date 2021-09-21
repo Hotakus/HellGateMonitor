@@ -20,8 +20,14 @@ namespace HgmApplication {
         HGM_TCP_PACK_METHOD_HGMC_IDENTIFY,          // (0) Identify TCP client is HGMC or not
         HGM_TCP_PACK_METHOD_OK,                     // (1) OK
         HGM_TCP_PACK_METHOD_ERROR,                  // (2) ERROR
-        HGM_TCP_PACK_METHOD_REQUEST_HWI,		    // (3) Request Hardware info from HGMC, it will get hardware info from HGMC according to config params
 
+        HGM_TCP_PACK_METHOD_REQUEST_HWI,		    // (3) Request Hardware info from HGMC, it will get hardware info from HGMC according to config params
+        HGM_TCP_PACK_METHOD_HWI,                    // (4) Hardware info pack
+
+        HGM_TCP_PACK_METHOD_NORMAL,                 // (5) Pack is Normal data
+
+
+        HGM_TCP_PACK_METHOD_NULL,                   // (M) Null
     };
 
     typedef enum TcpControlMethod
@@ -59,6 +65,12 @@ namespace HgmApplication {
 
         static WiFiServer* GetWiFiServer();
         static WiFiClient* GetWiFiClient();
+
+        /* Pack the raw data as a data frame via designated method */
+        static String PackRawData(String& dataToPack, HgmTcpPackMethod method);
+        /* To send data pack, used by another Hgm App */
+        static void SendDatePack(String& rawData, HgmTcpPackMethod method);
+        static HgmTcpPackMethod ReceiveDataPack(String& dataToSave, HgmTcpPackMethod* method);
     };
 
 
