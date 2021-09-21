@@ -225,9 +225,6 @@ void HgmGUI::HgmSetupUI::ComponentInitDone()
     lv_obj_del(prevCheckLabel);
     lv_obj_del(curCheckLabel);
     lv_obj_del(pb);
-
-    vTaskDelete(setupTaskHandle);
-    vQueueDelete(setupMsgBox);
 }
 
 

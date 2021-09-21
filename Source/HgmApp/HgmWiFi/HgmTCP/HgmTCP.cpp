@@ -219,6 +219,15 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack(String& dataToSave, Hgm
         HgmTCP::SendDatePack(dataToSave, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
     }
+    case HGM_TCP_PACK_METHOD_HWI: {
+        dataToSave = "null";
+        *method = HGM_TCP_PACK_METHOD_HWI;
+
+
+
+        HgmTCP::SendDatePack(dataToSave, HGM_TCP_PACK_METHOD_OK);
+        return HGM_TCP_PACK_METHOD_OK;
+    }
     default:
         dataToSave = "DataType error. it's not a valid HGM TCP pack";
         Serial.println(dataToSave);

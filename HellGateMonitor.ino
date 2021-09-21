@@ -199,6 +199,7 @@ void setup()
 	hgmSetupUI->ComponentControl(&component);
 	vTaskDelay(500);
 	hgmSetupUI->ComponentInitDone();
+	delete hgmSetupUI;
 
 	hgmLvgl->HgmLvglUIBegin();
 
@@ -212,25 +213,20 @@ void setup()
 	// Serial.println(ESP.getSketchSize());
 
 
-	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-	// vTaskList(task_buf);
-	// Serial.printf("%s\n", task_buf);
-	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-	// heap_caps_free(task_buf);
-
 }
 
 void loop()
 {
-	// char* task_buf = (char*)heap_caps_calloc(1, 4096, MALLOC_CAP_SPIRAM);
-	// vTaskList(task_buf);
-	// Serial.printf("%s\n", task_buf);
-	// Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-	// heap_caps_free(task_buf);
-	// vTaskDelay(1000);
+	char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
+	vTaskList(task_buf);
+	Serial.printf("%s\n", task_buf);
+	Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+	heap_caps_free(task_buf);
 
 	Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(), 
 		heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	vTaskDelay(2000);
+
+	//vTaskDelay(2000);
+
 	vTaskDelay(24 * 3600 * 1000);  // loop per one day
 }
