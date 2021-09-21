@@ -30,6 +30,9 @@ static BluetoothSerial* _bs = NULL;
 
 static char* name = nullptr;
 
+static String _dataToSave = "";
+static HgmBTPackMethod _method = HGM_BT_PACK_METHOD_NULL;
+
 static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
@@ -108,14 +111,18 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
 
     switch (method) {
     case HGM_BT_PACK_METHOD_OK: {
-        // TODO:
         hgmPack["DataType"] = String(HGM_BT_PACK_METHOD_OK);
         hgmPack["Data"] = "ok";
         break;
     }
+    case HGM_BT_PACK_METHOD_ERROR: {
+        hgmPack["DataType"] = String(HGM_BT_PACK_METHOD_ERROR);
+        hgmPack["Data"] = "error";
+        break;
+    }
     case HGM_BT_PACK_METHOD_NORMAL: {
         hgmPack["DataType"] = String(HGM_BT_PACK_METHOD_NULL - 1);
-        hgmPack["Data"] = dataToPack.c_str();
+        hgmPack["Data"] = dataToPack;
     }
     default:
         break;
@@ -141,28 +148,33 @@ void HgmApplication::HgmBT::SendDatePack(String& rawData, HgmBTPackMethod method
  * @brief Receive and analyze the data pack.
  * @param DateToSave Return data that was analyzed
  * @param method Return method
+ * 
+ * @return if OK return HGM_BT_PACK_METHOD_OK else HGM_BT_PACK_METHOD_ERROR
  */
-void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod* method)
+HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod* method)
 {
     if (!_bs->available())
-        return;
+        return HGM_BT_PACK_METHOD_ERROR;
 
     DynamicJsonDocument rawPack(2048);
 
+    dataToSave = "";
+
     // Receive raw pack
-    while (_bs->available()) {
+    while (_bs->available())
         dataToSave.concat((char)_bs->read());
-    }
     deserializeJson(rawPack, dataToSave.c_str());
     Serial.println(dataToSave);
 
     // Match Header
     String Header = rawPack["Header"];
     if (Header.compareTo(BT_PACK_HEADER)) {
-        Serial.println("Header error. No a valid HGM bluetooth pack");
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_NULL;
-        return;
+        dataToSave = "Header error. it's not a valid HGM bluetooth pack";
+        Serial.println(dataToSave);
+        Serial.println(Header);
+        *method = HGM_BT_PACK_METHOD_ERROR;
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_ERROR);
+        return HGM_BT_PACK_METHOD_ERROR;
     }
 
     // Match DataType
@@ -196,7 +208,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
 
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_WIFI_CLOSE: {
         dataToSave = "null";
@@ -205,7 +217,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         hgmApp->StopWiFi();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_WEATHER_CONF: {
         dataToSave = "null";
@@ -227,7 +239,7 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         WeatherInfo::SetWeatherConfig();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_BILIBILI_CONF: {
         dataToSave = "null";
@@ -250,26 +262,28 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
         file.close();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_NORMAL: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_NORMAL;
 
-        Serial.printf("BT Get (%d) : %s\n", rawPack["Data"].as<String>().length(), rawPack["Data"].as<String>().c_str());
+        Serial.printf("(BT %d): %s\n",
+            rawPack["Data"].as<String>().length(),
+            rawPack["Data"].as<String>().c_str());
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
     }
     case HGM_BT_PACK_METHOD_OK: {
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_OK;
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_GET_M: {
         dataToSave = String(HGM_BT_PACK_METHOD_NULL);
         *method = HGM_BT_PACK_METHOD_GET_M;
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_NORMAL);
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_HWM_CONF: {
         // TODO: 
@@ -279,16 +293,17 @@ void HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod*
 
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
-        return;
+        return HGM_BT_PACK_METHOD_OK;
     }
     default:
-        Serial.println("DataType error. No a valid HGM bluetooth pack");
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_NULL;
+        dataToSave = "DataType error. it's not a valid HGM TCP pack";
+        Serial.println(dataToSave);
+        *method = HGM_BT_PACK_METHOD_ERROR;
+        HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_ERROR);
+        return HGM_BT_PACK_METHOD_ERROR;
     }
 
-    return;
-
+    return HGM_BT_PACK_METHOD_ERROR;
 }
 
 
@@ -335,6 +350,7 @@ static void BluetoothControlTask(void* params)
     }
 }
 
+
 /**
  * @brief Bluetooth listening task.
  * @param params
@@ -344,7 +360,7 @@ static void BluetoothListeningTask(void* params)
     uint16_t sleepTimes = 1000;
     uint16_t times = 0;
     bool flag = false;
-    String greet = "Hello, I am HellGateMonitor!!";
+    String greet = "Hello, I am HellGateMonitorBT!!";
 
     while (true) {
         if (!_bs->connected()) {
@@ -361,11 +377,8 @@ static void BluetoothListeningTask(void* params)
         }
         
         xSemaphoreTake(wbs, portMAX_DELAY);
-        if (_bs->available()) {
-            String str;
-            HgmBTPackMethod method;
-            HgmBT::ReceiveDataPack(str, &method);
-        }
+        if (_bs->available())
+            HgmBT::ReceiveDataPack(_dataToSave, &_method);
         xSemaphoreGive(wbs);
 
         vTaskDelay(50);

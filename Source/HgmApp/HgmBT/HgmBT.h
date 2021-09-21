@@ -41,11 +41,8 @@ namespace HgmApplication {
 	class HgmBT
 	{
 	private:
-
 		void BluetoothTaskInit();
 		void BluetoothTaskDelete();
-		/* Pack the raw data as a data frame via designated method */
-		static String PackRawData(String& dataToPack, HgmBTPackMethod method);
 
 	public:
 		BluetoothSerial *bs = nullptr;
@@ -56,9 +53,11 @@ namespace HgmApplication {
 		void Begin();
 		void Stop();
 		
+		/* Pack the raw data as a data frame via designated method */
+		static String PackRawData(String& dataToPack, HgmBTPackMethod method);
 		/* To send data pack, used by another Hgm App */
 		static void SendDatePack(String& rawData, HgmBTPackMethod method);
-		static void ReceiveDataPack(String& dataToSave, HgmBTPackMethod *method);
+		static HgmBTPackMethod ReceiveDataPack(String& dataToSave, HgmBTPackMethod *method);
 	};
 };
 
