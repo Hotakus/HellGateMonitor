@@ -152,13 +152,11 @@ void setup()
 	while (!hgmApp->hgmBT->bs->isReady())
 		vTaskDelay(10);
 	component.waitStatus = true;
-	
 	vTaskDelay(200);
 	
 	// Check config file
 	HgmSC hgmSC;
 	hgmSC.Begin();
-	 
 	vTaskDelay(200);
 	
 	// Check WiFi
@@ -181,6 +179,7 @@ void setup()
 	
 	// Check bilibili component
 	bili.Begin();
+	vTaskDelay(200);
 
 	// lv_obj_t* img2 = lv_img_create(lv_scr_act());
 	// static lv_img_dsc_t face_dsc;
@@ -193,8 +192,7 @@ void setup()
 	// lv_img_set_src(img2, &face_dsc);
 	// lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
-	vTaskDelay(200);
-
+	// All done
 	component.type = HGM_COMPONENT_DONE;
 	component.curStatus = true;
 	component.waitStatus = true;
