@@ -65,6 +65,31 @@ BiliInfoRecv::BiliInfoRecv()
 BiliInfoRecv::~BiliInfoRecv()
 {
     delete _httpClient;
+    this->DeinitTask();
+}
+
+void HgmApplication::BiliInfoRecv::InitTask()
+{
+    if (biliTaskHandle)
+        return;
+
+    xTaskCreatePinnedToCore(
+        biliTask,
+        "biliTask",
+        2512,
+        NULL,
+        5,
+        &biliTaskHandle,
+        1
+    );
+}
+
+void HgmApplication::BiliInfoRecv::DeinitTask()
+{
+    if (biliTaskHandle) {
+        vTaskDelete(biliTaskHandle);
+        biliTaskHandle = NULL;
+    }
 }
 
 static void BiliConfig()
@@ -124,16 +149,7 @@ void HgmApplication::BiliInfoRecv::Begin()
         }
     }
 
-    xTaskCreatePinnedToCore(
-        biliTask,
-        "biliTask",
-        2512,
-        NULL,
-        5,
-        &biliTaskHandle,
-        1
-    );
-
+    this->InitTask();
 }
 
 /**

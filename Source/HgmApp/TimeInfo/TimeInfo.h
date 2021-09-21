@@ -28,6 +28,9 @@ namespace HgmApplication {
 		TimeInfo();
 		~TimeInfo();
 
+		void InitTask();
+		void DeinitTask();
+
 		void Begin();
 
 		static int GetNetTime(struct tm* timeStruct);

@@ -37,13 +37,37 @@ extern HgmSetupUI *hgmSetupUI;
 TimeInfo::TimeInfo()
 {
 	_rtc = &this->rtc;
-
 	_httpClient = new HTTPClient();
 }
 
 TimeInfo::~TimeInfo()
 {
 	delete _httpClient;
+	this->DeinitTask();
+}
+
+void HgmApplication::TimeInfo::InitTask()
+{
+	if (netTimeTaskHandle)
+		return;
+
+	xTaskCreatePinnedToCore(
+		netTimeTask,
+		"netTimeTask",
+		3072 - 512,
+		NULL,
+		15,
+		&netTimeTaskHandle,
+		1
+	);
+}
+
+void HgmApplication::TimeInfo::DeinitTask()
+{
+	if (netTimeTaskHandle) {
+		vTaskDelete(netTimeTaskHandle);
+		netTimeTaskHandle = NULL;
+	}
 }
 
 void HgmApplication::TimeInfo::Begin()
@@ -61,15 +85,7 @@ void HgmApplication::TimeInfo::Begin()
 	}
 	component.waitStatus = true;
 
-	xTaskCreatePinnedToCore(
-		netTimeTask,
-		"netTimeTask",
-		4096,
-		NULL,
-		15,
-		&netTimeTaskHandle,
-		1
-	);
+	this->InitTask();
 }
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)

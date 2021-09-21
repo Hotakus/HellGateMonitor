@@ -25,6 +25,9 @@ namespace HgmApplication {
         BiliInfoRecv();
         ~BiliInfoRecv();
 
+        void InitTask();
+        void DeinitTask();
+
         void Begin();
 
         static void SetUID(String uid);
