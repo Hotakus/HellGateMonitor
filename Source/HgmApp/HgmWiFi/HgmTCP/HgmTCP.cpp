@@ -45,6 +45,8 @@ static QueueHandle_t beginMsgbox = NULL;
 static void TcpControlTask(void* params);
 static void TcpServerListeningTask(void* params);
 
+static TaskHandle_t tcpServerTaskHandle = NULL;
+static TaskHandle_t tcpClientTaskHandle = NULL;
 
 HgmTCP::HgmTCP()
 {
@@ -137,11 +139,9 @@ WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
  */
 String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod method)
 {
-    DynamicJsonDocument hgmPack(512);
-    String tmp;
+    HotakusDynamicJsonDocument hgmPack(dataToPack.length() + 1024);
 
     hgmPack["Header"] = TCP_PACK_HEADER;
-    hgmPack["DataType"] = "";
 
     switch (method) {
     case HGM_TCP_PACK_METHOD_OK: {
@@ -157,6 +157,7 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
     case HGM_TCP_PACK_METHOD_NORMAL: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_NULL - 1);
         hgmPack["Data"] = dataToPack;
+        break;
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
@@ -168,11 +169,13 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
         break;
     }
     default:
+        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_ERROR);
+        hgmPack["Data"] = "null";
         break;
     }
 
-    serializeJson(hgmPack, tmp);
-    return tmp;
+    serializeJson(hgmPack, dataToPack);
+    return dataToPack;
 }
 
 
@@ -183,8 +186,8 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
  */
 void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod method)
 {
-    String pack = HgmTCP::PackRawData(rawData, method);
-    wc.write((uint8_t*)pack.c_str(), pack.length());
+    String s = HgmTCP::PackRawData(rawData, method);
+    wc.write((uint8_t*)s.c_str(), s.length());
 }
 
 /**
@@ -205,6 +208,11 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     size_t packSize = (wc.available() + 1);
     HotakusDynamicJsonDocument rawPack(packSize + 1024);
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+    if (!buf) {
+        Serial.println("TCP allocated error");
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        return HGM_TCP_PACK_METHOD_ERROR;
+    }
     buf[packSize - 1] = '\0';
     for (size_t i = 0; i < packSize - 1; i++)
         buf[i] = (char)wc.read();
@@ -214,8 +222,9 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
 
     // Match Header
     String Header = rawPack["Header"];
+    Serial.println("");
     if (Header.compareTo(TCP_PACK_HEADER)) {
-        String str = "Header error. No a valid HGM TCP pack";
+        str = "Header error. No a valid HGM TCP pack";
         Serial.println(str);
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
@@ -232,6 +241,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
             rawPack["Data"].as<String>().c_str());
 
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
@@ -260,12 +270,12 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
  * @brief TCP control task.
  * @param params
  */
+
 static void TcpControlTask(void* params)
 {
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
-    static TaskHandle_t tcpServerTaskHandle = NULL;
-    static TaskHandle_t tcpClientTaskHandle = NULL;
+
 
     while (true) {
         if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
@@ -281,7 +291,7 @@ static void TcpControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
-                    2048,
+                    3072,
                     NULL,
                     10,
                     &tcpServerTaskHandle,

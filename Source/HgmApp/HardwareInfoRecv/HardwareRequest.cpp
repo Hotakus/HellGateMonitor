@@ -11,6 +11,8 @@
 
 using namespace HgmApplication;
 
+HardwareRequest hardwareRequest;
+
 HgmApplication::HardwareRequest::HardwareRequest()
 {
 }
