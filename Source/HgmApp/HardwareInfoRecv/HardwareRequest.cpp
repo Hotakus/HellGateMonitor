@@ -12,6 +12,7 @@
 using namespace HgmApplication;
 
 HardwareRequest hardwareRequest;
+static HardwareRequest hardwareRequestDefault;
 
 HgmApplication::HardwareRequest::HardwareRequest()
 {
@@ -19,4 +20,9 @@ HgmApplication::HardwareRequest::HardwareRequest()
 
 HgmApplication::HardwareRequest::~HardwareRequest()
 {
+}
+
+void HgmApplication::HardwareRequest::UseDefault()
+{
+    hardwareRequest = hardwareRequestDefault;
 }

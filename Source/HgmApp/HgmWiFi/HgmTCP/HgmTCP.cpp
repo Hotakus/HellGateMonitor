@@ -11,6 +11,8 @@
 #include "HgmTCP.h"
 #include "../../HgmJsonUtil.h"
 #include "../../HardwareInfoRecv/HardwareCpuData.h"
+#include "../../HardwareInfoRecv/HardwareGpuData.h"
+#include "../../HardwareInfoRecv/HardwareMemData.h"
 #include "../../HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
@@ -25,6 +27,8 @@ using namespace HgmApplication::HgmJsonParseUtil;
 #define SERVER_DEFAULT_PORT 20
 
 extern HardwareCpuData hardwareCpuData;
+extern HardwareGpuData hardwareGpuData;
+extern HardwareMemData hardwareMemData;
 extern HardwareRequest hardwareRequest;
 extern SemaphoreHandle_t wbs;
 
@@ -245,16 +249,23 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-
         // TODO: realize another requests
-        if (hardwareRequest.rCpu)
-            hardwareCpuData.Set(rawPack);
+        if (hardwareRequest.rCpu) hardwareCpuData.Set(rawPack);
+        if (hardwareRequest.rGpu) hardwareGpuData.Set(rawPack);
+        if (hardwareRequest.rMemory) hardwareMemData.Set(rawPack);
 
         Serial.println(hardwareCpuData.name);
-        Serial.println(hardwareCpuData.coreFreq[1]);
+        Serial.println(hardwareGpuData.name);
 
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
+    }
+    case HGM_TCP_PACK_METHOD_PROJECTION: {
+
+
+
+        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        return HGM_TCP_PACK_METHOD_PROJECTION;
     }
     default:
         str = "DataType error. it's not a valid HGM TCP pack";
@@ -330,8 +341,6 @@ static void TcpControlTask(void* params)
             Serial.printf("Error in %s %s %s\n", __FILE__, __func__, __LINE__);
             break;
         }
-
-
 
         tcpOk = true;
     }

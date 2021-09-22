@@ -60,22 +60,22 @@ HGM的TCP数据包格式(JSON)
 [硬件信息数据包JSON示例文件](HardwareJsonPack.json)  
 若发送请求时未请求对应的硬件信息，则对应参数返回空值，若对应参数请求但返回空值，则认为其请求错误
 
-**TCP普通数据模式（被动）** （DataType == 5）
+**TCP普通数据模式（被动）** （DataType == M-1）
 ```json
 {
   "Header": "HgmTCP",
-  "DataType": "5",
+  "DataType": "M-1",
   "Data": "Hello HellGateMonitor"
 }
 ```
 普通数据模式下，显示Data内容到HGM串口
 
-**投屏图像帧头数据包（被动）** （DataType == 6）
+**投屏图像帧头数据包（被动）** （DataType == 5）
 
 ```json
 {
   "Header": "HgmTCP",
-  "DataType": "6",
+  "DataType": "5",
   "Data": {
     "h": "135",
     "w": "240",

@@ -24,6 +24,8 @@ namespace HgmApplication {
 
 		HardwareRequest();
 		~HardwareRequest();
+
+		void UseDefault();
 	};
 }
 

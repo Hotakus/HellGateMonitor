@@ -24,9 +24,9 @@ namespace HgmApplication {
         HGM_TCP_PACK_METHOD_REQUEST_HWI,		    // (3) Request Hardware info from HGMC, it will get hardware info from HGMC according to config params
         HGM_TCP_PACK_METHOD_HWI,                    // (4) Hardware info pack
 
-        HGM_TCP_PACK_METHOD_NORMAL,                 // (5) Pack is Normal data
+        HGM_TCP_PACK_METHOD_PROJECTION,             // (5) 
 
-
+        HGM_TCP_PACK_METHOD_NORMAL,                 // (M-1) Pack is Normal data
         HGM_TCP_PACK_METHOD_NULL,                   // (M) Null
     };
 
