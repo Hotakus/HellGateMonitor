@@ -1,0 +1,11 @@
+﻿#ifndef HELLGATEMONITOR_HGMHARDWAREUI_H
+#define HELLGATEMONITOR_HGMHARDWAREUI_H
+
+
+namespace HgmGUI {
+	class HgmHardwareUI {
+
+	};
+}
+
+#endif //HELLGATEMONITOR_HGMHARDWAREUI_H

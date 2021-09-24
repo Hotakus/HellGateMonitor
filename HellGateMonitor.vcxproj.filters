@@ -440,6 +440,12 @@
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -962,6 +968,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

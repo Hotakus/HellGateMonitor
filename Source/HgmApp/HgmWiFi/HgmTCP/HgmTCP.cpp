@@ -254,6 +254,10 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
         if (hardwareRequest.rGpu) hardwareGpuData.Set(rawPack);
         if (hardwareRequest.rMemory) hardwareMemData.Set(rawPack);
 
+        HgmHardwareObject obj;
+        obj.params = &hardwareCpuData;
+
+        Serial.println(((HardwareCpuData*)obj.params)->name);
         Serial.println(hardwareCpuData.name);
         Serial.println(hardwareGpuData.name);
 

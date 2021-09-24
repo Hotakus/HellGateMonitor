@@ -10,6 +10,7 @@
 #ifndef HELLGATEMONITOR_HARDWARECPUDATA_H
 #define HELLGATEMONITOR_HARDWARECPUDATA_H
 
+#include "HardwareParams.h"
 #include "../HgmJsonUtil.h"
 
 #include <Arduino.h>

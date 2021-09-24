@@ -187,6 +187,7 @@
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareGpuData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.h" />
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.h" />
     <ClInclude Include="Source\HgmApp\HgmApp.h" />
     <ClInclude Include="Source\HgmApp\HgmBT\HgmBT.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Source\HgmApp\WeatherInfo\WeatherInfo.h" />
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwUI.h" />
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h" />
@@ -328,6 +330,7 @@
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareGpuData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.cpp" />
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.cpp" />
     <ClCompile Include="Source\HgmApp\HgmApp.cpp" />
     <ClCompile Include="Source\HgmApp\HgmBT\HgmBT.cpp" />
@@ -338,6 +341,7 @@
     <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp" />
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwUI.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />

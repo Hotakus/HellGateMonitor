@@ -1,4 +1,4 @@
-﻿/******************************************************************
+/******************************************************************
  * @file HardwareNetData.cpp
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
@@ -18,5 +18,14 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 HardwareNetData hardwareNetData;
 
+HgmApplication::HardwareNetData::HardwareNetData()
+{
+}
 
+HgmApplication::HardwareNetData::~HardwareNetData()
+{
+}
 
+void HgmApplication::HardwareNetData::Set(HotakusDynamicJsonDocument& hdjd)
+{
+}

@@ -11,6 +11,8 @@
 #include "../HgmApp.h"
 #include "../WeatherInfo/WeatherInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
+#include "../HgmJsonUtil.h"
+#include "../HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
 #include <SPIFFS.h>
@@ -20,9 +22,11 @@
 
 using namespace fs;
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
 
 extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
+extern HardwareRequest hardwareRequest;
 
 static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;
@@ -156,7 +160,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
     if (!_bs->available())
         return HGM_BT_PACK_METHOD_ERROR;
 
-    DynamicJsonDocument rawPack(2048);
+    HotakusDynamicJsonDocument rawPack(_bs->available() + 1024);
 
     dataToSave = "";
 
@@ -290,7 +294,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_HWM_CONF;
 
-
+        
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
