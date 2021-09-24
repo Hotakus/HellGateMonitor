@@ -26,7 +26,7 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
-extern HardwareRequest hardwareRequest;
+extern HardwareRequest hrr;
 
 static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;

@@ -13,6 +13,7 @@
 #include "../../HardwareInfoRecv/HardwareCpuData.h"
 #include "../../HardwareInfoRecv/HardwareGpuData.h"
 #include "../../HardwareInfoRecv/HardwareMemData.h"
+#include "../../HardwareInfoRecv/HardwareNetData.h"
 #include "../../HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
@@ -26,10 +27,13 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 #define SERVER_DEFAULT_PORT 20
 
-extern HardwareCpuData hardwareCpuData;
-extern HardwareGpuData hardwareGpuData;
-extern HardwareMemData hardwareMemData;
-extern HardwareRequest hardwareRequest;
+// extern HardwareCpuData hardwareCpuData;
+// extern HardwareGpuData hardwareGpuData;
+// extern HardwareMemData hardwareMemData;
+
+extern HardwareRequest hrr;
+extern HgmHardwareObject* hgmHardObj[];
+
 extern SemaphoreHandle_t wbs;
 
 static WiFiClass wifi = WiFi;
@@ -165,11 +169,11 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
-        hgmPack["Data"]["CPU"] = String(hardwareRequest.rCpu);
-        hgmPack["Data"]["GPU"] = String(hardwareRequest.rGpu);
-        hgmPack["Data"]["Memory"] = String(hardwareRequest.rMemory);
-        hgmPack["Data"]["HardDisk"] = String(hardwareRequest.rHardDisk);
-        hgmPack["Data"]["Network"] = String(hardwareRequest.rNetwork);
+        hgmPack["Data"]["CPU"] = String(hrr.rCpu);
+        hgmPack["Data"]["GPU"] = String(hrr.rGpu);
+        hgmPack["Data"]["Memory"] = String(hrr.rMemory);
+        hgmPack["Data"]["HardDisk"] = String(hrr.rHardDisk);
+        hgmPack["Data"]["Network"] = String(hrr.rNetwork);
         break;
     }
     default:
@@ -250,16 +254,19 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     }
     case HGM_TCP_PACK_METHOD_HWI: {
         // TODO: realize another requests
-        if (hardwareRequest.rCpu) hardwareCpuData.Set(rawPack);
-        if (hardwareRequest.rGpu) hardwareGpuData.Set(rawPack);
-        if (hardwareRequest.rMemory) hardwareMemData.Set(rawPack);
+        if (hrr.rCpu)
+            ((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->Set(rawPack);
+        if (hrr.rGpu) 
+            ((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->Set(rawPack);
+        if (hrr.rMemory) 
+            ((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->Set(rawPack);
+        if (hrr.rNetwork)
+            ((HardwareMemData*)hgmHardObj[HGM_NETWORK]->params)->Set(rawPack);
 
-        HgmHardwareObject obj;
-        obj.params = &hardwareCpuData;
-
-        Serial.println(((HardwareCpuData*)obj.params)->name);
-        Serial.println(hardwareCpuData.name);
-        Serial.println(hardwareGpuData.name);
+        Serial.println(((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->name);
+        Serial.println(((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->name);
+        Serial.println(((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->free);
+        Serial.println(((HardwareNetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
 
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;

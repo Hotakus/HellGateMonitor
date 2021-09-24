@@ -30,16 +30,15 @@ namespace HgmApplication {
 
     /* HGM 硬件监控对象的位置 */
     typedef enum {
-        LEFT_TOP,
-        LEFT_BOTTOM,
-        RIGHT_TOP,
-        RIGHT_BOTTOM,
+        HGM_LEFT_TOP,
+        HGM_LEFT_BOTTOM,
+        HGM_RIGHT_TOP,
+        HGM_RIGHT_BOTTOM,
     } HgmHardwarePosition;
 
     /* HGM 受硬件监控对象。HGM会对 “受硬件监控对象” 发出参数请求，以此显示硬件参数 */
     /* "params" 参数指向对应硬件信息的数据类指针 */
     typedef struct {
-        // TODO:
         void* params;
         HgmHardware hardware;
         HgmHardwarePosition pos;
@@ -51,15 +50,24 @@ namespace HgmApplication {
         bool rCpu = true;
         bool rGpu = true;
         bool rMemory = true;
-        bool rHardDisk = true;
-        bool rNetwork = false;
+        bool rHardDisk = false;
+        bool rNetwork = true;
 
         HardwareRequest();
         ~HardwareRequest();
 
+        HardwareRequest operator=(const HardwareRequest& _hr) {
+            HardwareRequest hr;
+            hr.rCpu = _hr.rCpu;
+            hr.rGpu = _hr.rGpu;
+            hr.rMemory = _hr.rMemory;
+            hr.rHardDisk = _hr.rHardDisk;
+            hr.rNetwork = _hr.rNetwork;
+            return hr;
+        }
+
         void UseDefault();
 
-        void HardwareRequestConfig(HotakusDynamicJsonDocument& hdjd);
     };
 }
 

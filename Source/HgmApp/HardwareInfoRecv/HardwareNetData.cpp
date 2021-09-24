@@ -20,6 +20,12 @@ HardwareNetData hardwareNetData;
 
 HgmApplication::HardwareNetData::HardwareNetData()
 {
+    wlan.nd.downloaded = 0;
+    wlan.nd.uploaded = 0;
+    wlan.nt.download = 0;
+    wlan.nt.upload = 0;
+
+    ethernet = wlan;
 }
 
 HgmApplication::HardwareNetData::~HardwareNetData()
@@ -28,4 +34,13 @@ HgmApplication::HardwareNetData::~HardwareNetData()
 
 void HgmApplication::HardwareNetData::Set(HotakusDynamicJsonDocument& hdjd)
 {
+    this->ethernet.nd.downloaded = hdjd["Data"]["Network"]["ethernet"]["data"]["downloaded"].as<float>();
+    this->ethernet.nd.uploaded = hdjd["Data"]["Network"]["ethernet"]["data"]["uploaded"].as<float>();
+    this->ethernet.nt.download = hdjd["Data"]["Network"]["ethernet"]["data"]["download"].as<float>();
+    this->ethernet.nt.upload = hdjd["Data"]["Network"]["ethernet"]["data"]["upload"].as<float>();
+
+    this->wlan.nd.downloaded = hdjd["Data"]["Network"]["wlan"]["data"]["downloaded"].as<float>();
+    this->wlan.nd.uploaded = hdjd["Data"]["Network"]["wlan"]["data"]["uploaded"].as<float>();
+    this->wlan.nt.download = hdjd["Data"]["Network"]["wlan"]["data"]["download"].as<float>();
+    this->wlan.nt.upload = hdjd["Data"]["Network"]["wlan"]["data"]["upload"].as<float>();
 }

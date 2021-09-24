@@ -22,7 +22,23 @@ namespace HgmApplication {
 	private:
 	public:
 
+		// Unit: GiB
+		struct NetData {
+			float uploaded;
+			float downloaded;
+		};
 
+		// Unit: Bytes
+		struct NetThroughput {
+			float upload;
+			float download;
+		};
+
+		struct HgmNetwork
+		{
+			NetData nd;
+			NetThroughput nt;
+		} wlan, ethernet;
 
 
 		HardwareNetData();

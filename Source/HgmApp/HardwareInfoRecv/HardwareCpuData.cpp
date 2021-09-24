@@ -30,6 +30,7 @@ HardwareCpuData::~HardwareCpuData()
     free(coreLoad);
 }
 
+
 void HgmApplication::HardwareCpuData::Set(HotakusDynamicJsonDocument& hdjd)
 {
     this->coreCount = hdjd["Data"]["CPU"]["coreCount"].as<int8_t>();
@@ -58,5 +59,4 @@ void HgmApplication::HardwareCpuData::Set(HotakusDynamicJsonDocument& hdjd)
     this->loadTotal = hdjd["Data"]["CPU"]["load"]["total"].as<float>();
     this->powerCur = hdjd["Data"]["CPU"]["power"]["current"].as<float>();
     this->powerMax = hdjd["Data"]["CPU"]["power"]["max"].as<float>();
-
 }

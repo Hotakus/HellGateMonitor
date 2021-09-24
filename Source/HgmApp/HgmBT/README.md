@@ -15,7 +15,7 @@ HGM的蓝牙数据包格式(JSON)
 
 ![](../../../Image/BasicBTCommands.png)
 
-## 数据包例子：
+## 数据包示例：
 **获取命令长度M（被动）** （DataType == 0）
 ```json
 {
