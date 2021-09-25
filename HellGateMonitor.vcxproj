@@ -185,6 +185,7 @@
     </ClInclude>
     <ClInclude Include="Source\HgmApp\BiliInfoRecv\BiliInfoRecv.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.h" />
+    <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareGpuData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.h" />
@@ -328,6 +329,7 @@
   <ItemGroup>
     <ClCompile Include="Source\HgmApp\BiliInfoRecv\BiliInfoRecv.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareCpuData.cpp" />
+    <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareGpuData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.cpp" />
