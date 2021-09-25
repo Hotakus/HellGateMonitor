@@ -20,7 +20,7 @@ HGM的蓝牙数据包格式(JSON)
 ```json
 {
   "Header": "Hgm",
-  "DataType": "6",
+  "DataType": "0",
   "Data": ""
 }
 ```
@@ -68,10 +68,6 @@ API详见“ [和风天气API](https://dev.qweather.com/docs/api/) ”，若只�
   "Header": "Hgm",
   "DataType": "6",
   "Data": {
-    "id": "101010300",
-    "adm": "Beijing",
-    "adm2": "Beijing",
-    "location": "Chaoyang",
     "lat": "39.92149",
     "lon": "116.48641",
     "key": "xxxxxxxxxxxxxxx"
