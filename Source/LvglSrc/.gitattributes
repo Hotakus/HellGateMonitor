@@ -1,0 +1,7 @@
+﻿bg_*.c linguist-language=c++
+book*.c linguist-language=c++
+HGM*.c linguist-language=c++
+k12x8*.c linguist-language=c++
+test*.c linguist-language=c++
+TW*.c linguist-language=c++
+tw*.c linguist-language=c++
