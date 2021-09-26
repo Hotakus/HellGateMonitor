@@ -22,11 +22,14 @@ namespace HgmApplication {
     private:
 
     public:
+
+
+
         BiliInfoRecv();
         ~BiliInfoRecv();
 
         void InitTask();
-        void DeinitTask();
+        void DeInitTask();
 
         void Begin();
 

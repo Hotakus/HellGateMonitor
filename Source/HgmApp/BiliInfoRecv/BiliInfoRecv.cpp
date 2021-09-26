@@ -10,6 +10,7 @@
 #include "../HgmApp.h"
 #include "../../HgmLvgl/HgmLvgl.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../HgmWiFi/HgmTCP/HgmTCP.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -65,7 +66,7 @@ BiliInfoRecv::BiliInfoRecv()
 BiliInfoRecv::~BiliInfoRecv()
 {
     delete _httpClient;
-    this->DeinitTask();
+    this->DeInitTask();
 }
 
 void HgmApplication::BiliInfoRecv::InitTask()
@@ -84,7 +85,7 @@ void HgmApplication::BiliInfoRecv::InitTask()
     );
 }
 
-void HgmApplication::BiliInfoRecv::DeinitTask()
+void HgmApplication::BiliInfoRecv::DeInitTask()
 {
     if (biliTaskHandle) {
         vTaskDelete(biliTaskHandle);

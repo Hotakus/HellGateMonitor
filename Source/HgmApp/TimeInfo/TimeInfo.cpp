@@ -43,7 +43,7 @@ TimeInfo::TimeInfo()
 TimeInfo::~TimeInfo()
 {
 	delete _httpClient;
-	this->DeinitTask();
+	this->DeInitTask();
 }
 
 void HgmApplication::TimeInfo::InitTask()
@@ -62,7 +62,7 @@ void HgmApplication::TimeInfo::InitTask()
 	);
 }
 
-void HgmApplication::TimeInfo::DeinitTask()
+void HgmApplication::TimeInfo::DeInitTask()
 {
 	if (netTimeTaskHandle) {
 		vTaskDelete(netTimeTaskHandle);

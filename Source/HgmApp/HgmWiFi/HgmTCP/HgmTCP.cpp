@@ -14,6 +14,7 @@
 #include "../../HardwareInfoRecv/HardwareGpuData.h"
 #include "../../HardwareInfoRecv/HardwareMemData.h"
 #include "../../HardwareInfoRecv/HardwareNetData.h"
+#include "../../HardwareInfoRecv/HardwareDiskData.h"
 #include "../../HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
@@ -262,11 +263,14 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
             ((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->Set(rawPack);
         if (hrr.rNetwork)
             ((HardwareMemData*)hgmHardObj[HGM_NETWORK]->params)->Set(rawPack);
+        if (hrr.rHardDisk)
+            ((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->Set(rawPack);
 
-        Serial.println(((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->name);
-        Serial.println(((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->name);
-        Serial.println(((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->free);
-        Serial.println(((HardwareNetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
+        // Serial.println(((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->name);
+        // Serial.println(((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->name);
+        // Serial.println(((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->free);
+        // Serial.println(((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->disk[1].name);
+        // Serial.println(((HardwareNetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
 
         HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;

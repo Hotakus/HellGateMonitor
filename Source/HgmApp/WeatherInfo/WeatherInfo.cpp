@@ -8,16 +8,21 @@
  * @copyright Copyright (c) 2021/8/22
 *******************************************************************/
 #include "WeatherInfo.h"
+#include "../HgmWiFi/HgmTCP/HgmTCP.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../HgmApp.h"
+#include "../HgmJsonUtil.h"
+
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <ESP32Time.h>
-#include "../HgmWiFi/HgmTCP/HgmTCP.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
-#include "../HgmApp.h"
 #include <SPIFFS.h>
 
+#define HGM_DEBUG 1
+
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
 using namespace fs;
 
@@ -25,8 +30,11 @@ extern HgmApp* hgmApp;
 extern HgmSetupUI* hgmSetupUI;
 static HgmComponent component;
 
-static String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now";
-static String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d";
+extern SemaphoreHandle_t wbs;
+
+static String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now?";
+static String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d?";
+static String airAPI = "https://devapi.qweather.com/v7/air/now?";
 
 static String _id = "";
 static String _key = "";
@@ -38,28 +46,64 @@ static String _lon = "";
 
 static StaticJsonDocument<2048> doc;
 
-File _file;
-
+static File _file;
 
 static QueueHandle_t WCMsgBox;
 static TaskHandle_t WCTaskHandle;
 static void WCTask(void* params);
 
-bool configFlag = false;
+static bool configFlag = false;
+
+WeatherInfo weatherInfo;
+WeatherData weatherToday;
+
+static HTTPClient* _httpClient;
+
+
 
 WeatherInfo::WeatherInfo()
 {
     // TODO: Create a task to loop to get the weather
     WCMsgBox = xQueueCreate(1, sizeof(int));
+    _httpClient = new HTTPClient();
 }
 
 WeatherInfo::~WeatherInfo()
+{
+    delete _httpClient;
+}
+
+
+WeatherData::WeatherData()
+{
+}
+
+WeatherData::~WeatherData()
 {
 }
 
 void HgmApplication::WeatherInfo::Begin()
 {
+    this->CheckWeatherconfig();
+}
 
+void HgmApplication::WeatherInfo::InitTask()
+{
+    xTaskCreatePinnedToCore(
+        WCTask,
+        "WCTask",
+        8192,
+        NULL,
+        9,
+        &WCTaskHandle,
+        1
+    );
+}
+
+void HgmApplication::WeatherInfo::DeInitTask()
+{
+    vTaskDelete(WCTaskHandle);
+    WCTaskHandle = NULL;
 }
 
 
@@ -98,7 +142,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
         Serial.printf("Can't find the config file for the weather component.\n");
         WeatherConfig();
     } else {
-        _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+        _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_READ);
         if (!_file.size()) {
             _file.close();
             Serial.printf("Weather config file is null.\n");
@@ -108,7 +152,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
 
             Serial.printf("Found the weather config file.\n");
             String tmp;
-            _file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
+            _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_READ);
             tmp = _file.readString();
             _file.close();
 
@@ -122,26 +166,20 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
             } else {
                 _get();
             }
-            
+
+            _lat = doc["Data"]["lat"].as<String>();
+            _lon = doc["Data"]["lon"].as<String>();
+            _key = doc["Data"]["key"].as<String>();
+
             configFlag = true;
             vTaskDelay(200);
         }
     }
 
-    xTaskCreatePinnedToCore(
-        WCTask,
-        "WCTask",
-        2048,
-        NULL,
-        5,
-        &WCTaskHandle,
-        1
-    );
+    this->InitTask();
 
     return true;
 }
-
-
 
 void HgmApplication::WeatherInfo::SetWeatherConfig()
 {
@@ -149,13 +187,14 @@ void HgmApplication::WeatherInfo::SetWeatherConfig()
     _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_WRITE);
 
     String wi;
-    doc["data"]["id"] = _id;
-    doc["data"]["key"] = _key;
-    doc["data"]["adm"] = _adm;
-    doc["data"]["adm2"] = _adm2;
-    doc["data"]["location"] = _location;
-    doc["data"]["lat"] = _lat;
-    doc["data"]["lon"] = _lon;
+    doc["Header"] = "Weather";
+    doc["Data"]["id"] = _id;
+    doc["Data"]["key"] = _key;
+    doc["Data"]["adm"] = _adm;
+    doc["Data"]["adm2"] = _adm2;
+    doc["Data"]["location"] = _location;
+    doc["Data"]["lat"] = _lat;
+    doc["Data"]["lon"] = _lon;
     serializeJson(doc, wi);
 
     _file.write((const uint8_t*)wi.c_str(), wi.length());
@@ -166,24 +205,16 @@ void HgmApplication::WeatherInfo::SetWeatherConfig()
 
 void HgmApplication::WeatherInfo::SetAppKey(String key)
 {
-    Serial.println(key);
-
     _key = key;
 }
 
 void HgmApplication::WeatherInfo::SetWeatherConfig(String id)
 {
-    Serial.println(id);
-
     _id = id;
 }
 
 void HgmApplication::WeatherInfo::SetWeatherConfig(String adm, String adm2, String location)
 {
-    Serial.println(adm);
-    Serial.println(adm2);
-    Serial.println(location);
-
     _adm = adm;
     _adm2 = adm2;
     _location = location;
@@ -216,26 +247,89 @@ void HgmApplication::WeatherInfo::GetWeatherConfig(String& latitude, String& lon
     longitude = _lon;
 }
 
+
+
 void HgmApplication::WeatherInfo::GetWeather()
 {
-    // TODO:
-    Serial.println("Get weather...");
+#if HGM_DEBUG == 1
+    String __lat = "23.172";
+    String __lon = "108.241";
+    String __key = "bc1f1bdefb944930bef0208ecd03f66a"; // TODO: delete
+#else
+    String& __lat = _lat;
+    String& __lon = _lon;
+    String& __key = _key;
+#endif
+
+    String lonLat = "&location=" + __lon + ',' + __lat;
+    String key = "&key=" + __key;
+    String gzip = "&gzip=n";
+    String nowApi = nowWeatherAPI + lonLat + key + gzip;
+    String threeApi = threeWeatherAPI + lonLat + key + gzip;
+    String airApi = airAPI + lonLat + key + gzip;
+
+#if HGM_DEBUG == 1
+    Serial.println(nowApi);
+    Serial.println(threeApi);
+    Serial.println(airApi);
+#endif
+
+    WiFiClient* wc = NULL;
+    size_t packSize = 0;
+    HotakusDynamicJsonDocument rawPack(8192);
+    uint8_t* packBuf = (uint8_t*)heap_caps_calloc(8192, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+
+    /* Air */
+    _httpClient->begin(airApi);
+    int code = _httpClient->GET();
+    if (code != HTTP_CODE_OK) {
+        Serial.printf("HTTP error code : % d\n", code);
+        _httpClient->end();
+        return;
+    }
+    wc = _httpClient->getStreamPtr();
+    packSize = wc->available();
+    memset(packBuf, 0x00, 8192);
+    packBuf[packSize] = '\0';
+    for (size_t i = 0; i < packSize; i++) {
+        packBuf[i] = (uint8_t)wc->read();
+        Serial.printf("%c", packBuf[i]);
+    }
+    Serial.println();
+    deserializeJson(rawPack, packBuf);
+
+    Serial.println(rawPack["now"]["aqi"].as<String>());
+    _httpClient->end();
+
+    /* Now */
+    /* Three days */
+
+    heap_caps_free(packBuf);
 }
 
 
 static void WCTask(void* params)
 {
     int tmp = 0;
-    while (true) {
-        //xQueueReceive(WCMsgBox, &tmp, portMAX_DELAY);
 
+    while (true) {
         if (!WiFi.isConnected()) {
             vTaskDelay(1000);
             continue;
         }
 
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        hgmApp->StopBT();
+        while (hgmApp->hgmBT->bs->isReady()) 
+            vTaskDelay(2000);
         WeatherInfo::GetWeather();
+        hgmApp->BeginBT();
+        while (!hgmApp->hgmBT->bs->isReady())
+            vTaskDelay(200);
+        xSemaphoreGive(wbs);
 
         vTaskDelay(WEATHER_GET_GAP);
+
+        //vTaskDelay(5 * 1000);
     }
 }

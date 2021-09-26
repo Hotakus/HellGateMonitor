@@ -41,7 +41,7 @@ namespace HgmApplication {
 			float writeRate = 0;
 		} HgmDisk;
 
-		HgmDisk* disk = null;
+		HgmDisk* disk = NULL;
 
 		HardwareDiskData();
 		~HardwareDiskData();

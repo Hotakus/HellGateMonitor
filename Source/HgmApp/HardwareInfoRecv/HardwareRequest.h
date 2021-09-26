@@ -34,6 +34,7 @@ namespace HgmApplication {
         HGM_LEFT_BOTTOM,
         HGM_RIGHT_TOP,
         HGM_RIGHT_BOTTOM,
+        HGM_POS_NULL,
     } HgmHardwarePosition;
 
     /* HGM 受硬件监控对象。HGM会对 “受硬件监控对象” 发出参数请求，以此显示硬件参数 */
@@ -55,16 +56,6 @@ namespace HgmApplication {
 
         HardwareRequest();
         ~HardwareRequest();
-
-        HardwareRequest operator=(const HardwareRequest& _hr) {
-            HardwareRequest hr;
-            hr.rCpu = _hr.rCpu;
-            hr.rGpu = _hr.rGpu;
-            hr.rMemory = _hr.rMemory;
-            hr.rHardDisk = _hr.rHardDisk;
-            hr.rNetwork = _hr.rNetwork;
-            return hr;
-        }
 
         void UseDefault();
 

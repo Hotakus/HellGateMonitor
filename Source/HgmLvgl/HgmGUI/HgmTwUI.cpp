@@ -96,7 +96,7 @@ void HgmGUI::HgmTwUI::Begin()
 
     date_label = lv_label_create(tw_time);
     lv_label_set_recolor(date_label, true);
-    lv_label_set_text(date_label, "#59493f 2021.08.28 Tue#");
+    lv_label_set_text(date_label, "#59493f 1970.01.01 ---#");
     lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, -6, -5);
     lv_obj_set_style_opa(date_label, LV_OPA_0, 0);
     lv_obj_set_style_text_font(date_label, &k12x8_8px, 0);
@@ -148,12 +148,9 @@ void HgmGUI::HgmTwUI::Begin()
 
     vTaskDelay(lv_anim_timeline_start(at));
 
-
     // TODO: add animation
     // TODO: Show clock img per 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-    
-    vTaskDelay(510);
 
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);

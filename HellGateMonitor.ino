@@ -16,6 +16,7 @@
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 #include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "Source/HgmApp/TimeInfo/TimeInfo.h"
+#include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
 
 #include <Arduino.h>
 #include <TFT_eSPI.h>
@@ -48,6 +49,8 @@ using namespace fs;
 extern HgmApp* hgmApp;
 extern HgmLvgl* hgmLvgl;
 extern BiliInfoRecv bili;
+extern WeatherInfo weatherInfo;
+
 HgmSetupUI* hgmSetupUI;
 TimeInfo ti;
 
@@ -80,10 +83,21 @@ static void backlightControl(void* params)
     }
 }
 
+float firmwareSize = 0;
 
 void setup()
 {
     Serial.begin(115200);
+
+    vTaskDelay(200);
+
+    hgmApp = new HgmApp(true);
+    hgmApp->Stop();	// Stop BT and WiFi.
+    vTaskDelay(1000);
+    while (WiFi.isConnected())
+        vTaskDelay(200);
+
+    firmwareSize = ESP.getSketchSize() / 1024.0 / 1024.0;
 
     Serial.printf("\n****************** Hell Gate Monitor ******************\n");
     Serial.printf("           ___           ___           ___               \n");
@@ -102,8 +116,8 @@ void setup()
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(),
         lv_version_info());
-    Serial.printf("Firmware : V%d.%d.%d %s\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
-        HGM_VERSION_INFO);
+    Serial.printf("Firmware : V%d.%d.%d %s %0.2fMiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
+        HGM_VERSION_INFO, firmwareSize);
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
 
@@ -138,20 +152,17 @@ void setup()
     wbs = xSemaphoreCreateBinary();
     xSemaphoreGive(wbs);
 
-    hgmApp = new HgmApp(true);
-    hgmApp->Stop();	// Stop BT and WiFi.
-    while (hgmApp->hgmWifi->wifi->isConnected() || hgmApp->hgmBT->bs->isReady()) // wait to close
-        vTaskDelay(10);
-
-    //// Open bluetooth
-    //component.type = HGM_COMPONENT_BT;
-    //component.curStatus = true;
-    //component.waitStatus = false;
-    //hgmSetupUI->ComponentControl(&component);
-    //hgmApp->BeginBT();
-    //while (!hgmApp->hgmBT->bs->isReady())
-    //    vTaskDelay(10);
-    //component.waitStatus = true;
+    // Open bluetooth
+    component.type = HGM_COMPONENT_BT;
+    component.curStatus = true;
+    component.waitStatus = false;
+    hgmSetupUI->ComponentControl(&component);
+    hgmApp->BeginBT();
+    while (!hgmApp->hgmBT->bs->isReady())
+    {
+        vTaskDelay(200);
+    }
+    component.waitStatus = true;
     vTaskDelay(200);
 
     // Check config file
@@ -174,8 +185,6 @@ void setup()
     ti.Begin();
     vTaskDelay(200);
 
-
-
     // Check bilibili component
     bili.Begin();
     vTaskDelay(200);
@@ -191,6 +200,10 @@ void setup()
     // lv_img_set_src(img2, &face_dsc);
     // lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
+    // Check weather
+    weatherInfo.Begin();
+    vTaskDelay(200);
+
     // All done
     component.type = HGM_COMPONENT_DONE;
     component.curStatus = true;
@@ -202,20 +215,6 @@ void setup()
 
     hgmLvgl->HgmLvglUIBegin();
 
-    // Serial.println(ESP.getSdkVersion());
-    // Serial.println(ESP.getChipCores());
-    // Serial.println(ESP.getChipModel());
-    // Serial.println(ESP.getCpuFreqMHz());
-    // Serial.println(ESP.getFlashChipSize());
-    // Serial.println(ESP.getFlashChipSpeed());
-    // Serial.println(heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    // Serial.println(ESP.getSketchSize());
-
-
-}
-
-void loop()
-{
     char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
     vTaskList(task_buf);
     Serial.printf("%s\n", task_buf);
@@ -224,8 +223,22 @@ void loop()
 
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+}
 
-    //vTaskDelay(2000);
+void loop()
+{
+    //char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
+    //vTaskList(task_buf);
+    //Serial.printf("%s\n", task_buf);
+    //Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
+    //heap_caps_free(task_buf);
 
-    vTaskDelay(24 * 3600 * 1000);  // loop per one day
+    //Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
+    //    heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+
+    //vTaskDelay(24 * 3600 * 1000);  // loop per one day
+
+    //Serial.println(hgmApp->hgmBT->bs->isReady());
+    vTaskDelay(100);
+
 }

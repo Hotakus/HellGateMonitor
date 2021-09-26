@@ -19,17 +19,38 @@ using namespace fs;
 namespace HgmApplication {
 #define WEATHER_CONFIG_FILE_PATH "/weather.conf"
 #define WEATHER_GET_GAP (1800U * 1000U)	// 30 min
+
+	class WeatherData
+	{
+	public:
+		// Unit: Celsius
+		float temp = 0;
+
+		int16_t aqi = -1;
+		int16_t icon = -1;
+
+		// Unit: %
+		float humidity = 0;
+
+		WeatherData();
+		~WeatherData();
+	};
+
 	class WeatherInfo
 	{
 	private:
 
 	public:
+
 		WeatherInfo();
 		~WeatherInfo();
 
 		void Begin();
 
-		static bool CheckWeatherconfig();
+		void InitTask();
+		void DeInitTask();
+
+		bool CheckWeatherconfig();
 
 		static void SetAppKey(String key);
 		// two method to set the location info

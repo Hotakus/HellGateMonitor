@@ -10,6 +10,8 @@
 #include "HardwareCpuData.h"
 #include "HardwareGpuData.h"
 #include "HardwareMemData.h"
+#include "HardwareNetData.h"
+#include "HardwareDiskData.h"
 
 #include "HardwareRequest.h"
 #include "../HgmJsonUtil.h"
@@ -23,6 +25,8 @@ using namespace HgmApplication;
 extern HardwareCpuData hardwareCpuData;
 extern HardwareGpuData hardwareGpuData;
 extern HardwareMemData hardwareMemData;
+extern HardwareGpuData hardwareNetData;
+extern HardwareMemData hardwareDiskData;
 
 HardwareRequest hrr;
 static HardwareRequest hardwareRequestDefault;
@@ -46,6 +50,8 @@ HgmApplication::HardwareRequest::HardwareRequest()
     (hgmHardObj[HGM_CPU]->params) = &hardwareCpuData;
     (hgmHardObj[HGM_GPU]->params) = &hardwareGpuData;
     (hgmHardObj[HGM_MEMORY]->params) = &hardwareMemData;
+    (hgmHardObj[HGM_HARD_DISK]->params) = &hardwareDiskData;
+    (hgmHardObj[HGM_NETWORK]->params) = &hardwareNetData;
 
 }
 
@@ -54,6 +60,8 @@ HgmApplication::HardwareRequest::~HardwareRequest()
     (hgmHardObj[HGM_CPU]->params) = NULL;
     (hgmHardObj[HGM_GPU]->params) = NULL;
     (hgmHardObj[HGM_MEMORY]->params) = NULL;
+    (hgmHardObj[HGM_HARD_DISK]->params) = NULL;
+    (hgmHardObj[HGM_NETWORK]->params) = NULL;
 }
 
 void HgmApplication::HardwareRequest::UseDefault()
@@ -65,4 +73,6 @@ void HgmApplication::HardwareRequest::UseDefault()
     (hgmHardObj[HGM_CPU]->pos) = HGM_LEFT_TOP;
     (hgmHardObj[HGM_GPU]->pos) = HGM_RIGHT_TOP;
     (hgmHardObj[HGM_MEMORY]->pos) = HGM_LEFT_BOTTOM;
+    (hgmHardObj[HGM_NETWORK]->pos) = HGM_RIGHT_BOTTOM;
+    (hgmHardObj[HGM_HARD_DISK]->pos) = HGM_POS_NULL;
 }
