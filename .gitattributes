@@ -1,1 +1,1 @@
-﻿*.c linguist-language=c++
+﻿./Source/LvglSrc/*.c linguist-language=c++
