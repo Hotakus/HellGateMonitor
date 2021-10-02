@@ -204,6 +204,11 @@ size_t HgmApplication::BiliInfoRecv::GetFollower()
     return userFans;
 }
 
+String& HgmApplication::BiliInfoRecv::GetUserName()
+{
+    return userName;
+}
+
 
 uint8_t HgmApplication::BiliInfoRecv::GetLevel()
 {

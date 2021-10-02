@@ -23,8 +23,6 @@ namespace HgmApplication {
 
     public:
 
-
-
         BiliInfoRecv();
         ~BiliInfoRecv();
 
@@ -38,6 +36,7 @@ namespace HgmApplication {
 
         static uint8_t GetLevel();
         static size_t GetFollower();
+        static String& GetUserName();
         static void GetBasicInfo();
         static int GetUserFaceImg(uint16_t imgWidth = 64, uint16_t imgHeight = 64);
         static uint8_t* GetUserFaceImgBuf(size_t* imgSize);
