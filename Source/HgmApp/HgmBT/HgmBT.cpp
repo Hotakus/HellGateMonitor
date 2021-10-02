@@ -67,7 +67,7 @@ void HgmApplication::HgmBT::BluetoothTaskInit()
         "BluetoothControlTask",
         2048,
         NULL,
-        9,
+        13,
         &bluetoothCheckTaskHandle,
         1
     );
@@ -334,7 +334,7 @@ static void BluetoothControlTask(void* params)
                     "bluetoothListeningTask",
                     3072,
                     NULL,
-                    12,
+                    10,
                     &bluetoothListeningTaskHandle,
                     1
                 );
@@ -361,8 +361,6 @@ static void BluetoothControlTask(void* params)
  */
 static void BluetoothListeningTask(void* params)
 {
-    uint16_t sleepTimes = 1000;
-    uint16_t times = 0;
     bool flag = false;
     String greet = "Hello, I am HellGateMonitorBT!!";
 

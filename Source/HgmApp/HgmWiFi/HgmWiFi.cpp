@@ -150,7 +150,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
         "wifiControlTask",
         2048,
         NULL,
-        10,
+        13,
         &wifiControlTaskHandle,
         1
     );
@@ -175,7 +175,7 @@ static void wifiControlTask(void* params)
 
                 _wifi.mode(WIFI_USE_MODE);
                 _wifi.setSleep(true);
-                _wifi.setAutoReconnect(false);
+                _wifi.setAutoReconnect(true);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
                 Serial.printf("wifiControlTask %s %s\n", _ssid, _password);
                 _wifi.begin(_ssid.c_str(), _password.c_str());

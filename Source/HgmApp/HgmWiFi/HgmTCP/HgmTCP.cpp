@@ -90,7 +90,7 @@ void HgmApplication::HgmTCP::HgmTcpTaskInit()
         "TcpControlTask",
         2048,
         NULL,
-        15,
+        13,
         &tcpControlTaskHandle,
         1
     );
@@ -318,7 +318,7 @@ static void TcpControlTask(void* params)
                     "TcpServerListeningTask",
                     3072,
                     NULL,
-                    10,
+                    9,
                     &tcpServerTaskHandle,
                     1
                 );

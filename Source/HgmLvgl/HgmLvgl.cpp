@@ -86,7 +86,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTick",
         768,
         NULL,
-        15,
+        16,
         &this->hgmLvglTickHandle,
         0
     );
