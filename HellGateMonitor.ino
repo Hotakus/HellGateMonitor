@@ -159,9 +159,7 @@ void setup()
     hgmSetupUI->ComponentControl(&component);
     hgmApp->BeginBT();
     while (!hgmApp->hgmBT->bs->isReady())
-    {
         vTaskDelay(200);
-    }
     component.waitStatus = true;
     vTaskDelay(200);
 

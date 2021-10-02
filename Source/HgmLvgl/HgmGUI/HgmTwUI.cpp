@@ -25,6 +25,8 @@ LV_IMG_DECLARE(book_left);
 LV_IMG_DECLARE(book_right);
 LV_IMG_DECLARE(book_mid);
 
+LV_FONT_DECLARE(k12x8_6px);
+LV_FONT_DECLARE(k12x8_7px);
 LV_FONT_DECLARE(k12x8_8px);
 LV_FONT_DECLARE(k12x8_10px);
 LV_FONT_DECLARE(k12x8_14px_time);
@@ -48,10 +50,6 @@ static lv_timer_t* showTimeTimer = NULL;
 struct tm time_s;
 
 extern TimeInfo ti;
-
-static void ShowTime();
-static void ShowWeather();
-static void ShowBili();
 
 static TaskHandle_t showTaskHandle;
 static void ShowTime(lv_timer_t* timer);
@@ -97,9 +95,10 @@ void HgmGUI::HgmTwUI::Begin()
     date_label = lv_label_create(tw_time);
     lv_label_set_recolor(date_label, true);
     lv_label_set_text(date_label, "#59493f 1970.01.01 ---#");
-    lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, -6, -5);
+    lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
     lv_obj_set_style_opa(date_label, LV_OPA_0, 0);
-    lv_obj_set_style_text_font(date_label, &k12x8_8px, 0);
+    lv_obj_set_style_text_font(date_label, &k12x8_6px, 0);
+
 
 
     /* Animations */
@@ -154,6 +153,12 @@ void HgmGUI::HgmTwUI::Begin()
 
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
+
+    lv_obj_t* tempMaxLabel = lv_label_create(tw_weather);
+    lv_label_set_recolor(tempMaxLabel, true);
+    lv_obj_set_style_text_font(tempMaxLabel, &k12x8_7px, 0);
+    lv_label_set_text_fmt(tempMaxLabel, "#59493f Max:% 3d℃#", 5);
+    lv_obj_align(tempMaxLabel, LV_ALIGN_TOP_RIGHT, -10, 10);
 }
 
 void HgmGUI::HgmTwUI::Stop()

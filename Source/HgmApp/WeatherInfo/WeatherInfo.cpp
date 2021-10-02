@@ -94,7 +94,7 @@ void HgmApplication::WeatherInfo::InitTask()
         "WCTask",
         8192,
         NULL,
-        9,
+        10,
         &WCTaskHandle,
         1
     );

@@ -254,7 +254,6 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-        // TODO: realize another requests
         if (hrr.rCpu)
             ((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->Set(rawPack);
         if (hrr.rGpu) 
