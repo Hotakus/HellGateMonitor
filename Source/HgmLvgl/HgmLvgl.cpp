@@ -81,6 +81,8 @@ void HGM::HgmLvgl::HgmLvglBegin()
         &this->hgmLvglTaskHandle,
         1
     );
+
+#if LV_TICK_CUSTOM != 1
     xTaskCreatePinnedToCore(
         HgmLvglTick,
         "HgmLvglTick",
@@ -90,6 +92,8 @@ void HGM::HgmLvgl::HgmLvglBegin()
         &this->hgmLvglTickHandle,
         1
     );
+#endif
+
     // xTaskCreatePinnedToCore(
     //     HgmControlCheckTask,
     //     "HgmControlCheckTask",
