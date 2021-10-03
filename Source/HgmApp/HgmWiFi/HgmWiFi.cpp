@@ -9,11 +9,8 @@
 *******************************************************************/
 #include <WiFi.h>
 #include "HgmWiFi.h"
-#include "../HgmApp.h"
 
 using namespace HgmApplication;
-
-extern HgmApp* hgmApp;
 
 static bool wifiSwitch = true;		// To control the WiFi's on/off
 
@@ -27,10 +24,12 @@ static QueueHandle_t wifiCtlMsgBox = NULL;
 static void wifiCheckTask(void* params);
 static void wifiControlTask(void* params);
 
-HgmWiFi::HgmWiFi(bool flag)
+HgmWiFi hgmWiFi;
+
+
+HgmWiFi::HgmWiFi()
 {
     this->wifi = &_wifi;
-
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
     this->hgmTcp->Begin();
@@ -42,7 +41,6 @@ HgmWiFi::HgmWiFi(String ssid, String password)
     _password = password;
 
     this->wifi = &_wifi;
-
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
     this->hgmTcp->Begin();
@@ -52,7 +50,6 @@ HgmWiFi::~HgmWiFi()
 {
     delete this->hgmTcp;
 
-    // TODO: finish the gc
     vTaskDelete(wifiControlTaskHandle);
     vQueueDelete(wifiCtlMsgBox);
 }
@@ -188,8 +185,8 @@ static void wifiControlTask(void* params)
                 if (timeout <= 0) {
                     Serial.println("WiFi open failed.");
 
-                    hgmApp->hgmWifi->OpenTCP(false, false);
-                    hgmApp->hgmWifi->OpenTCP(false, true);
+                    hgmWiFi.OpenTCP(false, false);
+                    hgmWiFi.OpenTCP(false, true);
 
                     _wifi.disconnect();
                     _wifi.mode(WIFI_OFF);

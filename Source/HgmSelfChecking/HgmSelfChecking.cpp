@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
 
-#include "../HgmApp/HgmApp.h"
 #include "../HgmApp/HgmWiFi/HgmWiFi.h"
 #include "HgmSelfChecking.h"
 #include "../HgmLvgl/HgmGUI/HgmSetupUI.h"
@@ -25,7 +24,7 @@ using namespace HgmGUI;
 using namespace HGM;
 using namespace fs;
 
-extern HgmApp* hgmApp;
+extern HgmWiFi hgmWiFi;
 extern HgmSetupUI* hgmSetupUI;
 static HgmComponent component;
 
@@ -118,7 +117,7 @@ void HGM::HgmSC::Begin()
             password = doc["password"].as<String>();
             if ((!ssid.compareTo("null") || !password.compareTo("null")) || (!ssid || !password))
                 WiFiBTConfig();
-            hgmApp->hgmWifi->ConfigWiFi(ssid, password);
+            hgmWiFi.ConfigWiFi(ssid, password);
 
             component.type = HGM_COMPONENT_CONFIG_FILE;
             component.curStatus = true;

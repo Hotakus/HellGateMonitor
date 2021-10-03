@@ -16,6 +16,7 @@
 #define WIFI_CONFIG_FILE_PATH "/wifi.conf"
 
 namespace HgmApplication {
+#define WIFI_USE_MODE WIFI_STA
 	class HgmWiFi
 	{
 	private:
@@ -27,7 +28,7 @@ namespace HgmApplication {
 		WiFiClass* wifi;
 		HgmTCP* hgmTcp = nullptr;
 
-		HgmWiFi(bool flag);
+		HgmWiFi();
 		HgmWiFi(String ssid, String password);
 		~HgmWiFi();
 

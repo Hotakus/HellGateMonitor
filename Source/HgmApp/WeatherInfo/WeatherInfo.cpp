@@ -94,7 +94,7 @@ void HgmApplication::WeatherInfo::InitTask()
         "WCTask",
         8192,
         NULL,
-        10,
+        7,
         &WCTaskHandle,
         1
     );
@@ -282,6 +282,7 @@ void HgmApplication::WeatherInfo::GetWeather()
     /* Air */
     _httpClient->begin(airApi);
     int code = _httpClient->GET();
+
     if (code != HTTP_CODE_OK) {
         Serial.printf("HTTP error code : % d\n", code);
         _httpClient->end();
@@ -318,18 +319,23 @@ static void WCTask(void* params)
             continue;
         }
 
-        xSemaphoreTake(wbs, portMAX_DELAY);
-        hgmApp->StopBT();
-        while (hgmApp->hgmBT->bs->isReady()) 
-            vTaskDelay(2000);
-        WeatherInfo::GetWeather();
-        hgmApp->BeginBT();
-        while (!hgmApp->hgmBT->bs->isReady())
-            vTaskDelay(200);
-        xSemaphoreGive(wbs);
+        //xSemaphoreTake(wbs, portMAX_DELAY);
+        //hgmApp->StopBT();
+        //while (hgmApp->hgmBT->bs->isReady()) 
+        //    vTaskDelay(2000);
+        //WeatherInfo::GetWeather();
+        //hgmApp->BeginBT();
+        //while (!hgmApp->hgmBT->bs->isReady())
+        //    vTaskDelay(2000);
+        //xSemaphoreGive(wbs);
 
-        vTaskDelay(WEATHER_GET_GAP);
+        //String url = "https://devapi.qweather.com/v7/air/now?&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a&gzip=n";
+        //HTTPClient hc;
+        //hc.begin(url);
+        //int code = hc.GET();
+        //Serial.println(code);
 
-        //vTaskDelay(5 * 1000);
+        //vTaskDelay(WEATHER_GET_GAP);
+        vTaskDelay(5 * 1000);
     }
 }

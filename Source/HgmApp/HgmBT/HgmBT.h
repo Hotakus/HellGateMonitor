@@ -47,7 +47,7 @@ namespace HgmApplication {
 	public:
 		BluetoothSerial *bs = nullptr;
 
-		HgmBT(char* name = BT_DEFAULT_NAME);
+		HgmBT();
 		~HgmBT();
 
 		void Begin();

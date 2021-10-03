@@ -9,8 +9,8 @@
 *******************************************************************/
 
 /* User include files */
+#include "Source/HgmApp/HgmWiFi/HgmWiFi.h"
 #include "Source/HgmApp/HgmBT/HgmBT.h"
-#include "Source/HgmApp/HgmApp.h"
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
@@ -46,14 +46,14 @@ using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace fs;
 
-extern HgmApp* hgmApp;
-extern HgmLvgl* hgmLvgl;
+extern HgmWiFi hgmWiFi;
+extern HgmBT hgmBT;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
+extern HgmLvgl* hgmLvgl;
 
 HgmSetupUI* hgmSetupUI;
 TimeInfo ti;
-
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -84,6 +84,7 @@ static void backlightControl(void* params)
 }
 
 float firmwareSize = 0;
+BluetoothSerial bs;
 
 void setup()
 {
@@ -91,9 +92,7 @@ void setup()
 
     vTaskDelay(200);
 
-    hgmApp = new HgmApp(true);
-    hgmApp->Stop();	// Stop BT and WiFi.
-    vTaskDelay(1000);
+    hgmBT.Stop();
     while (WiFi.isConnected())
         vTaskDelay(200);
 
@@ -157,8 +156,8 @@ void setup()
     component.curStatus = true;
     component.waitStatus = false;
     hgmSetupUI->ComponentControl(&component);
-    hgmApp->BeginBT();
-    while (!hgmApp->hgmBT->bs->isReady())
+    hgmBT.Begin();
+    while (!hgmBT.bs->isReady())
         vTaskDelay(200);
     component.waitStatus = true;
     vTaskDelay(200);
@@ -173,8 +172,8 @@ void setup()
     component.curStatus = true;
     component.waitStatus = false;
     hgmSetupUI->ComponentControl(&component);
-    hgmApp->hgmWifi->Begin();
-    while (!hgmApp->hgmWifi->wifi->isConnected())
+    hgmWiFi.Begin();
+    while (!hgmWiFi.wifi->isConnected())
         vTaskDelay(50);
     component.waitStatus = true;
     vTaskDelay(200);
@@ -186,17 +185,6 @@ void setup()
     // Check bilibili component
     bili.Begin();
     vTaskDelay(200);
-
-    // lv_obj_t* img2 = lv_img_create(lv_scr_act());
-    // static lv_img_dsc_t face_dsc;
-    // face_dsc.header.always_zero = 0;
-    // face_dsc.header.w = 64;
-    // face_dsc.header.h = 64;
-    // face_dsc.data_size = 4096 * 2;
-    // face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-    // face_dsc.data = (uint8_t*)faceBuf;
-    // lv_img_set_src(img2, &face_dsc);
-    // lv_obj_align(img2, LV_ALIGN_LEFT_MID, 0, 0);
 
     // Check weather
     weatherInfo.Begin();
@@ -215,12 +203,12 @@ void setup()
 
     char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
     vTaskList(task_buf);
+    //vTaskGetRunTimeStats(task_buf);
     Serial.printf("%s\n", task_buf);
-    Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
     heap_caps_free(task_buf);
-
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+
 }
 
 void loop()
@@ -236,7 +224,9 @@ void loop()
 
     //vTaskDelay(24 * 3600 * 1000);  // loop per one day
 
-    //Serial.println(hgmApp->hgmBT->bs->isReady());
-    vTaskDelay(100);
+    
+
+    //WeatherInfo::GetWeather();
+    vTaskDelay(2 * 1000);
 
 }

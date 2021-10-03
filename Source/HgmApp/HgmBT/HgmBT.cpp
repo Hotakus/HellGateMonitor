@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2021/8/13
 *******************************************************************/
 #include "HgmBT.h"
-#include "../HgmApp.h"
+#include "../HgmWiFi/HgmWiFi.h"
 #include "../WeatherInfo/WeatherInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 #include "../HgmJsonUtil.h"
@@ -24,7 +24,6 @@ using namespace fs;
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-extern HgmApp* hgmApp;
 extern SemaphoreHandle_t wbs;
 extern HardwareRequest hrr;
 
@@ -32,7 +31,7 @@ static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;
 static BluetoothSerial* _bs = NULL;
 
-static char* name = nullptr;
+static String name;
 
 static String _dataToSave = "";
 static HgmBTPackMethod _method = HGM_BT_PACK_METHOD_NULL;
@@ -40,13 +39,15 @@ static HgmBTPackMethod _method = HGM_BT_PACK_METHOD_NULL;
 static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
+extern HgmWiFi hgmWiFi;
+HgmBT hgmBT;
+
 /**
  * @brief Construct.
  * @param n set the name of the bluetooth
  */
-HgmBT::HgmBT(char* n)
+HgmBT::HgmBT()
 {
-    name = n;
     this->bs = new BluetoothSerial();
     _bs = this->bs;
     btCtlMsgbox = xQueueCreate(1, sizeof(bool));
@@ -65,7 +66,7 @@ void HgmApplication::HgmBT::BluetoothTaskInit()
     xTaskCreatePinnedToCore(
         BluetoothControlTask,
         "BluetoothControlTask",
-        2048,
+        4096,
         NULL,
         13,
         &bluetoothCheckTaskHandle,
@@ -78,24 +79,29 @@ void HgmApplication::HgmBT::BluetoothTaskDelete()
     vTaskDelete(bluetoothCheckTaskHandle);
 }
 
+bool sw = false;
 void HgmApplication::HgmBT::Begin()
 {
-    bool sw = true;
+    sw = true;
+    Serial.println("HgmBT::Begin() 0");
     xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+    Serial.println("HgmBT::Begin() 1");
 }
 
 void HgmApplication::HgmBT::Stop()
 {
-    bool sw = false;
+    sw = false;
+    Serial.println("HgmBT::Stop() 0");
     xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+    Serial.println("HgmBT::Stop() 1");
 }
 
 
 
 static void BeginWiFiWithConfig(String ssid, String password)
 {
-    hgmApp->BeginWiFiWithConfig(ssid, password);
-
+    hgmWiFi.ConfigWiFi(ssid, password);
+    hgmWiFi.Begin();
 }
 
 /**
@@ -191,7 +197,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
 
-        hgmApp->StopWiFi();
+        hgmWiFi.Stop();
         vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
 
@@ -218,7 +224,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CLOSE;
 
-        hgmApp->StopWiFi();
+        hgmWiFi.Stop();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
@@ -321,23 +327,26 @@ static void BluetoothControlTask(void* params)
     static bool sw = false;
 
     while (true) {
-        if (xQueueReceive(btCtlMsgbox, &sw, portMAX_DELAY) != pdPASS) {
+        if (xQueueReceive(btCtlMsgbox, &sw, portMAX_DELAY) != pdPASS)
             continue;
-        }
 
         if (sw) {
             if (bluetoothListeningTaskHandle == NULL) {
                 Serial.println("BT Start to listening...");
                 _bs->begin(name);
+                Serial.println("BT Start to listening...2");
+                while (!_bs->isReady())
+                    vTaskDelay(500);
                 xTaskCreatePinnedToCore(
                     BluetoothListeningTask,
                     "bluetoothListeningTask",
-                    3072,
+                    4096,
                     NULL,
-                    10,
+                    11,
                     &bluetoothListeningTaskHandle,
                     1
                 );
+                Serial.println("BT Start to listening...3");
             }
         } else {
             _bs->disconnect();
@@ -363,6 +372,8 @@ static void BluetoothListeningTask(void* params)
 {
     bool flag = false;
     String greet = "Hello, I am HellGateMonitorBT!!";
+
+    Serial.println("BT Start to listening...4");
 
     while (true) {
         if (!_bs->connected()) {

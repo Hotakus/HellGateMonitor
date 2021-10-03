@@ -77,7 +77,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTask",
         2256,
         NULL,
-        15,
+        4,
         &this->hgmLvglTaskHandle,
         1
     );
@@ -86,9 +86,9 @@ void HGM::HgmLvgl::HgmLvglBegin()
         "HgmLvglTick",
         768,
         NULL,
-        16,
+        5,
         &this->hgmLvglTickHandle,
-        0
+        1
     );
     // xTaskCreatePinnedToCore(
     //     HgmControlCheckTask,

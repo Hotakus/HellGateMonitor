@@ -79,7 +79,7 @@ void HgmApplication::BiliInfoRecv::InitTask()
         "biliTask",
         2512,
         NULL,
-        5,
+        7,
         &biliTaskHandle,
         1
     );

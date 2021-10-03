@@ -10,8 +10,9 @@
 #include <Arduino.h>
 #include <ESP32Time.h>
 #include "HgmTwUI.h"
-#include"../HgmLvgl.h"
+#include "../HgmLvgl.h"
 #include "../../HgmApp/TimeInfo/TimeInfo.h"
+#include "../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 
 using namespace HgmApplication;
 using namespace HgmGUI;
@@ -32,6 +33,9 @@ LV_FONT_DECLARE(k12x8_10px);
 LV_FONT_DECLARE(k12x8_14px_time);
 LV_FONT_DECLARE(k12x8_16px_time);
 LV_FONT_DECLARE(k12x8_24px_time);
+
+static lv_img_dsc_t face_dsc;
+static lv_obj_t* faceImg = NULL;
 
 static lv_obj_t* tw_time = NULL;
 static lv_obj_t* tw_weather = NULL;
@@ -62,6 +66,13 @@ HgmTwUI::HgmTwUI()
 HgmTwUI::~HgmTwUI()
 {
 
+}
+
+static bool CheckChinese(String& str)
+{
+    for (int ch : str)
+        if (ch < 0) return true;
+    return false;
 }
 
 void HgmGUI::HgmTwUI::Begin()
@@ -154,11 +165,33 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 
-    lv_obj_t* tempMaxLabel = lv_label_create(tw_weather);
-    lv_label_set_recolor(tempMaxLabel, true);
-    lv_obj_set_style_text_font(tempMaxLabel, &k12x8_7px, 0);
-    lv_label_set_text_fmt(tempMaxLabel, "#59493f Max:% 3d℃#", 5);
-    lv_obj_align(tempMaxLabel, LV_ALIGN_TOP_RIGHT, -10, 10);
+    // Face
+    face_dsc.header.always_zero = 0;
+    face_dsc.header.w = 64;
+    face_dsc.header.h = 64;
+    face_dsc.data_size = 4096 * 2;
+    face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    faceImg = lv_img_create(book);
+    lv_img_set_src(faceImg, &face_dsc);
+    lv_obj_align(faceImg, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_set_size(faceImg, 64, 64);
+
+    // Bili label
+    lv_obj_t* biliName = lv_label_create(book);
+    lv_obj_set_style_text_font(biliName, &k12x8_10px, 0);
+    lv_label_set_recolor(biliName, true);
+    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
+    lv_obj_set_style_text_align(biliName, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
+
+    lv_obj_t* biliFans = lv_label_create(book);
+    lv_label_set_recolor(biliFans, true);
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%dK#", BiliInfoRecv::GetFollower());
+    lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
+    lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
+
 }
 
 void HgmGUI::HgmTwUI::Stop()

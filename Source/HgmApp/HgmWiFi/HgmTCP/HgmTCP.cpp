@@ -318,7 +318,7 @@ static void TcpControlTask(void* params)
                     "TcpServerListeningTask",
                     3072,
                     NULL,
-                    9,
+                    10,
                     &tcpServerTaskHandle,
                     1
                 );

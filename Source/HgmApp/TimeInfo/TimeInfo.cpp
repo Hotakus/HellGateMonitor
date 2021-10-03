@@ -56,7 +56,7 @@ void HgmApplication::TimeInfo::InitTask()
 		"netTimeTask",
 		3072,
 		NULL,
-		15,
+		8,
 		&netTimeTaskHandle,
 		1
 	);
