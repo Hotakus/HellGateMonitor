@@ -129,6 +129,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 static void netTimeTask(void* params)
 {
 	static struct tm ts;
+	extern SemaphoreHandle_t wbs;
 
 	Serial.println("netTimeTask");
 
@@ -139,7 +140,10 @@ static void netTimeTask(void* params)
 			continue;
 		}
 
+		xSemaphoreTake(wbs, portMAX_DELAY);
 		TimeInfo::GetNetTime(&ts);
+		xSemaphoreGive(wbs);
+		
 		vTaskDelay(NET_TIME_GAP);
 	}
 }
