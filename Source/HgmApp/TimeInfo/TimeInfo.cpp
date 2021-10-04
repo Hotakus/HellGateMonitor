@@ -24,7 +24,7 @@ static String timeAPI = "http://quan.suning.com/getSysTime.do";
 static ESP32Time *_rtc;
 static struct tm _timeStruct;
 
-static HTTPClient *_httpClient;
+extern HTTPClient hgmHttpClient;
 
 static TaskHandle_t netTimeTaskHandle;
 static QueueHandle_t netTimeMsgBox;
@@ -34,15 +34,15 @@ static HgmComponent component;
 
 extern HgmSetupUI *hgmSetupUI;
 
+TimeInfo ti;
+
 TimeInfo::TimeInfo()
 {
 	_rtc = &this->rtc;
-	_httpClient = new HTTPClient();
 }
 
 TimeInfo::~TimeInfo()
 {
-	delete _httpClient;
 	this->DeInitTask();
 }
 
@@ -92,15 +92,15 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 {
 	StaticJsonDocument<512> doc;
 
-	_httpClient->begin(timeAPI);
-	int code = _httpClient->GET();
+	hgmHttpClient.begin(timeAPI);
+	int code = hgmHttpClient.GET();
 
-	if (code != 200) {
+	if (code != HTTP_CODE_OK) {
 		Serial.printf("HTTP code : %d\n", code);
-		_httpClient->end();
+		hgmHttpClient.end();
 		return -1;
 	}
-	String recv = _httpClient->getString();
+	String recv = hgmHttpClient.getString();
 	deserializeJson(doc, recv);
 	Serial.println(recv);
 
@@ -122,7 +122,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 	_timeStruct = _rtc->getTimeStruct();
 	timeStruct = &_timeStruct;
 
-	_httpClient->end();
+	hgmHttpClient.end();
 	return 0;
 }
 

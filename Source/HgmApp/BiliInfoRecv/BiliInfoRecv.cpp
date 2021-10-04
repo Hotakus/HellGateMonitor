@@ -33,7 +33,7 @@ extern HgmSetupUI* hgmSetupUI;
 
 BiliInfoRecv bili;
 
-HTTPClient* _httpClient = nullptr;
+extern HTTPClient hgmHttpClient;
 
 static String _uid = "";
 static String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
@@ -60,12 +60,10 @@ static void biliTask(void* params);
 
 BiliInfoRecv::BiliInfoRecv()
 {
-    _httpClient = new HTTPClient();
 }
 
 BiliInfoRecv::~BiliInfoRecv()
 {
-    delete _httpClient;
     this->DeInitTask();
 }
 
@@ -79,7 +77,7 @@ void HgmApplication::BiliInfoRecv::InitTask()
         "biliTask",
         2512,
         NULL,
-        7,
+        8,
         &biliTaskHandle,
         1
     );
@@ -178,20 +176,20 @@ static int _GetFollower()
     String url = statAPI + _uid;
     StaticJsonDocument<512> userInfo;
 
-    _httpClient->begin(url);
-    int code = _httpClient->GET();
+    hgmHttpClient.begin(url);
+    int code = hgmHttpClient.GET();
 
-    if (code != 200) {
+    if (code != HTTP_CODE_OK) {
         Serial.printf("HTTP code : %d", code);
-        _httpClient->end();
+        hgmHttpClient.end();
         return -1;
     }
-    String recv = _httpClient->getString();
+    String recv = hgmHttpClient.getString();
     deserializeJson(userInfo, recv);
 
     userFans = userInfo["data"]["follower"].as<size_t>();
 
-    _httpClient->end();
+    hgmHttpClient.end();
     return userFans;
 }
 
@@ -282,10 +280,10 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
 
     int code = -1;
 
-    _httpClient->begin(imgUrl);
-    code = _httpClient->GET();
+    hgmHttpClient.begin(imgUrl);
+    code = hgmHttpClient.GET();
 
-    WiFiClient* client = _httpClient->getStreamPtr();
+    WiFiClient* client = hgmHttpClient.getStreamPtr();
     if (client->available()) {
         size_t size = client->available();
         userFaceImgBufSize = size;
@@ -296,13 +294,13 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
         userFaceImgBuf = (uint8_t*)heap_caps_calloc(size, 1, MALLOC_CAP_SPIRAM);
         if (!userFaceImgBuf) {
             Serial.println("Face image buffer allocated failed.");
-            _httpClient->end();
+            hgmHttpClient.end();
             return -1;
         }
 
         if (client->readBytes(userFaceImgBuf, size) != size) {
             Serial.println("Face image buffer save failed.");
-            _httpClient->end();
+            hgmHttpClient.end();
             return -1;
         }
         Serial.println("Face image get done.");
@@ -312,7 +310,7 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
 
     _SaveUserFaceImg();
 
-    _httpClient->end();
+    hgmHttpClient.end();
 }
 
 uint8_t* HgmApplication::BiliInfoRecv::GetUserFaceImgBuf(size_t* imgSize)
@@ -326,7 +324,6 @@ void* HgmApplication::BiliInfoRecv::GetUserFaceBitmap()
     return userFaceBitmap;
 }
 
-
 /**
  * @brief Get basic bilibili user info.
  */
@@ -336,17 +333,17 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     Serial.println(url);
 
-    _httpClient->begin(url);
-    int code = _httpClient->GET();
+    hgmHttpClient.begin(url);
+    int code = hgmHttpClient.GET();
 
-    if (code != 200) {
+    if (code != HTTP_CODE_OK) {
         Serial.printf("%s HTTP code : %d", __func__, code);
-        _httpClient->end();
+        hgmHttpClient.end();
         getFlag = false;
         return;
     }
 
-    WiFiClient* wc = _httpClient->getStreamPtr();
+    WiFiClient* wc = hgmHttpClient.getStreamPtr();
     size_t size = wc->available();
     uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
     recvBuf[size] = '\0';
@@ -358,7 +355,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
         Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
-        _httpClient->end();
+        hgmHttpClient.end();
         getFlag = false;
         return;
     }
@@ -367,7 +364,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     userLevel = userInfo["data"]["level"].as<uint8_t>();
     userFaceImgUrl = userInfo["data"]["face"].as<String>();
 
-    _httpClient->end();
+    hgmHttpClient.end();
 
     _GetFollower();
 
