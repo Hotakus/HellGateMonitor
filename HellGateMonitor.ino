@@ -51,14 +51,17 @@ extern HgmBT hgmBT;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern HgmLvgl* hgmLvgl;
+extern TimeInfo ti;
 
 HgmSetupUI* hgmSetupUI;
-TimeInfo ti;
+
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
 
 SemaphoreHandle_t wbs;
+
+float firmwareSize = 0;
 
 // Show the init progress task
 static void backlightControl(void* params)
@@ -83,18 +86,16 @@ static void backlightControl(void* params)
     }
 }
 
-float firmwareSize = 0;
-BluetoothSerial bs;
-
 void setup()
 {
     Serial.begin(115200);
 
-    vTaskDelay(200);
-
     hgmBT.Stop();
+    while (hgmBT.bs->isReady())
+        vTaskDelay(500);
+    hgmWiFi.Stop();
     while (WiFi.isConnected())
-        vTaskDelay(200);
+        vTaskDelay(500);
 
     firmwareSize = ESP.getSketchSize() / 1024.0 / 1024.0;
 
@@ -115,7 +116,7 @@ void setup()
     Serial.printf("FreeRTOS : %s\n", tskKERNEL_VERSION_NUMBER);
     Serial.printf("LVGL     : V%d.%d.%d %s\n", lv_version_major(), lv_version_minor(), lv_version_patch(),
         lv_version_info());
-    Serial.printf("Firmware : V%d.%d.%d %s %0.2fMiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
+    Serial.printf("Firmware : V%d.%d.%d %s %0.2f MiB\n", HGM_VERSION_MAJOR, HGM_VERSION_MINOR, HGM_VERSION_PATCH,
         HGM_VERSION_INFO, firmwareSize);
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
@@ -125,15 +126,7 @@ void setup()
     ledcWrite(0, 0);
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
-    xTaskCreatePinnedToCore(
-        backlightControl,
-        "backlightControl",
-        1024,
-        NULL,
-        5,
-        &bkHandle,
-        1
-    );
+    xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024, NULL, 5, &bkHandle, 1);
 
     /* HGM LVGL Component initialize */
     Wire1.begin(21, 22);
@@ -156,6 +149,7 @@ void setup()
     component.curStatus = true;
     component.waitStatus = false;
     hgmSetupUI->ComponentControl(&component);
+    hgmBT.SetName();
     hgmBT.Begin();
     while (!hgmBT.bs->isReady())
         vTaskDelay(200);
@@ -174,21 +168,21 @@ void setup()
     hgmSetupUI->ComponentControl(&component);
     hgmWiFi.Begin();
     while (!hgmWiFi.wifi->isConnected())
-        vTaskDelay(50);
+        vTaskDelay(100);
     component.waitStatus = true;
-    vTaskDelay(200);
+    vTaskDelay(300);
 
     // Check time
     ti.Begin();
-    vTaskDelay(200);
+    vTaskDelay(300);
 
     // Check bilibili component
     bili.Begin();
-    vTaskDelay(200);
+    vTaskDelay(300);
 
     // Check weather
     weatherInfo.Begin();
-    vTaskDelay(200);
+    vTaskDelay(300);
 
     // All done
     component.type = HGM_COMPONENT_DONE;
@@ -209,24 +203,10 @@ void setup()
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 
+    
 }
 
 void loop()
 {
-    //char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
-    //vTaskList(task_buf);
-    //Serial.printf("%s\n", task_buf);
-    //Serial.printf("Total tasks : %d\n", uxTaskGetNumberOfTasks());
-    //heap_caps_free(task_buf);
-
-    //Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
-    //    heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-
-    //vTaskDelay(24 * 3600 * 1000);  // loop per one day
-
-    
-
-    //WeatherInfo::GetWeather();
-    vTaskDelay(2 * 1000);
-
+    vTaskDelay(5 * 60 * 1000);
 }

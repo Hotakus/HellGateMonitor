@@ -62,7 +62,7 @@ HgmSetupUI::HgmSetupUI()
         "SetupCheckTask",
         2048,
         NULL,
-        5,
+        15,
         &setupTaskHandle,
         1
     );
@@ -76,16 +76,6 @@ HgmSetupUI::~HgmSetupUI()
 
 void HgmGUI::HgmSetupUI::Begin()
 {
-    //// Set the bg for lv_scr_act()
-    //lv_obj_set_style_bg_img_src(lv_scr_act(), &testbg, 0);
-    lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
-
-    /*lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
-    lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
-    lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_width(bg, 240);*/
-    lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
-
     // logo
     logo = lv_img_create(lv_scr_act());
     lv_img_set_src(logo, &HGM_LOGO);
@@ -104,7 +94,7 @@ void HgmGUI::HgmSetupUI::Begin()
     // progress bar
     pb = lv_bar_create(lv_scr_act());
     lv_obj_set_size(pb, 135, 5);
-    lv_bar_set_range(pb, 0, ((HGM_COMPONENT_NULL - 1) * 1000));
+    lv_bar_set_range(pb, 0, ((HGM_COMPONENT_NULL - 2) * 1000));
     lv_obj_set_style_anim_time(pb, 70, 0);
     lv_obj_align(pb, LV_ALIGN_BOTTOM_MID, 0, 20);
     lv_bar_set_start_value(pb, 0, LV_ANIM_OFF);
@@ -311,7 +301,7 @@ static void SetupCheckTask(void* params)
 
         vTaskDelay(100);
 
-        progress += (HGM_COMPONENT_NULL - 1) * 1000 / (HGM_COMPONENT_NULL - 1);
+        progress += (HGM_COMPONENT_NULL - 2) * 1000 / (HGM_COMPONENT_NULL - 2);
         lv_bar_set_value(pb, progress, LV_ANIM_ON);
 
         curText += ok;

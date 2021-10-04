@@ -52,6 +52,8 @@ namespace HgmApplication {
 
 		void Begin();
 		void Stop();
+
+		static void SetName(String _name = BT_DEFAULT_NAME);
 		
 		/* Pack the raw data as a data frame via designated method */
 		static String PackRawData(String& dataToPack, HgmBTPackMethod method);

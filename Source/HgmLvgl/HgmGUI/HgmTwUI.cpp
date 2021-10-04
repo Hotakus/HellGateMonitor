@@ -82,13 +82,12 @@ void HgmGUI::HgmTwUI::Begin()
 
     //
     tw_time = lv_img_create(lv_scr_act());
-    lv_img_set_src(tw_time, &tw_t);
     lv_obj_align(tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(tw_time, &tw_t);
 
     tw_weather = lv_img_create(lv_scr_act());
-    lv_img_set_src(tw_weather, &tw_w);
-    // lv_obj_align(tw_weather, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
     lv_obj_align(tw_weather, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(tw_weather, &tw_w);
 
     book = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
@@ -180,14 +179,17 @@ void HgmGUI::HgmTwUI::Begin()
     // Bili label
     lv_obj_t* biliName = lv_label_create(book);
     lv_obj_set_style_text_font(biliName, &k12x8_10px, 0);
+    lv_obj_set_width(biliName, 85);
     lv_label_set_recolor(biliName, true);
+    lv_label_set_long_mode(biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    // TODO: Check chinese
     lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
     lv_obj_set_style_text_align(biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
     lv_obj_t* biliFans = lv_label_create(book);
     lv_label_set_recolor(biliFans, true);
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%dK#", BiliInfoRecv::GetFollower());
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
     lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);

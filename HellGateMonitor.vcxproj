@@ -190,7 +190,6 @@
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.h" />
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.h" />
-    <ClInclude Include="Source\HgmApp\HgmApp.h" />
     <ClInclude Include="Source\HgmApp\HgmBT\HgmBT.h" />
     <ClInclude Include="Source\HgmApp\HgmJsonUtil.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h" />
@@ -334,7 +333,6 @@
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareMemData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.cpp" />
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareRequest.cpp" />
-    <ClCompile Include="Source\HgmApp\HgmApp.cpp" />
     <ClCompile Include="Source\HgmApp\HgmBT\HgmBT.cpp" />
     <ClCompile Include="Source\HgmApp\HgmJsonUtil.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp" />
@@ -361,6 +359,8 @@
     <ClCompile Include="Source\LvglSrc\k12x8_14px_time.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_16px_time.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_24px_time.c" />
+    <ClCompile Include="Source\LvglSrc\k12x8_6px.c" />
+    <ClCompile Include="Source\LvglSrc\k12x8_7px.c" />
     <ClCompile Include="Source\LvglSrc\k12x8_8px.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_event.c" />

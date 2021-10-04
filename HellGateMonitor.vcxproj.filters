@@ -407,9 +407,6 @@
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmApp\HgmApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -889,9 +886,6 @@
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmApp\HgmApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -980,6 +974,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\k12x8_7px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\k12x8_6px.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
