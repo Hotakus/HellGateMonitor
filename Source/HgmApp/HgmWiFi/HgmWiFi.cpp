@@ -147,7 +147,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
         "wifiControlTask",
         2048,
         NULL,
-        13,
+        10,
         &wifiControlTaskHandle,
         1
     );

@@ -36,6 +36,8 @@ static String name;
 static String _dataToSave = "";
 static HgmBTPackMethod _method = HGM_BT_PACK_METHOD_NULL;
 
+static TaskHandle_t bluetoothListeningTaskHandle = NULL;
+
 static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
@@ -51,7 +53,7 @@ HgmBT::HgmBT()
     this->bs = new BluetoothSerial();
     _bs = this->bs;
     btCtlMsgbox = xQueueCreate(1, sizeof(bool));
-    this->BluetoothTaskInit();
+    //this->BluetoothTaskInit();
 }
 
 HgmBT::~HgmBT()
@@ -63,15 +65,15 @@ HgmBT::~HgmBT()
 
 void HgmApplication::HgmBT::BluetoothTaskInit()
 {
-    xTaskCreatePinnedToCore(
-        BluetoothControlTask,
-        "BluetoothControlTask",
-        4096,
-        NULL,
-        13,
-        &bluetoothCheckTaskHandle,
-        1
-    );
+    //xTaskCreatePinnedToCore(
+    //    BluetoothControlTask,
+    //    "BluetoothControlTask",
+    //    3072,
+    //    NULL,
+    //    10,
+    //    &bluetoothCheckTaskHandle,
+    //    1
+    //);
 }
 
 void HgmApplication::HgmBT::BluetoothTaskDelete()
@@ -82,18 +84,47 @@ void HgmApplication::HgmBT::BluetoothTaskDelete()
 bool sw = false;
 void HgmApplication::HgmBT::Begin()
 {
-    sw = true;
-    Serial.println("HgmBT::Begin() 0");
-    xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
-    Serial.println("HgmBT::Begin() 1");
+    //sw = true;
+    //Serial.println("HgmBT::Begin() 0");
+    //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+    //Serial.println("HgmBT::Begin() 1");
+
+    if (bluetoothListeningTaskHandle == NULL) {
+        Serial.println("BT Start to listening...");
+        _bs->begin(name);
+        Serial.println("BT Start to listening...2");
+        xTaskCreatePinnedToCore(
+            BluetoothListeningTask,
+            "bluetoothListeningTask",
+            3072,
+            NULL,
+            9,
+            &bluetoothListeningTaskHandle,
+            1
+        );
+        Serial.println("BT Start to listening...3");
+    }
 }
 
 void HgmApplication::HgmBT::Stop()
 {
-    sw = false;
-    Serial.println("HgmBT::Stop() 0");
-    xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
-    Serial.println("HgmBT::Stop() 1");
+    //sw = false;
+    //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+
+    _bs->disconnect();
+    _bs->end();
+    if (bluetoothListeningTaskHandle) {
+        vTaskDelete(bluetoothListeningTaskHandle);
+        bluetoothListeningTaskHandle = NULL;
+        Serial.println("BT stop ...");
+    } else {
+        Serial.println("BT stop already");
+    }
+}
+
+void HgmApplication::HgmBT::SetName(String _name)
+{
+    name = _name;
 }
 
 
@@ -323,7 +354,6 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
  */
 static void BluetoothControlTask(void* params)
 {
-    static TaskHandle_t bluetoothListeningTaskHandle = NULL;
     static bool sw = false;
 
     while (true) {
@@ -331,34 +361,9 @@ static void BluetoothControlTask(void* params)
             continue;
 
         if (sw) {
-            if (bluetoothListeningTaskHandle == NULL) {
-                Serial.println("BT Start to listening...");
-                _bs->begin(name);
-                Serial.println("BT Start to listening...2");
-                while (!_bs->isReady())
-                    vTaskDelay(500);
-                xTaskCreatePinnedToCore(
-                    BluetoothListeningTask,
-                    "bluetoothListeningTask",
-                    4096,
-                    NULL,
-                    11,
-                    &bluetoothListeningTaskHandle,
-                    1
-                );
-                Serial.println("BT Start to listening...3");
-            }
+            
         } else {
-            _bs->disconnect();
-            _bs->end();
-            if (bluetoothListeningTaskHandle) {
-                vTaskDelete(bluetoothListeningTaskHandle);
-                bluetoothListeningTaskHandle = NULL;
-                Serial.println("BT stop ...");
-            } else {
-                Serial.println("BT stop already");
-            }
-
+            
         }
     }
 }
