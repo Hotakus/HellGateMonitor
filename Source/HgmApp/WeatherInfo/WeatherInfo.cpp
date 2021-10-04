@@ -9,8 +9,8 @@
 *******************************************************************/
 #include "WeatherInfo.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
+#include "../HgmBT/HgmBT.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
-#include "../HgmApp.h"
 #include "../HgmJsonUtil.h"
 
 #include <WiFi.h>
@@ -26,7 +26,7 @@ using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
 using namespace fs;
 
-extern HgmApp* hgmApp;
+extern HgmBT hgmBT;
 extern HgmSetupUI* hgmSetupUI;
 static HgmComponent component;
 
@@ -57,20 +57,17 @@ static bool configFlag = false;
 WeatherInfo weatherInfo;
 WeatherData weatherToday;
 
-static HTTPClient* _httpClient;
-
-
+HTTPClient hgmHttpClient;
 
 WeatherInfo::WeatherInfo()
 {
     // TODO: Create a task to loop to get the weather
     WCMsgBox = xQueueCreate(1, sizeof(int));
-    _httpClient = new HTTPClient();
 }
 
 WeatherInfo::~WeatherInfo()
 {
-    delete _httpClient;
+    vQueueDelete(WCMsgBox);
 }
 
 
@@ -94,7 +91,7 @@ void HgmApplication::WeatherInfo::InitTask()
         "WCTask",
         8192,
         NULL,
-        7,
+        3,
         &WCTaskHandle,
         1
     );
@@ -278,36 +275,61 @@ void HgmApplication::WeatherInfo::GetWeather()
     size_t packSize = 0;
     HotakusDynamicJsonDocument rawPack(8192);
     uint8_t* packBuf = (uint8_t*)heap_caps_calloc(8192, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+    HTTPClient* hc = (HTTPClient*)heap_caps_calloc(1, sizeof(HTTPClient), MALLOC_CAP_SPIRAM);
 
     /* Air */
-    _httpClient->begin(airApi);
-    int code = _httpClient->GET();
-
-    if (code != HTTP_CODE_OK) {
-        Serial.printf("HTTP error code : % d\n", code);
-        _httpClient->end();
-        return;
+    // TODO: create func
+    uint8_t retry = 5;
+    while (retry--) {
+        hc->setTimeout(2000);
+        hc->begin(airApi);
+        vTaskDelay(50);
+        int code = hc->GET();
+        if (code != HTTP_CODE_OK) {
+            Serial.printf("%s HTTP error code : % d\n", __func__, code);
+            hc->end();
+            continue;
+        } else
+            break;
     }
-    wc = _httpClient->getStreamPtr();
-    packSize = wc->available();
-    memset(packBuf, 0x00, 8192);
-    packBuf[packSize] = '\0';
-    for (size_t i = 0; i < packSize; i++) {
-        packBuf[i] = (uint8_t)wc->read();
-        Serial.printf("%c", packBuf[i]);
-    }
-    Serial.println();
-    deserializeJson(rawPack, packBuf);
+    if (retry) {
+        wc = hc->getStreamPtr();
+        packSize = wc->available();
+        memset(packBuf, 0x00, 8192);
+        packBuf[packSize] = '\0';
+        for (size_t i = 0; i < packSize; i++) {
+            packBuf[i] = (uint8_t)wc->read();
+            Serial.printf("%c", packBuf[i]);
+        }
+        Serial.println();
+        deserializeJson(rawPack, packBuf);
 
-    Serial.println(rawPack["now"]["aqi"].as<String>());
-    _httpClient->end();
+        if (rawPack["code"].as<uint16_t>() == 402) {
+            Serial.println("The qweather api at max using times.");
+            hc->end();
+            return;
+        }
+
+        Serial.println(rawPack["now"]["aqi"].as<String>());
+        hc->end();
+    }
+
+    
 
     /* Now */
+    retry = 5;
+
     /* Three days */
+    retry = 5;
+
 
     heap_caps_free(packBuf);
+    heap_caps_free(hc);
 }
 
+
+static String url = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+static String url2 = "http://api.bilibili.com/x/space/acc/info?mid=114514";
 
 static void WCTask(void* params)
 {
@@ -319,23 +341,42 @@ static void WCTask(void* params)
             continue;
         }
 
-        //xSemaphoreTake(wbs, portMAX_DELAY);
-        //hgmApp->StopBT();
-        //while (hgmApp->hgmBT->bs->isReady()) 
-        //    vTaskDelay(2000);
-        //WeatherInfo::GetWeather();
-        //hgmApp->BeginBT();
-        //while (!hgmApp->hgmBT->bs->isReady())
-        //    vTaskDelay(2000);
-        //xSemaphoreGive(wbs);
 
-        //String url = "https://devapi.qweather.com/v7/air/now?&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a&gzip=n";
-        //HTTPClient hc;
-        //hc.begin(url);
-        //int code = hc.GET();
-        //Serial.println(code);
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        hgmBT.Stop();
+        while (hgmBT.bs->isReady())
+            vTaskDelay(2000);
+        
+        /* Air */
+        WeatherInfo::GetWeather();
 
-        //vTaskDelay(WEATHER_GET_GAP);
-        vTaskDelay(5 * 1000);
+        // HTTPClient* hc = (HTTPClient*)heap_caps_calloc(1, sizeof(HTTPClient), MALLOC_CAP_SPIRAM);
+        // while (true) {
+        //     hc->setTimeout(2000);
+        //     hc->begin(url);
+        //     vTaskDelay(50);
+        //     int code = hc->GET();
+        //     if (code < 0) {
+        //         Serial.printf("1 HTTP error code : % d\n", code);
+        //         hc->end();
+        //         continue;
+        //     } else {
+        //         Serial.printf("HTTP GET OK\n");
+        //         Serial.println(hc->getString());
+        //         hc->end();
+        //         break;
+        //     }
+        //     vTaskDelay(1000);
+        // }
+        // heap_caps_free(hc);
+        
+        hgmBT.Begin();
+        while (!hgmBT.bs->isReady())
+            vTaskDelay(1000);
+        xSemaphoreGive(wbs);
+
+        
+
+        vTaskDelay(WEATHER_GET_GAP);
     }
 }
