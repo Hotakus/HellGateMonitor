@@ -348,7 +348,7 @@ static void WCTask(void* params)
             vTaskDelay(2000);
         
         /* Air */
-        WeatherInfo::GetWeather();
+        //WeatherInfo::GetWeather();
 
         // HTTPClient* hc = (HTTPClient*)heap_caps_calloc(1, sizeof(HTTPClient), MALLOC_CAP_SPIRAM);
         // while (true) {

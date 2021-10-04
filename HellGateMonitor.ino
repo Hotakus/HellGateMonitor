@@ -208,5 +208,7 @@ void setup()
 
 void loop()
 {
-    vTaskDelay(5 * 60 * 1000);
+    Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
+        heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+    vTaskDelay(30 * 60 * 1000);
 }

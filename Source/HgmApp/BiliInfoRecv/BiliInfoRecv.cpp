@@ -10,6 +10,7 @@
 #include "../../HgmLvgl/HgmLvgl.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
+#include "../HgmWiFi/HgmWiFi.h"
 #include "../HgmJsonUtil.h"
 
 #include <Arduino.h>
