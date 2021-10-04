@@ -18,6 +18,15 @@
 using namespace HGM;
 using namespace HgmGUI;
 
+LV_IMG_DECLARE(HGMBG);
+LV_IMG_DECLARE(bg_left);
+LV_IMG_DECLARE(bg_mid);
+LV_IMG_DECLARE(bg_right);
+
+xTaskHandle hgmControlHandle;
+xTaskHandle hgmLvglTaskHandle;
+xTaskHandle hgmLvglTickHandle;
+
 HgmLvgl* hgmLvgl = new HgmLvgl(HGM_MONITOR_HEIGHT, HGM_MONITOR_WIDTH);
 
 static TFT_eSPI* _lcd = nullptr;
@@ -38,9 +47,8 @@ HgmLvgl::~HgmLvgl()
     delete _lcd;
     delete this->hcl;
     delete this->hgmFw;
-    vTaskDelete(&this->hgmLvglTaskHandle);
+    vTaskDelete(hgmLvglTaskHandle);
 }
-
 
 /* public function */
 /**
@@ -67,10 +75,18 @@ void HGM::HgmLvgl::HgmLvglBegin()
     this->HgmLvglDispInit();
     // this->HgmLvglIndevInit();
     // this->HgmLvglFsInit();
-
+    
     /* Create All basic UI */
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
-
+    lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
+    lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
+    
+    // //lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
+    // //lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);
+    // //lv_obj_align(bg, LV_ALIGN_CENTER, 0, 0);
+    // //lv_obj_set_width(bg, 240);
+    
+    
     /* Create the basic tasks */
     xTaskCreatePinnedToCore(
         HgmLvglTask,
@@ -78,7 +94,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         2256,
         NULL,
         4,
-        &this->hgmLvglTaskHandle,
+        &hgmLvglTaskHandle,
         1
     );
 
@@ -89,7 +105,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
         768,
         NULL,
         5,
-        &this->hgmLvglTickHandle,
+        &hgmLvglTickHandle,
         1
     );
 #endif
@@ -100,7 +116,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
     //     2048,
     //     this,
     //     5,
-    //     &this->hgmControlHandle,
+    //     &hgmControlHandle,
     //     1
     // );
 }
@@ -113,11 +129,10 @@ void HGM::HgmLvgl::HgmLvglUIBegin()
     this->hgmFw->begin();
 }
 
-/* private function */
 void HGM::HgmLvgl::HgmLvglTask(void* params)
 {
     while (true) {
-        lv_timer_handler(); /* let the GUI do its work */
+        lv_timer_handler(); 
         vTaskDelay(HGM_LVGL_TICK);
     }
 }

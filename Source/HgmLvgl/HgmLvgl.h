@@ -30,11 +30,6 @@ namespace HGM {
 		int16_t _width = 0;
 		int16_t _height = 0;
 
-		xTaskHandle hgmControlHandle;
-
-		xTaskHandle hgmLvglTaskHandle;
-		xTaskHandle hgmLvglTickHandle;
-
 		void HgmLvglDispInit();
 		void HgmLvglIndevInit();
 		void HgmLvglFsInit();
