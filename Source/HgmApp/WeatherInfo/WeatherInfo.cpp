@@ -369,7 +369,7 @@ static void WCTask(void* params)
         //     vTaskDelay(1000);
         // }
         // heap_caps_free(hc);
-        
+
         hgmBT.Begin();
         while (!hgmBT.bs->isReady())
             vTaskDelay(1000);

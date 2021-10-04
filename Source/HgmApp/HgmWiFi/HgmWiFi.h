@@ -16,6 +16,7 @@
 #define WIFI_CONFIG_FILE_PATH "/wifi.conf"
 
 namespace HgmApplication {
+#define WIFI_DEFAULT_NAME "HellGateMonitorWiFi"
 #define WIFI_USE_MODE WIFI_STA
 	class HgmWiFi
 	{

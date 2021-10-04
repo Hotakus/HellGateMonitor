@@ -170,6 +170,7 @@ static void wifiControlTask(void* params)
             if (wifiCheckTaskHandle == NULL) {
                 uint16_t timeout = 10 * 1000;
 
+                _wifi.setHostname(WIFI_DEFAULT_NAME);
                 _wifi.mode(WIFI_USE_MODE);
                 _wifi.setSleep(true);
                 _wifi.setAutoReconnect(true);

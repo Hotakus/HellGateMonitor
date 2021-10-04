@@ -232,7 +232,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
 
-        DynamicJsonDocument doc(256);
+        HotakusDynamicJsonDocument doc(256);
         String tmp;
         doc["Header"] = "WiFi";
         doc["ssid"] = HgmWiFi::GetSSID();
@@ -290,7 +290,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
 
         BiliInfoRecv::SetUID(_uid);
 
-        DynamicJsonDocument doc(256);
+        HotakusDynamicJsonDocument doc(256);
         String tmp;
         doc["Header"] = "bilibili";
         doc["Data"]["uid"] = _uid;

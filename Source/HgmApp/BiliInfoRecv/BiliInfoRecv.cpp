@@ -7,10 +7,10 @@
  * @date 2021/8/15 16:33
  * @copyright Copyright (c) 2021/8/15
 *******************************************************************/
-#include "../HgmApp.h"
 #include "../../HgmLvgl/HgmLvgl.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
+#include "../HgmJsonUtil.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -25,9 +25,9 @@
 using namespace fs;
 using namespace HgmGUI;
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HGM;
 
-extern HgmApp* hgmApp;
 extern HgmLvgl* hgmLvgl;
 extern HgmSetupUI* hgmSetupUI;
 
@@ -121,7 +121,7 @@ void HgmApplication::BiliInfoRecv::Begin()
         } else {
             Serial.printf("Found the bilibili.conf file.\n");
             String tmp;
-            DynamicJsonDocument doc(256);
+            HotakusDynamicJsonDocument doc(256);
             file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
             tmp = file.readString();
             deserializeJson(doc, tmp);
@@ -174,7 +174,7 @@ void HgmApplication::BiliInfoRecv::GetUID(String& uid)
 static int _GetFollower() 
 {
     String url = statAPI + _uid;
-    StaticJsonDocument<512> userInfo;
+    HotakusDynamicJsonDocument userInfo(512);
 
     hgmHttpClient.begin(url);
     int code = hgmHttpClient.GET();
@@ -349,7 +349,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     recvBuf[size] = '\0';
     wc->readBytes(recvBuf, size);
 
-    DynamicJsonDocument userInfo(2048);
+    HotakusDynamicJsonDocument userInfo(4096);
     deserializeJson(userInfo, recvBuf);
     heap_caps_free(recvBuf);
 
@@ -380,7 +380,7 @@ static void biliTask(void* params)
             vTaskDelay(1000);
             continue;
         }
-
+        
         xSemaphoreTake(wbs, portMAX_DELAY);
         bili.GetBasicInfo();
         bili.GetUserFaceImg();
