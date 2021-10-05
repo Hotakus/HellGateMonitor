@@ -392,9 +392,6 @@
     <ClInclude Include="Source\LvglSrc\lvgl\lvgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\LvglSrc\lv_conf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmApp\BiliInfoRecv\BiliInfoRecv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -444,6 +441,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -889,16 +889,7 @@
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\HGM_LOGO.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_10px.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_8px.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp">
@@ -907,49 +898,7 @@
     <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\testbg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\book_left.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\book_mid.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\book_right.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\bg_left.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\bg_mid.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\bg_right.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\HGMBG.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\TW.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\tw_t.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\tw_w.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_24px_time.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_14px_time.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_16px_time.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HgmJsonUtil.cpp">
@@ -976,10 +925,64 @@
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_7px.c">
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\k12x8_6px.c">
+    <ClCompile Include="Source\LvglSrc\Assets\img\HGM_LOGO.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\HGMBG.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_6px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_7px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_8px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_10px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_14px_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_16px_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_24px_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bg_left.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bg_mid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bg_right.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\book_left.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\book_mid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\book_right.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\testbg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\TW.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\tw_t.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\tw_w.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
