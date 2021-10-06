@@ -19,6 +19,39 @@ using namespace HgmGUI;
 using namespace HGM;
 
 /* Assets */
+LV_IMG_DECLARE(clock_00)
+LV_IMG_DECLARE(clock_07)
+LV_IMG_DECLARE(clock_12)
+LV_IMG_DECLARE(clock_16)
+LV_IMG_DECLARE(clock_22)
+LV_IMG_DECLARE(clock_27)
+LV_IMG_DECLARE(clock_32)
+LV_IMG_DECLARE(clock_39)
+LV_IMG_DECLARE(clock_43)
+LV_IMG_DECLARE(clock_49)
+LV_IMG_DECLARE(clock_54)
+LV_IMG_DECLARE(clock_60)
+
+static const lv_img_dsc_t* clock_imgs_array[] = {
+    // 24:00
+    &clock_32,
+    &clock_39,
+    &clock_43,
+    &clock_49,
+    &clock_54,
+    &clock_60,
+    // 12:00
+    &clock_00,
+    &clock_07,
+    &clock_12,
+    &clock_16,
+    &clock_22,
+    &clock_27,
+};
+
+static lv_obj_t* clock_img = NULL;
+
+
 // TODO: Add btn
 LV_IMG_DECLARE(tw_t);
 LV_IMG_DECLARE(tw_w);
@@ -90,8 +123,8 @@ void HgmGUI::HgmTwUI::Begin()
     lv_img_set_src(tw_weather, &tw_w);
 
     book = lv_imgbtn_create(lv_scr_act());
-    lv_imgbtn_set_src(book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
     lv_obj_align(book, LV_ALIGN_LEFT_MID, -97, 0);
+    lv_imgbtn_set_src(book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
     lv_obj_set_width(book, 97);
 
     /* Label */
@@ -164,6 +197,11 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 
+    // clock image
+    clock_img = lv_img_create(tw_time);
+    lv_obj_align(clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
+
+
     // Face
     face_dsc.header.always_zero = 0;
     face_dsc.header.w = 64;
@@ -198,7 +236,7 @@ void HgmGUI::HgmTwUI::Begin()
 
 void HgmGUI::HgmTwUI::Stop()
 {
-
+    // TODO: delete
 }
 
 
@@ -224,6 +262,8 @@ static void ShowTime(lv_timer_t* timer)
         _tm.tm_mday,
         wd[_tm.tm_wday]
     );
+
+    lv_img_set_src(clock_img, clock_imgs_array[_tm.tm_hour / 2]);
 }
 
 static void ShowWeather()
