@@ -77,12 +77,16 @@ static lv_obj_t* book = NULL;
 static lv_obj_t* main_time_label = NULL;
 static lv_obj_t* date_label = NULL;
 
+lv_obj_t* biliName = NULL;
+lv_obj_t* biliFans = NULL;
+
 static lv_anim_t* anim_book = NULL;
 static lv_anim_t* anim_t = NULL;
 static lv_anim_t* anim_w = NULL;
 static lv_anim_t* anim_tw_expand = NULL;
 
 static lv_timer_t* showTimeTimer = NULL;
+static lv_timer_t* showBiliTimer = NULL;
 
 struct tm time_s;
 
@@ -90,6 +94,7 @@ extern TimeInfo ti;
 
 static TaskHandle_t showTaskHandle;
 static void ShowTime(lv_timer_t* timer);
+static void ShowBili(lv_timer_t* timer);
 
 HgmTwUI::HgmTwUI()
 {
@@ -191,9 +196,7 @@ void HgmGUI::HgmTwUI::Begin()
     vTaskDelay(lv_anim_timeline_start(at));
 
     // TODO: add animation
-    // TODO: Show clock img per 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-
     lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
     lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 
@@ -215,7 +218,7 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_set_size(faceImg, 64, 64);
 
     // Bili label
-    lv_obj_t* biliName = lv_label_create(book);
+    biliName = lv_label_create(book);
     lv_obj_set_style_text_font(biliName, &k12x8_10px, 0);
     lv_obj_set_width(biliName, 85);
     lv_label_set_recolor(biliName, true);
@@ -225,12 +228,14 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_set_style_text_align(biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
-    lv_obj_t* biliFans = lv_label_create(book);
+    biliFans = lv_label_create(book);
     lv_label_set_recolor(biliFans, true);
     lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
     lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
+
+    showBiliTimer = lv_timer_create(ShowBili, (BILI_GET_GAP/2), NULL);
 
 }
 
@@ -270,9 +275,10 @@ static void ShowWeather()
 {
 
 }
-
-static void ShowBili()
+static void ShowBili(lv_timer_t* timer)
 {
-
+    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
 }
 
