@@ -1,0 +1,4 @@
+{
+  "name" : "Hell Gate Monitor",
+  "chip" : "ESP32-PICO-D4"
+}
