@@ -129,6 +129,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.bin
+*.elf
 
 # Chutzpah Test files
 _Chutzpah*
@@ -367,6 +369,7 @@ ASALocalRun/
 
 # MSBuild Binary and Structured Log
 *.binlog
+*.bin
 
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
