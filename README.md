@@ -10,11 +10,11 @@
 [![BiliBili](https://img.shields.io/badge/GitHub-我的主页-teal?style=flat-square&logo=Github)](https://visualstudio.microsoft.com/zh-hans/vs/)
 [![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 
-![logo](Image/HellGateMonitor.png)
+![logo](GuideImage/HellGateMonitor.png)
 
 ---
 
-## 基本信息：
+## 一、基本信息：
 
 > 主控: &emsp; &emsp; ESP32-PICO-D4 (240Mhz，4MB Flash，512KB RAM )  
 > PSRAM: &emsp;ESP-PSRAM64 (8MB SPI RAM)   
@@ -27,11 +27,11 @@
 >   
 从硬件上看，ESP32系列只要支持**PSRAM**，则代码通用。 
 
-## GUI
+## 二、GUI
 [**LittleVGL**](https://github.com/lvgl/lvgl)
 
 ---
-## 基本功能：
+## 三、基本功能：
 >通过蓝牙安卓APP进行Hell Gate Monitor 的 __实时控制与WiFi配置等__  
 >通过WiFi对局域网PC进行实时的 __硬件信息监控__ 显示（通过我的另外一个项目 
 > [HGMC](https://github.com/Hotakus/HGMC) 后续考虑Linux版本
@@ -49,7 +49,7 @@ Bluetooth 和 Wi-Fi TCP 与上位机通信的数据包格式为本人规定的�
 
 ---
 
-## 项目克隆：
+## 四、项目克隆：
 项目使用了 __子模块__，clone 时要加 __--recurse-submodules__  
 需要为你的Github账号配置 SSH key（方法请百度）
 ```shell
@@ -58,9 +58,9 @@ git clone --recurse-submodules git@github.com:Hotakus/HellGateMonitor.git
 
 ---
 
-## 项目基本结构：
+## 五、项目基本结构：
 下位机所有的程序源码都放在Source文件夹下  
-![HellGateMonitor](Image/SourceStruct.png)  
+![HellGateMonitor](GuideImage/SourceStruct.png)  
 LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
 另外，由于此项目使用的是Arduino平台，所以在使用此项目前，你应该先安装指定库：
 * **ArduinoJson** （解析/打包JSON数据）
@@ -79,28 +79,39 @@ https://dl.espressif.com/dl/package_esp32_index.json
 
 ---
 
-## 开始项目编译：
+## 六、开始项目编译：
 如果上述工作都正确完成了，那么接下来可以编译项目了。  
 首先，你应该在 VS2019 的“扩展”--“管理扩展”中，搜索并添加Arduino的扩展，
 扩展安装方法不赘述，关于VS2019的Arduino扩展，请自行摸索一遍，再对项目使用。
 
 现在，我默认你已经搞清楚了Arduino的扩展，接下来找到vMicro按照我下图进行简单配置。
 
-![ArduinoConfig](Image/ArduinoConfig.png)  
+![ArduinoConfig](GuideImage/ArduinoConfig.png)  
 我之所以选这个是因为这个开发板环境和此项目几乎完美契合。
 
 然后，将项目Debug改为Release，不然项目跑不起来。  
 __最后：__  
-![tb](Image/tb.png)
+![tb](GuideImage/tb.png)
 
 如果编译烧写正常，那么串口会出现以下信息(115200)：  
-![HGM](Image/HGM.png)  
+![HGM](GuideImage/HGM.png)  
 则项目构建完成。
 
 ---
 
-## HGM的初次上电启动流程（重要）：
-HGM的上电时需要对各个功能组件进行检查：
+## 七、不会编译，想直接使用👇
+如果你觉得编译太麻烦，或者不会编译，
+那么可以直接使用我编译好的固件：[固件下载 TODO]()  
+然后按照以下流程配置并烧写固件：
+- 首先，进入目录：Tool/hgm_spiffs/base_dir/, 按照里面的文件模板进行配置，如WiFi的SSID和密码、B站配置等
+- 第二，双击运行目录下的bat脚本：Tool/hgm_spiffs/hgm_spiffs_gen.bat，它会自动生成适用于HGM的spiffs固件，
+
+
+---
+
+## 八、HGM的初次上电启动流程（重要）：
+HGM的上电时需要对各个功能组件进行检查：  
+关于配置文件：如果你使用Tool/hgm_spiffs/hgm_spiffs_gen.bat工具生成的话，运行就不会failed
 
 - **Bluetooth**（用于HGM的控制和配置等）
 - **Config**（初次启动没有任何配置文件，首次运行会failed，用 [HGMA](https://github.com/Hotakus/HGMA) 配置）
@@ -113,7 +124,7 @@ HGM的上电时需要对各个功能组件进行检查：
 
 ---
 
-## 部分功能上手配置说明：
+## 九、部分功能上手配置说明：
 ### 1、如何配置并使用局域网PC硬件监控功能（HGM核心功能）
 需要使用我的PC上位机配套项目： [HGMC](https://github.com/Hotakus/HGMC)    
 要想使用PC硬件监控功能，那么必须要配合上位机实现，
@@ -150,7 +161,7 @@ A：TODO
 ---
 
 **开头** 的这些Badge可以点击哦👇👇👇    
-![prompt](Image/prompt.png)
+![prompt](GuideImage/prompt.png)
 
 ---
 

@@ -13,7 +13,7 @@ HGM的蓝牙数据包格式(JSON)
 
 可以自己添加命令实现更多功能(详见 [BT代码](./HgmBT.h) )
 
-![](../../../Image/BasicBTCommands.png)
+![](../../../GuideImage/BasicBTCommands.png)
 
 ## 数据包示例：
 **获取命令长度M（被动）** （DataType == 0）
