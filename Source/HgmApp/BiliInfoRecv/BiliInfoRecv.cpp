@@ -359,7 +359,9 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     recvBuf[size] = '\0';
     wc->readBytes(recvBuf, size);
 
-    
+    /* Check begin characters */
+    while (*pRecvBuf != '{' && (*pRecvBuf != recvBuf[size]))
+        pRecvBuf++;
 
 #if HGM_DEBUG == 1
     Serial.printf("%s", pRecvBuf);
