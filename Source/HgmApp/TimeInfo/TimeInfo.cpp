@@ -15,8 +15,10 @@
 #include "TimeInfo.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../HgmJsonUtil.h"
 
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
 
 static String timeAPI = "http://quan.suning.com/getSysTime.do";
@@ -90,8 +92,8 @@ void HgmApplication::TimeInfo::Begin()
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 {
-	StaticJsonDocument<512> doc;
-
+	hgmHttpClient.setConnectTimeout(3 * 1000);
+	hgmHttpClient.setTimeout(3 * 1000);
 	hgmHttpClient.begin(timeAPI);
 	int code = hgmHttpClient.GET();
 
@@ -101,6 +103,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 		return -1;
 	}
 	String recv = hgmHttpClient.getString();
+	HotakusDynamicJsonDocument doc(recv.length() + 512);
 	deserializeJson(doc, recv);
 	Serial.println(recv);
 

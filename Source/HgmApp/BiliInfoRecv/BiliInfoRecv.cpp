@@ -23,6 +23,8 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
+#define HGM_DEBUG 0
+
 using namespace fs;
 using namespace HgmGUI;
 using namespace HgmApplication;
@@ -177,6 +179,8 @@ static int _GetFollower()
     String url = statAPI + _uid;
     HotakusDynamicJsonDocument userInfo(512);
 
+    hgmHttpClient.setConnectTimeout(3 * 1000);
+    hgmHttpClient.setTimeout(3 * 1000);
     hgmHttpClient.begin(url);
     int code = hgmHttpClient.GET();
 
@@ -281,6 +285,8 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
 
     int code = -1;
 
+    hgmHttpClient.setConnectTimeout(3 * 1000);
+    hgmHttpClient.setTimeout(3 * 1000);
     hgmHttpClient.begin(imgUrl);
     code = hgmHttpClient.GET();
 
@@ -334,6 +340,8 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     Serial.println(url);
 
+    hgmHttpClient.setConnectTimeout(3 * 1000);
+    hgmHttpClient.setTimeout(3 * 1000);
     hgmHttpClient.begin(url);
     int code = hgmHttpClient.GET();
 
@@ -347,11 +355,18 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     WiFiClient* wc = hgmHttpClient.getStreamPtr();
     size_t size = wc->available();
     uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
+    uint8_t* pRecvBuf = recvBuf;
     recvBuf[size] = '\0';
     wc->readBytes(recvBuf, size);
 
-    HotakusDynamicJsonDocument userInfo(4096);
-    deserializeJson(userInfo, recvBuf);
+    
+
+#if HGM_DEBUG == 1
+    Serial.printf("%s", pRecvBuf);
+#endif
+
+    HotakusDynamicJsonDocument userInfo(8192);
+    deserializeJson(userInfo, pRecvBuf);
     heap_caps_free(recvBuf);
 
     if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
