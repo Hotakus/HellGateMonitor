@@ -369,7 +369,6 @@ ASALocalRun/
 
 # MSBuild Binary and Structured Log
 *.binlog
-*.bin
 
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
@@ -388,3 +387,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/Tools/*/*.bin
