@@ -14,7 +14,7 @@
 #include <HTTPClient.h>
 
 namespace HgmApplication {
-#define BILI_CONFIG_FILE_PATH "/bilibili.conf"
+#define BILI_CONFIG_FILE_PATH "/bilibili.json"
 #define BILI_GET_GAP (10 * 60 * 1000)   // 10min
 
     class BiliInfoRecv
