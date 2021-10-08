@@ -13,9 +13,9 @@
 #include "Source/HgmApp/HgmBT/HgmBT.h"
 #include "Source/HgmLvgl/HgmLvgl.h"
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
+#include "Source/HgmApp/TimeInfo/TimeInfo.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 #include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
-#include "Source/HgmApp/TimeInfo/TimeInfo.h"
 #include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
 
 #include <Arduino.h>
@@ -48,10 +48,10 @@ using namespace fs;
 
 extern HgmWiFi hgmWiFi;
 extern HgmBT hgmBT;
+extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern HgmLvgl* hgmLvgl;
-extern TimeInfo ti;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -100,7 +100,7 @@ void setup()
     hgmBT.Stop();
     while (hgmBT.bs->isReady())
         vTaskDelay(500);
-    
+
     //hgmWiFi.Stop();
     //while (WiFi.isConnected())
     //    vTaskDelay(500);
@@ -142,7 +142,7 @@ void setup()
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    HgmSetupUI *hgmSetupUI = new HgmSetupUI();
+    HgmSetupUI* hgmSetupUI = new HgmSetupUI();
     hgmSetupUI->Begin();
 
     // Open bluetooth
@@ -181,9 +181,9 @@ void setup()
     bili.Begin();
     vTaskDelay(300);
 
-    // // Check weather
-    // weatherInfo.Begin();
-    // vTaskDelay(300);
+    // Check weather
+    weatherInfo.Begin();
+    vTaskDelay(300);
 
     // All done
     component.type = HGM_COMPONENT_DONE;
@@ -193,7 +193,7 @@ void setup()
     vTaskDelay(500);
     hgmSetupUI->ComponentInitDone();
     delete hgmSetupUI;
-    
+
     hgmLvgl->HgmLvglUIBegin();
 
 
@@ -210,6 +210,7 @@ void setup()
 
 void loop()
 {
-
-    vTaskDelay(30 * 60 * 1000);
+    Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
+        heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+    vTaskDelay(10 * 60 * 1000);
 }

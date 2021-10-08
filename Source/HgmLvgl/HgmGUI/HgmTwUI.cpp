@@ -276,10 +276,6 @@ static void ShowWeather()
 
 }
 
-extern HTTPClient hgmHttpClient;
-static String url = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
-
-
 static void ShowBili(lv_timer_t* timer)
 {
     face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
@@ -287,18 +283,5 @@ static void ShowBili(lv_timer_t* timer)
 
     lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
     lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
-
-    // hgmHttpClient.setTimeout(2000);
-    // hgmHttpClient.begin(url);
-    // vTaskDelay(50);
-    // int code = hgmHttpClient.GET();
-    // if (code < 0) {
-    //     Serial.printf("1 HTTP error code : % d\n", code);
-    //     hgmHttpClient.end();
-    // } else {
-    //     Serial.printf("HTTP GET OK\n");
-    //     Serial.println(hgmHttpClient.getString());
-    //     hgmHttpClient.end();
-    // }
 }
 

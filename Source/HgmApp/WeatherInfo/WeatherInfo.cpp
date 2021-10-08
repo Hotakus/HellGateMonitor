@@ -12,6 +12,8 @@
 #include "../HgmBT/HgmBT.h"
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "../HgmJsonUtil.h"
+#include "../TimeInfo/TimeInfo.h"
+#include "../BiliInfoRecv/BiliInfoRecv.h"
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -48,9 +50,9 @@ static StaticJsonDocument<2048> doc;
 
 static File _file;
 
-static QueueHandle_t WCMsgBox;
-static TaskHandle_t WCTaskHandle;
-static void WCTask(void* params);
+static QueueHandle_t WeatherCheckMsgBox;
+static TaskHandle_t WeatherCheckTaskHandle;
+static void WeatherCheckTask(void* params);
 
 static bool configFlag = false;
 
@@ -60,12 +62,12 @@ WeatherData weatherToday;
 WeatherInfo::WeatherInfo()
 {
     // TODO: Create a task to loop to get the weather
-    WCMsgBox = xQueueCreate(1, sizeof(int));
+    WeatherCheckMsgBox = xQueueCreate(1, sizeof(int));
 }
 
 WeatherInfo::~WeatherInfo()
 {
-    vQueueDelete(WCMsgBox);
+    vQueueDelete(WeatherCheckMsgBox);
 }
 
 
@@ -85,20 +87,20 @@ void HgmApplication::WeatherInfo::Begin()
 void HgmApplication::WeatherInfo::InitTask()
 {
     xTaskCreatePinnedToCore(
-        WCTask,
-        "WCTask",
+        WeatherCheckTask,
+        "WeatherCheckTask",
         8192,
         NULL,
         8,
-        &WCTaskHandle,
+        &WeatherCheckTaskHandle,
         1
     );
 }
 
 void HgmApplication::WeatherInfo::DeInitTask()
 {
-    vTaskDelete(WCTaskHandle);
-    WCTaskHandle = NULL;
+    vTaskDelete(WeatherCheckTaskHandle);
+    WeatherCheckTaskHandle = NULL;
 }
 
 
@@ -281,67 +283,36 @@ void HgmApplication::WeatherInfo::GetWeather()
 
 
 static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
-static String url_path = "/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
-static String url2 = "http://api.bilibili.com/x/space/acc/info?mid=114514";
-extern HTTPClient* https;
 
-static size_t count = 0;
-
-static void WCTask(void* params)
+static void WeatherCheckTask(void* params)
 {
-    int tmp = 0;
 
+    Serial.println("WeatherCheckTask");
 
     while (true) {
         xSemaphoreTake(wbs, portMAX_DELAY);
-        Serial.print("[HTTPS] begin...\n");
-
-        if (https->connected()) {
-            Serial.print("[HTTPS] https->connected()...\n");
-            https->end();
-        }
-
+        HTTPClient* https = new HTTPClient();
         https->setConnectTimeout(50 * 1000);
         https->setTimeout(50 * 1000);
         if (https->begin(wurl)) {  // HTTPS
-            Serial.print("[HTTPS] GET...\n");
-            // start connection and send HTTP header
+            Serial.printf("[Weather/HTTPS] GET %d...\n", https->connected());
             int httpCode = https->GET();
-
-            // httpCode will be negative on error
             if (httpCode > 0) {
-                // HTTP header has been send and Server response header has been handled
-                Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
-
-                // file found at server
+                Serial.printf("[Weather/HTTPS] GET... code: %d\n", httpCode);
                 if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
                     Serial.println(https->getString());
                 }
             } else {
-                Serial.printf("[HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
+                Serial.printf("[Weather/HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
             }
             https->end();
         } else {
-            Serial.printf("[HTTPS] Unable to connect\n");
+            Serial.printf("[Weather/HTTPS] Unable to connect\n");
         }
+
+        delete https;
         xSemaphoreGive(wbs);
 
-        // count++;
-        // 
-        // Serial.println();
-        // 
-        // if (count == 5)
-        //     while (true) {
-        //         Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
-        //             heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-        //         vTaskDelay(3000);
-        //     }
-
-
-        
-        Serial.println("Waiting 10s before the next round...");
-        Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
-            heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-        vTaskDelay(3000);
+        vTaskDelay(WEATHER_GET_GAP);
     }
 }

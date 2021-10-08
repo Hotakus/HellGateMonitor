@@ -90,6 +90,52 @@ void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
     } else {
         Serial.println("Switch the _wifi on/off failed.");
     }
+
+    // if (sw) {
+    //     if (wifiCheckTaskHandle == NULL) {
+    //         uint16_t timeout = 10 * 1000;
+    // 
+    //         _wifi.setHostname(WIFI_DEFAULT_NAME);
+    //         _wifi.mode(WIFI_USE_MODE);
+    //         _wifi.setSleep(true);
+    //         _wifi.setAutoReconnect(true);
+    //         _wifi.setTxPower(WIFI_POWER_15dBm);
+    //         _wifi.begin(_ssid.c_str(), _password.c_str());
+    //         while (_wifi.status() != WL_CONNECTED && timeout > 0) {
+    //             vTaskDelay(500);
+    //             Serial.print(".#");
+    //             Serial.print(_wifi.status());
+    //             timeout -= 500;
+    //         }
+    //         if (timeout <= 0) {
+    //             Serial.println("WiFi open failed.");
+    // 
+    //             hgmWiFi.OpenTCP(false, false);
+    //             hgmWiFi.OpenTCP(false, true);
+    // 
+    //             _wifi.disconnect();
+    //             _wifi.mode(WIFI_OFF);
+    //             return;
+    //         }
+    // 
+    //         Serial.println("\nWiFi Connected successfully.");
+    //         Serial.printf("Local IP Address: %s\n", WiFi.localIP().toString().c_str());
+    //         Serial.printf("RSSI : %d\n", WiFi.RSSI());
+    //     } else {
+    //         Serial.println("WiFi open already.");
+    //     }
+    // } else {
+    //     if (wifiCheckTaskHandle) {
+    //         vTaskDelete(wifiCheckTaskHandle);
+    //         wifiCheckTaskHandle = NULL;
+    //         Serial.println("WiFi close.");
+    //     } else {
+    //         Serial.println("WiFi close already.");
+    //     }
+    // 
+    //     _wifi.disconnect();
+    //     _wifi.mode(WIFI_OFF);
+    // }
 }
 
 /**
@@ -152,7 +198,7 @@ String HgmApplication::HgmWiFi::GetPassword()
 void HgmApplication::HgmWiFi::WifiTaskInit()
 {
     wifiCtlMsgBox = xQueueCreate(1, sizeof(bool));
-
+    
     xTaskCreatePinnedToCore(
         wifiControlTask,
         "wifiControlTask",
@@ -186,7 +232,6 @@ static void wifiControlTask(void* params)
                 _wifi.setSleep(true);
                 _wifi.setAutoReconnect(true);
                 _wifi.setTxPower(WIFI_POWER_15dBm);
-                Serial.printf("wifiControlTask %s %s\n", _ssid, _password);
                 _wifi.begin(_ssid.c_str(), _password.c_str());
                 while (_wifi.status() != WL_CONNECTED && timeout > 0) {
                     vTaskDelay(500);
@@ -202,20 +247,12 @@ static void wifiControlTask(void* params)
 
                     _wifi.disconnect();
                     _wifi.mode(WIFI_OFF);
-                    continue;
+                    return;
                 }
 
-                xTaskCreatePinnedToCore(
-                    wifiCheckTask,
-                    "wifiCheckTask",
-                    1024,
-                    NULL,
-                    7,
-                    &wifiCheckTaskHandle,
-                    1
-                );
-
-                Serial.println("WiFi open.");
+                Serial.println("\nWiFi Connected successfully.");
+                Serial.printf("Local IP Address: %s\n", WiFi.localIP().toString().c_str());
+                Serial.printf("RSSI : %d\n", WiFi.RSSI());
             } else {
                 Serial.println("WiFi open already.");
             }
@@ -233,43 +270,4 @@ static void wifiControlTask(void* params)
         }
     }
 }
-
-
-/**
- * @brief WiFi check task.
- * @param params
- */
-static void wifiCheckTask(void* params)
-{
-    static uint8_t cnt = 0;
-    static bool flag = false;
-
-    while (true) {
-        if (wifiSwitch == false) {
-            vTaskDelay(2000);
-            continue;
-        }
-
-        if (_wifi.status() == WL_IDLE_STATUS) {
-            vTaskDelay(500);
-            continue;
-        }
-
-        if (!flag) {
-            Serial.println("");
-            flag = true;
-
-            Serial.println("\nWiFi Connected");
-            Serial.print("Local IP Address: ");
-            Serial.println(WiFi.localIP());
-            Serial.print("RSSI : ");
-            Serial.println(WiFi.RSSI());
-        }
-
-        vTaskDelay(2000);
-    }
-}
-
-
-
 

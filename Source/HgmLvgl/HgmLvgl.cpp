@@ -168,7 +168,7 @@ void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* ar
     //size_t start = millis();
 
     _lcd->startWrite();
-#if HGM_LVGL_USE_DMA != 1
+#if HGM_LVGL_USE_DMA == 0
     _lcd->setAddrWindow(area->x1, area->y1, w, h);
     _lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
 #else
