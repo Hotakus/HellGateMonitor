@@ -17,6 +17,8 @@
 #include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "../HgmJsonUtil.h"
 
+#define HGM_DEBUG 0
+
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
@@ -26,13 +28,14 @@ static String timeAPI = "http://quan.suning.com/getSysTime.do";
 static ESP32Time *_rtc;
 static struct tm _timeStruct;
 
-extern HTTPClient hgmHttpClient;
+// extern HTTPClient hgmHttpClient;
+extern HTTPClient* https;
 
 static TaskHandle_t netTimeTaskHandle;
 static QueueHandle_t netTimeMsgBox;
 static void netTimeTask(void* params);
 
-static HgmComponent component;
+extern HgmComponent component;
 
 extern HgmSetupUI *hgmSetupUI;
 
@@ -87,25 +90,33 @@ void HgmApplication::TimeInfo::Begin()
 	}
 	component.waitStatus = true;
 
-	this->InitTask();
+	// this->InitTask();
 }
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 {
-	hgmHttpClient.setConnectTimeout(3 * 1000);
-	hgmHttpClient.setTimeout(3 * 1000);
-	hgmHttpClient.begin(timeAPI);
-	int code = hgmHttpClient.GET();
+	if (https->connected()) {
+		Serial.print("[HTTPS] time https->connected()...\n");
+		https->end();
+	}
+
+	https->setConnectTimeout(3 * 1000);
+	https->setTimeout(3 * 1000);
+	https->begin(timeAPI);
+	int code = https->GET();
 
 	if (code != HTTP_CODE_OK) {
-		Serial.printf("HTTP code : %d\n", code);
-		hgmHttpClient.end();
+		Serial.printf("Net time HTTP code : %d\n", code);
+		https->end();
 		return -1;
 	}
-	String recv = hgmHttpClient.getString();
+	String recv = https->getString();
 	HotakusDynamicJsonDocument doc(recv.length() + 512);
 	deserializeJson(doc, recv);
+
+#if HGM_DEBUG == 1
 	Serial.println(recv);
+#endif
 
 	// {"sysTime2":"2021-08-21 04:55:48","sysTime1":"20210821045548"}
 	String sysTime1 = doc["sysTime1"];
@@ -125,7 +136,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
 	_timeStruct = _rtc->getTimeStruct();
 	timeStruct = &_timeStruct;
 
-	hgmHttpClient.end();
+	https->end();
 	return 0;
 }
 

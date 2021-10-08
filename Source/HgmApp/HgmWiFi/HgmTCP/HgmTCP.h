@@ -46,7 +46,8 @@ namespace HgmApplication {
         WiFiServer* wifiServer = nullptr;
         WiFiClient* wifiClient = nullptr;
 
-        void HgmTcpTaskInit();
+        void InitTask();
+        void DeInitTask();
 
     public:
         TcpControlMethod tcm = TCP_NULL;

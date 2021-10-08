@@ -37,10 +37,7 @@ namespace HgmApplication {
 		void OpenTCP(bool sw = true, bool asServer = true);
 
 		void Begin();
-
-		// TODO: WiFi stop;
 		void Stop();
-
 
 		static String GetSSID();
 		static String GetPassword();

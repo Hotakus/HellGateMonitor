@@ -7,8 +7,11 @@
  * @date 2021/8/12 5:52
  * @copyright Copyright (c) 2021/8/12
 *******************************************************************/
-#include <WiFi.h>
 #include "HgmWiFi.h"
+#include "../HotakusMemUtil.h"
+
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 using namespace HgmApplication;
 
@@ -25,33 +28,39 @@ static void wifiCheckTask(void* params);
 static void wifiControlTask(void* params);
 
 HgmWiFi hgmWiFi;
-
+HTTPClient *https;
 
 HgmWiFi::HgmWiFi()
 {
+    https = new HTTPClient();
     this->wifi = &_wifi;
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
+
     this->hgmTcp->Begin();
 }
 
 HgmWiFi::HgmWiFi(String ssid, String password)
 {
+    https = new HTTPClient();
     _ssid = ssid;
     _password = password;
 
     this->wifi = &_wifi;
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
+
     this->hgmTcp->Begin();
 }
 
 HgmWiFi::~HgmWiFi()
 {
     delete this->hgmTcp;
-
     vTaskDelete(wifiControlTaskHandle);
     vQueueDelete(wifiCtlMsgBox);
+    delete https;
+
+    this->hgmTcp->Stop();
 }
 
 /**
@@ -110,8 +119,10 @@ void HgmApplication::HgmWiFi::Begin()
 {
     this->OpenWiFi();
 
-    this->OpenTCP(true, true);          // Open TCP Server
-    this->OpenTCP(true, false);         // Open TCP client
+    // this->OpenTCP(true, true);          // Open TCP Server
+    // this->OpenTCP(true, false);         // Open TCP client
+
+    uint16_t timeout = 10 * 1000;
 }
 
 /**
@@ -119,8 +130,8 @@ void HgmApplication::HgmWiFi::Begin()
  */
 void HgmApplication::HgmWiFi::Stop()
 {
-    this->OpenTCP(false, true);     // Close server
-    this->OpenTCP(false, false);    // Close client
+    // this->OpenTCP(false, true);     // Close server
+    // this->OpenTCP(false, false);    // Close client
 
     this->OpenWiFi(false);
 }
@@ -145,7 +156,7 @@ void HgmApplication::HgmWiFi::WifiTaskInit()
     xTaskCreatePinnedToCore(
         wifiControlTask,
         "wifiControlTask",
-        2048,
+        2048 + 128,
         NULL,
         10,
         &wifiControlTaskHandle,
@@ -180,7 +191,7 @@ static void wifiControlTask(void* params)
                 while (_wifi.status() != WL_CONNECTED && timeout > 0) {
                     vTaskDelay(500);
                     Serial.print(".#");
-                    Serial.println(_wifi.status());
+                    Serial.print(_wifi.status());
                     timeout -= 500;
                 }
                 if (timeout <= 0) {

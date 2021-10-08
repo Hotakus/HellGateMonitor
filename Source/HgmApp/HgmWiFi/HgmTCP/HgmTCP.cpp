@@ -39,7 +39,6 @@ extern SemaphoreHandle_t wbs;
 
 static WiFiClass wifi = WiFi;
 static WiFiServer _wifiServer;
-static WiFiClient _wifiClient;
 static WiFiClient wc = NULL;        // To store the object of the client that want to connect to server.
 
 static bool tcpOk = false;
@@ -47,7 +46,6 @@ static TcpControlMethod tcm;
 
 static String _dataToSave;
 static HgmTcpPackMethod _recvMethod;
-
 
 static TaskHandle_t tcpControlTaskHandle = NULL;
 static QueueHandle_t beginMsgbox = NULL;
@@ -59,31 +57,40 @@ static TaskHandle_t tcpClientTaskHandle = NULL;
 
 HgmTCP::HgmTCP()
 {
-    this->wifiServer = wifiServer;
-    this->wifiClient = wifiClient;
-    beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
+    this->wifiServer = &_wifiServer;
+    //this->wifiClient = &wifiClient;
 }
 
 HgmTCP::~HgmTCP()
 {
-    vTaskDelete(tcpControlTaskHandle);
-    vQueueDelete(beginMsgbox);
+    this->Stop();
 }
 
 void HgmApplication::HgmTCP::Begin()
 {
-    this->HgmTcpTaskInit();
+    beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
+    this->InitTask();
 }
 
 void HgmApplication::HgmTCP::Stop()
 {
+    this->StopServer();
+    this->StopClient();
 
+    while (tcpServerTaskHandle || tcpClientTaskHandle)
+        vTaskDelay(100);
+
+    this->DeInitTask();
+    if (beginMsgbox) {
+        vQueueDelete(beginMsgbox);
+        beginMsgbox = NULL;
+    }
 }
 
 /**
  * @brief Init TCP relative task.
  */
-void HgmApplication::HgmTCP::HgmTcpTaskInit()
+void HgmApplication::HgmTCP::InitTask()
 {
     xTaskCreatePinnedToCore(
         TcpControlTask,
@@ -94,6 +101,14 @@ void HgmApplication::HgmTCP::HgmTcpTaskInit()
         &tcpControlTaskHandle,
         1
     );
+}
+
+void HgmApplication::HgmTCP::DeInitTask()
+{
+    if (tcpControlTaskHandle) {
+        vTaskDelete(tcpControlTaskHandle);
+        tcpControlTaskHandle = NULL;
+    }
 }
 
 
@@ -115,18 +130,18 @@ void HgmApplication::HgmTCP::StopServer()
 
 void HgmApplication::HgmTCP::BeginClient()
 {
-    Serial.println(__func__);
-    tcm = TCP_BEGIN_CLIENT;
-    this->tcm = tcm;
-    xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
+    // Serial.println(__func__);
+    // tcm = TCP_BEGIN_CLIENT;
+    // this->tcm = tcm;
+    // xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 void HgmApplication::HgmTCP::StopClient()
 {
-    Serial.println(__func__);
-    tcm = TCP_STOP_CLIENT;
-    this->tcm = tcm;
-    xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
+    // Serial.println(__func__);
+    // tcm = TCP_STOP_CLIENT;
+    // this->tcm = tcm;
+    // xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
@@ -134,10 +149,10 @@ WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
     return &_wifiServer;
 }
 
-WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
-{
-    return &_wifiClient;
-}
+// WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
+// {
+//     return &_wifiClient;
+// }
 
 
 /**
@@ -301,14 +316,18 @@ static void TcpControlTask(void* params)
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
 
+    Serial.printf("-----------------TCP_BEGIN_SERVER 1\n");
 
     while (true) {
         if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
             continue;
         }
 
+        Serial.printf("-----------------TCP_BEGIN_SERVER 0\n");
+
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
+            Serial.printf("-----------------TCP_BEGIN_SERVER 1\n");
             if (tcpServerTaskHandle == NULL) {
                 while (!wifi.isConnected())
                     vTaskDelay(100);
@@ -344,12 +363,12 @@ static void TcpControlTask(void* params)
             }
             break;
         case TCP_STOP_CLIENT:         // client stop
-            if (tcpClientTaskHandle) {
-                _wifiClient.stop();
-                vTaskDelete(tcpClientTaskHandle);
-                tcpClientTaskHandle = NULL;
-                Serial.printf("TCP client stop\n");
-            }
+            // if (tcpClientTaskHandle) {
+            //     _wifiClient.stop();
+            //     vTaskDelete(tcpClientTaskHandle);
+            //     tcpClientTaskHandle = NULL;
+            //     Serial.printf("TCP client stop\n");
+            // }
             break;
         default:
             Serial.printf("Error in %s %s %s\n", __FILE__, __func__, __LINE__);

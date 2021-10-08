@@ -29,7 +29,7 @@ extern HardwareRequest hrr;
 
 static QueueHandle_t btCtlMsgbox = NULL;
 static TaskHandle_t bluetoothCheckTaskHandle = NULL;
-static BluetoothSerial* _bs = NULL;
+static BluetoothSerial _bs;
 
 static String name;
 
@@ -50,15 +50,13 @@ HgmBT hgmBT;
  */
 HgmBT::HgmBT()
 {
-    this->bs = new BluetoothSerial();
-    _bs = this->bs;
+    this->bs = &_bs;
     btCtlMsgbox = xQueueCreate(1, sizeof(bool));
     //this->BluetoothTaskInit();
 }
 
 HgmBT::~HgmBT()
 {
-    delete this->bs;
     this->BluetoothTaskDelete();
     vQueueDelete(btCtlMsgbox);
 }
@@ -78,7 +76,7 @@ void HgmApplication::HgmBT::BluetoothTaskInit()
 
 void HgmApplication::HgmBT::BluetoothTaskDelete()
 {
-    vTaskDelete(bluetoothCheckTaskHandle);
+    // vTaskDelete(bluetoothCheckTaskHandle);
 }
 
 bool sw = false;
@@ -89,9 +87,9 @@ void HgmApplication::HgmBT::Begin()
     //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
     //Serial.println("HgmBT::Begin() 1");
 
-    if (bluetoothListeningTaskHandle == NULL) {
+    if (!bluetoothListeningTaskHandle) {
         Serial.println("BT Start to listening...");
-        _bs->begin(name);
+        _bs.begin(name);
         Serial.println("BT Start to listening...2");
         xTaskCreatePinnedToCore(
             BluetoothListeningTask,
@@ -111,8 +109,8 @@ void HgmApplication::HgmBT::Stop()
     //sw = false;
     //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
 
-    _bs->disconnect();
-    _bs->end();
+    _bs.disconnect();
+    _bs.end();
     if (bluetoothListeningTaskHandle) {
         vTaskDelete(bluetoothListeningTaskHandle);
         bluetoothListeningTaskHandle = NULL;
@@ -143,7 +141,7 @@ static void BeginWiFiWithConfig(String ssid, String password)
  */
 String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod method)
 {
-    StaticJsonDocument<512> hgmPack;
+    HotakusDynamicJsonDocument hgmPack(8192);
     String tmp;
     JsonObject Data;
 
@@ -182,28 +180,28 @@ String HgmApplication::HgmBT::PackRawData(String& dataToPack, HgmBTPackMethod me
 void HgmApplication::HgmBT::SendDatePack(String& rawData, HgmBTPackMethod method)
 {
     String pack = HgmBT::PackRawData(rawData, method);
-    _bs->write((uint8_t*)pack.c_str(), pack.length());
+    _bs.write((uint8_t*)pack.c_str(), pack.length());
 }
 
 /**
  * @brief Receive and analyze the data pack.
  * @param DateToSave Return data that was analyzed
  * @param method Return method
- * 
+ *
  * @return if OK return HGM_BT_PACK_METHOD_OK else HGM_BT_PACK_METHOD_ERROR
  */
 HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBTPackMethod* method)
 {
-    if (!_bs->available())
+    if (!_bs.available())
         return HGM_BT_PACK_METHOD_ERROR;
 
-    HotakusDynamicJsonDocument rawPack(_bs->available() + 1024);
+    HotakusDynamicJsonDocument rawPack(_bs.available() + 1024);
 
     dataToSave = "";
 
     // Receive raw pack
-    while (_bs->available())
-        dataToSave.concat((char)_bs->read());
+    while (_bs.available())
+        dataToSave.concat((char)_bs.read());
     deserializeJson(rawPack, dataToSave.c_str());
     Serial.println(dataToSave);
 
@@ -331,7 +329,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_HWM_CONF;
 
-        
+
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
@@ -361,9 +359,9 @@ static void BluetoothControlTask(void* params)
             continue;
 
         if (sw) {
-            
+
         } else {
-            
+
         }
     }
 }
@@ -381,7 +379,7 @@ static void BluetoothListeningTask(void* params)
     Serial.println("BT Start to listening...4");
 
     while (true) {
-        if (!_bs->connected()) {
+        if (!_bs.connected()) {
             flag = false;
             vTaskDelay(1000);
             continue;
@@ -390,15 +388,16 @@ static void BluetoothListeningTask(void* params)
         if (!flag) {
             flag = true;
             xSemaphoreTake(wbs, portMAX_DELAY);
-            _bs->write((const uint8_t*)greet.c_str(), greet.length());
+            _bs.write((const uint8_t*)greet.c_str(), greet.length());
             xSemaphoreGive(wbs);
         }
-        
-        xSemaphoreTake(wbs, portMAX_DELAY);
-        if (_bs->available())
-            HgmBT::ReceiveDataPack(_dataToSave, &_method);
-        xSemaphoreGive(wbs);
 
-        vTaskDelay(50);
+        if (_bs.available()){
+            xSemaphoreTake(wbs, portMAX_DELAY);
+            HgmBT::ReceiveDataPack(_dataToSave, &_method);
+            xSemaphoreGive(wbs);
+        }
+
+        vTaskDelay(100);
     }
 }

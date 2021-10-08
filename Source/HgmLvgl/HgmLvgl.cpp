@@ -66,10 +66,6 @@ void HGM::HgmLvgl::HgmLvglBegin()
     _lcd->initDMA();
 #endif
 
-    /* Hgm Control init */
-    this->hcl->HgmControlBegin();
-    Serial.printf("0x%X\n", this->hcl->imu->whoAmI());
-
     /* LVGL init */
     lv_init();
     this->HgmLvglDispInit();
@@ -110,6 +106,8 @@ void HGM::HgmLvgl::HgmLvglBegin()
     );
 #endif
 
+    // Wire1.begin(21, 22);
+    // Wire1.setClock(400 * 1000);
     // xTaskCreatePinnedToCore(
     //     HgmControlCheckTask,
     //     "HgmControlCheckTask",

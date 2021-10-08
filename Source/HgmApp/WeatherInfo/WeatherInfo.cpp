@@ -57,8 +57,6 @@ static bool configFlag = false;
 WeatherInfo weatherInfo;
 WeatherData weatherToday;
 
-HTTPClient hgmHttpClient;
-
 WeatherInfo::WeatherInfo()
 {
     // TODO: Create a task to loop to get the weather
@@ -91,7 +89,7 @@ void HgmApplication::WeatherInfo::InitTask()
         "WCTask",
         8192,
         NULL,
-        3,
+        8,
         &WCTaskHandle,
         1
     );
@@ -271,112 +269,79 @@ void HgmApplication::WeatherInfo::GetWeather()
     Serial.println(airApi);
 #endif
 
-    WiFiClient* wc = NULL;
-    size_t packSize = 0;
-    HotakusDynamicJsonDocument rawPack(8192);
-    uint8_t* packBuf = (uint8_t*)heap_caps_calloc(8192, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
-    HTTPClient* hc = (HTTPClient*)heap_caps_calloc(1, sizeof(HTTPClient), MALLOC_CAP_SPIRAM);
 
     /* Air */
-    // TODO: create func
-    uint8_t retry = 5;
-    while (retry--) {
-        hc->setTimeout(2000);
-        hc->begin(airApi);
-        vTaskDelay(50);
-        int code = hc->GET();
-        if (code != HTTP_CODE_OK) {
-            Serial.printf("%s HTTP error code : % d\n", __func__, code);
-            hc->end();
-            continue;
-        } else
-            break;
-    }
-    if (retry) {
-        wc = hc->getStreamPtr();
-        packSize = wc->available();
-        memset(packBuf, 0x00, 8192);
-        packBuf[packSize] = '\0';
-        for (size_t i = 0; i < packSize; i++) {
-            packBuf[i] = (uint8_t)wc->read();
-            Serial.printf("%c", packBuf[i]);
-        }
-        Serial.println();
-        deserializeJson(rawPack, packBuf);
 
-        if (rawPack["code"].as<uint16_t>() == 402) {
-            Serial.println("The qweather api at max using times.");
-            hc->end();
-            return;
-        }
-
-        Serial.println(rawPack["now"]["aqi"].as<String>());
-        hc->end();
-    }
-
-    
 
     /* Now */
-    retry = 5;
 
     /* Three days */
-    retry = 5;
 
-
-    heap_caps_free(packBuf);
-    heap_caps_free(hc);
 }
 
 
-static String url = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+static String url_path = "/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
 static String url2 = "http://api.bilibili.com/x/space/acc/info?mid=114514";
+extern HTTPClient* https;
+
+static size_t count = 0;
 
 static void WCTask(void* params)
 {
     int tmp = 0;
 
+
     while (true) {
-        if (!WiFi.isConnected()) {
-            vTaskDelay(1000);
-            continue;
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        Serial.print("[HTTPS] begin...\n");
+
+        if (https->connected()) {
+            Serial.print("[HTTPS] https->connected()...\n");
+            https->end();
         }
 
+        https->setConnectTimeout(50 * 1000);
+        https->setTimeout(50 * 1000);
+        if (https->begin(wurl)) {  // HTTPS
+            Serial.print("[HTTPS] GET...\n");
+            // start connection and send HTTP header
+            int httpCode = https->GET();
 
-        xSemaphoreTake(wbs, portMAX_DELAY);
-        hgmBT.Stop();
-        while (hgmBT.bs->isReady())
-            vTaskDelay(2000);
-        
-        /* Air */
-        //WeatherInfo::GetWeather();
+            // httpCode will be negative on error
+            if (httpCode > 0) {
+                // HTTP header has been send and Server response header has been handled
+                Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
 
-        // HTTPClient* hc = (HTTPClient*)heap_caps_calloc(1, sizeof(HTTPClient), MALLOC_CAP_SPIRAM);
-        // while (true) {
-        //     hc->setTimeout(2000);
-        //     hc->begin(url);
-        //     vTaskDelay(50);
-        //     int code = hc->GET();
-        //     if (code < 0) {
-        //         Serial.printf("1 HTTP error code : % d\n", code);
-        //         hc->end();
-        //         continue;
-        //     } else {
-        //         Serial.printf("HTTP GET OK\n");
-        //         Serial.println(hc->getString());
-        //         hc->end();
-        //         break;
-        //     }
-        //     vTaskDelay(1000);
-        // }
-        // heap_caps_free(hc);
-
-        hgmBT.Begin();
-        while (!hgmBT.bs->isReady())
-            vTaskDelay(1000);
+                // file found at server
+                if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                    Serial.println(https->getString());
+                }
+            } else {
+                Serial.printf("[HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
+            }
+            https->end();
+        } else {
+            Serial.printf("[HTTPS] Unable to connect\n");
+        }
         xSemaphoreGive(wbs);
 
-        
+        // count++;
+        // 
+        // Serial.println();
+        // 
+        // if (count == 5)
+        //     while (true) {
+        //         Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
+        //             heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+        //         vTaskDelay(3000);
+        //     }
 
-        vTaskDelay(WEATHER_GET_GAP);
+
+        
+        Serial.println("Waiting 10s before the next round...");
+        Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
+            heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+        vTaskDelay(3000);
     }
 }

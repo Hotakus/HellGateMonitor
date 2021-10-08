@@ -36,7 +36,8 @@ extern HgmSetupUI* hgmSetupUI;
 
 BiliInfoRecv bili;
 
-extern HTTPClient hgmHttpClient;
+//extern  
+extern HTTPClient* https;
 
 static String _uid = "";
 static String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
@@ -51,7 +52,7 @@ static size_t userFaceImgBufSize = 0;
 static uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
 static uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
 
-static HgmComponent component;
+extern HgmComponent component;
 
 static bool getFlag = false;
 static bool configFlag = false;
@@ -78,7 +79,7 @@ void HgmApplication::BiliInfoRecv::InitTask()
     xTaskCreatePinnedToCore(
         biliTask,
         "biliTask",
-        2512,
+        2048 + 256,
         NULL,
         8,
         &biliTaskHandle,
@@ -179,22 +180,27 @@ static int _GetFollower()
     String url = statAPI + _uid;
     HotakusDynamicJsonDocument userInfo(512);
 
-    hgmHttpClient.setConnectTimeout(3 * 1000);
-    hgmHttpClient.setTimeout(3 * 1000);
-    hgmHttpClient.begin(url);
-    int code = hgmHttpClient.GET();
+    if (https->connected()) {
+        Serial.print("[HTTPS] blil https->connected()...\n");
+        https->end();
+    }
+
+    https->setConnectTimeout(3 * 1000);
+    https->setTimeout(3 * 1000);
+    https->begin(url);
+    int code = https->GET();
 
     if (code != HTTP_CODE_OK) {
         Serial.printf("HTTP code : %d", code);
-        hgmHttpClient.end();
+        https->end();
         return -1;
     }
-    String recv = hgmHttpClient.getString();
+    String recv = https->getString();
     deserializeJson(userInfo, recv);
 
     userFans = userInfo["data"]["follower"].as<size_t>();
 
-    hgmHttpClient.end();
+    https->end();
     return userFans;
 }
 
@@ -285,12 +291,13 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
 
     int code = -1;
 
-    hgmHttpClient.setConnectTimeout(3 * 1000);
-    hgmHttpClient.setTimeout(3 * 1000);
-    hgmHttpClient.begin(imgUrl);
-    code = hgmHttpClient.GET();
+     
+    https->setConnectTimeout(3 * 1000);
+    https->setTimeout(3 * 1000);
+    https->begin(imgUrl);
+    code = https->GET();
 
-    WiFiClient* client = hgmHttpClient.getStreamPtr();
+    WiFiClient* client = https->getStreamPtr();
     if (client->available()) {
         size_t size = client->available();
         userFaceImgBufSize = size;
@@ -301,13 +308,13 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
         userFaceImgBuf = (uint8_t*)heap_caps_calloc(size, 1, MALLOC_CAP_SPIRAM);
         if (!userFaceImgBuf) {
             Serial.println("Face image buffer allocated failed.");
-            hgmHttpClient.end();
+            https->end();
             return -1;
         }
 
         if (client->readBytes(userFaceImgBuf, size) != size) {
             Serial.println("Face image buffer save failed.");
-            hgmHttpClient.end();
+            https->end();
             return -1;
         }
         Serial.println("Face image get done.");
@@ -315,9 +322,9 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
         Serial.println("Face image is null, check image URL.");
     }
 
-    _SaveUserFaceImg();
+    https->end();
 
-    hgmHttpClient.end();
+    _SaveUserFaceImg();
 }
 
 uint8_t* HgmApplication::BiliInfoRecv::GetUserFaceImgBuf(size_t* imgSize)
@@ -340,19 +347,24 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     Serial.println(url);
 
-    hgmHttpClient.setConnectTimeout(3 * 1000);
-    hgmHttpClient.setTimeout(3 * 1000);
-    hgmHttpClient.begin(url);
-    int code = hgmHttpClient.GET();
+    if (https->connected()) {
+        Serial.print("[HTTPS] blil https->connected()...\n");
+        https->end();
+    }
+     
+    https->setConnectTimeout(3 * 1000);
+    https->setTimeout(3 * 1000);
+    https->begin(url);
+    int code = https->GET();
 
     if (code != HTTP_CODE_OK) {
         Serial.printf("%s HTTP code : %d", __func__, code);
-        hgmHttpClient.end();
+        https->end();
         getFlag = false;
         return;
     }
 
-    WiFiClient* wc = hgmHttpClient.getStreamPtr();
+    WiFiClient* wc = https->getStreamPtr();
     size_t size = wc->available();
     uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
     uint8_t* pRecvBuf = recvBuf;
@@ -373,7 +385,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
         Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
-        hgmHttpClient.end();
+        https->end();
         getFlag = false;
         return;
     }
@@ -382,7 +394,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
     userLevel = userInfo["data"]["level"].as<uint8_t>();
     userFaceImgUrl = userInfo["data"]["face"].as<String>();
 
-    hgmHttpClient.end();
+    https->end();
 
     _GetFollower();
 
@@ -405,6 +417,5 @@ static void biliTask(void* params)
         xSemaphoreGive(wbs);
 
         vTaskDelay(BILI_GET_GAP);
-        //vTaskDelay(2000);
     }
 }

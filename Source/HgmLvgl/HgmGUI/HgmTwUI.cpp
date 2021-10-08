@@ -235,7 +235,7 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
 
-    showBiliTimer = lv_timer_create(ShowBili, (BILI_GET_GAP/2), NULL);
+    showBiliTimer = lv_timer_create(ShowBili, (BILI_GET_GAP/10/10), NULL);
 
 }
 
@@ -275,10 +275,30 @@ static void ShowWeather()
 {
 
 }
+
+extern HTTPClient hgmHttpClient;
+static String url = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+
+
 static void ShowBili(lv_timer_t* timer)
 {
     face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    lv_img_set_src(faceImg, &face_dsc);
+
     lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
     lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
+
+    // hgmHttpClient.setTimeout(2000);
+    // hgmHttpClient.begin(url);
+    // vTaskDelay(50);
+    // int code = hgmHttpClient.GET();
+    // if (code < 0) {
+    //     Serial.printf("1 HTTP error code : % d\n", code);
+    //     hgmHttpClient.end();
+    // } else {
+    //     Serial.printf("HTTP GET OK\n");
+    //     Serial.println(hgmHttpClient.getString());
+    //     hgmHttpClient.end();
+    // }
 }
 

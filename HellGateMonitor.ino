@@ -53,20 +53,27 @@ extern WeatherInfo weatherInfo;
 extern HgmLvgl* hgmLvgl;
 extern TimeInfo ti;
 
-HgmSetupUI* hgmSetupUI;
-
-
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
 
 SemaphoreHandle_t wbs;
+HgmComponent component;
 
 float firmwareSize = 0;
+
+
+static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+extern HTTPClient* https;
 
 // Show the init progress task
 static void backlightControl(void* params)
 {
     bool flag = false;
+
+    ledcAttachPin(SCREEN_BK_PIN, 0);
+    ledcSetup(0, (10 * 1000), 8);   // PWM 10kHz
+    ledcWrite(0, 0);
+
     while (true) {
         if (xQueueReceive(bkMsgBox, &flag, portMAX_DELAY) != pdPASS) {
 
@@ -93,9 +100,10 @@ void setup()
     hgmBT.Stop();
     while (hgmBT.bs->isReady())
         vTaskDelay(500);
-    hgmWiFi.Stop();
-    while (WiFi.isConnected())
-        vTaskDelay(500);
+    
+    //hgmWiFi.Stop();
+    //while (WiFi.isConnected())
+    //    vTaskDelay(500);
 
     firmwareSize = ESP.getSketchSize() / 1024.0 / 1024.0;
 
@@ -121,28 +129,21 @@ void setup()
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
 
-    ledcAttachPin(SCREEN_BK_PIN, 0);
-    ledcSetup(0, (10 * 1000), 8);   // PWM 10kHz
-    ledcWrite(0, 0);
-
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024, NULL, 5, &bkHandle, 1);
 
-    /* HGM LVGL Component initialize */
-    Wire1.begin(21, 22);
-    Wire1.setClock(400 * 1000);
+    // Semaphore for BT and WiFi. Don't remove it
+    wbs = xSemaphoreCreateBinary();
+    xSemaphoreGive(wbs);
+
+    /* HGM LVGL initialize */
     hgmLvgl->HgmLvglBegin();
 
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    HgmComponent component;
-    hgmSetupUI = new HgmSetupUI();
+    HgmSetupUI *hgmSetupUI = new HgmSetupUI();
     hgmSetupUI->Begin();
-
-    // Semaphore for BT and WiFi. Don't remove it
-    wbs = xSemaphoreCreateBinary();
-    xSemaphoreGive(wbs);
 
     // Open bluetooth
     component.type = HGM_COMPONENT_BT;
@@ -180,9 +181,9 @@ void setup()
     bili.Begin();
     vTaskDelay(300);
 
-    // Check weather
-    weatherInfo.Begin();
-    vTaskDelay(300);
+    // // Check weather
+    // weatherInfo.Begin();
+    // vTaskDelay(300);
 
     // All done
     component.type = HGM_COMPONENT_DONE;
@@ -192,8 +193,9 @@ void setup()
     vTaskDelay(500);
     hgmSetupUI->ComponentInitDone();
     delete hgmSetupUI;
-
+    
     hgmLvgl->HgmLvglUIBegin();
+
 
     char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
     vTaskList(task_buf);
@@ -203,12 +205,11 @@ void setup()
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 
-    
 }
+
 
 void loop()
 {
-    Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
-        heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+
     vTaskDelay(30 * 60 * 1000);
 }
