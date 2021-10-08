@@ -1,4 +1,4 @@
-﻿/******************************************************************
+/******************************************************************
  * @file HgmJsonUtil.h
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
@@ -10,6 +10,8 @@
 #ifndef HELLGATEMONITOR_HGMJSONUTIL_H
 #define HELLGATEMONITOR_HGMJSONUTIL_H
 
+#include "./HotakusMemUtil.h"
+
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
@@ -18,17 +20,17 @@ namespace HgmApplication {
 		struct HotakusDefaultAllocator {
 			void *allocate(size_t size)
 			{
-				return heap_caps_calloc(1, size, MALLOC_CAP_SPIRAM);
+				return HotakusMem::alloc(size);
 			}
 
 			void deallocate(void *ptr)
 			{
-				heap_caps_free(ptr);
+				HotakusMem::free(ptr);
 			}
 
 			void *reallocate(void *ptr, size_t new_size)
 			{
-				return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
+				return HotakusMem::realloc(ptr, new_size);
 			}
 		};
 		typedef BasicJsonDocument <HotakusDefaultAllocator> HotakusDynamicJsonDocument;
