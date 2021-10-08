@@ -12,11 +12,11 @@
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
 #include "../HgmWiFi/HgmWiFi.h"
 #include "../HgmJsonUtil.h"
+#include "BiliInfoRecv.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include "BiliInfoRecv.h"
 #include <ArduinoJson.h>
 #include <iostream>
 #include <TJpg_Decoder.h>
@@ -56,6 +56,8 @@ extern HgmComponent component;
 
 static bool getFlag = false;
 static bool configFlag = false;
+static bool getDoneFlag = false;
+static bool gettingFlag = false;
 
 // TODO: add task
 TaskHandle_t biliTaskHandle;
@@ -89,6 +91,9 @@ void HgmApplication::BiliInfoRecv::InitTask()
 
 void HgmApplication::BiliInfoRecv::DeInitTask()
 {
+    while (gettingFlag && !getDoneFlag)
+        vTaskDelay(100);
+
     if (biliTaskHandle) {
         vTaskDelete(biliTaskHandle);
         biliTaskHandle = NULL;
@@ -172,6 +177,11 @@ void HgmApplication::BiliInfoRecv::SetUID(String uid)
 void HgmApplication::BiliInfoRecv::GetUID(String& uid)
 {
     uid = _uid;
+}
+
+bool HgmApplication::BiliInfoRecv::Done()
+{
+    return getDoneFlag;
 }
 
 
@@ -269,6 +279,7 @@ static void _SaveUserFaceImg()
     Serial.print(t); Serial.println(" ms");
 
     Serial.printf("User face image was decoded.\n");
+    getDoneFlag = true;
 }
 
 /**
@@ -347,6 +358,8 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
 
     Serial.println(url);
 
+    getDoneFlag = false;
+
     if (https->connected()) {
         Serial.print("[HTTPS] blil https->connected()...\n");
         https->end();
@@ -412,8 +425,10 @@ static void biliTask(void* params)
         }
         
         xSemaphoreTake(wbs, portMAX_DELAY);
+        gettingFlag = true;
         bili.GetBasicInfo();
         bili.GetUserFaceImg();
+        gettingFlag = false;
         xSemaphoreGive(wbs);
 
         vTaskDelay(BILI_GET_GAP);

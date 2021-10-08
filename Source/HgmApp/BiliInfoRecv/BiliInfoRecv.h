@@ -33,6 +33,7 @@ namespace HgmApplication {
 
         static void SetUID(String uid);
         static void GetUID(String& uid);
+        static bool Done();
 
         static uint8_t GetLevel();
         static size_t GetFollower();
