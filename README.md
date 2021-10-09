@@ -5,14 +5,18 @@
 
 ---
 
-[![LICENSE](https://img.shields.io/github/v/release/Hotakus/HellGateMonitor?include_prereleases&logo=F&style=flat-square)](https://github.com/Hotakus/HellGateMonitor/releases)  
 [![LICENSE](https://img.shields.io/github/license/Hotakus/HellGateMonitor?label=LICENSE&logo=GNU&style=flat-square)](./LICENSE)
-[![BiliBili](https://img.shields.io/badge/Kicad-硬件原理图-yellow?style=flat-square&logo=Files)](Hardware)
+[![hardware](https://img.shields.io/badge/Kicad-硬件原理图-yellow?style=flat-square&logo=Files)](Hardware)
 [![BiliBili](https://img.shields.io/badge/BiliBili-视频介绍-blue?style=flat-square&logo=Bilibili)](https://space.bilibili.com/341974201)
-[![BiliBili](https://img.shields.io/badge/GitHub-我的主页-teal?style=flat-square&logo=Github)](https://visualstudio.microsoft.com/zh-hans/vs/)
-[![BiliBili](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
+[![github](https://img.shields.io/badge/GitHub-我的主页-teal?style=flat-square&logo=Github)](https://visualstudio.microsoft.com/zh-hans/vs/)
+[![vs](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
+[![release](https://img.shields.io/github/v/release/Hotakus/HellGateMonitor?include_prereleases&logo=F&style=flat-square)](https://github.com/Hotakus/HellGateMonitor/releases)
 
-![logo](GuideImage/HellGateMonitor.png)
+![logo](GuideImage/HellGateMonitor.png)  
+
+<div align=center>
+    <img src="GuideImage/HellGateMonitor.png"/>
+</div>
 
 ---
 
