@@ -128,7 +128,6 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-*.bin
 *.elf
 
 # Chutzpah Test files
@@ -386,4 +385,3 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-!/Tools/hgm_spiffs/hgm.spiffs.bin
