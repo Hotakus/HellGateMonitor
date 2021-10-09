@@ -48,10 +48,10 @@ TimeInfo::TimeInfo()
 
 TimeInfo::~TimeInfo()
 {
-    this->DeInitTask();
+    this->deInitTask();
 }
 
-void HgmApplication::TimeInfo::InitTask()
+void HgmApplication::TimeInfo::initTask()
 {
     if (netTimeTaskHandle)
         return;
@@ -67,7 +67,7 @@ void HgmApplication::TimeInfo::InitTask()
     );
 }
 
-void HgmApplication::TimeInfo::DeInitTask()
+void HgmApplication::TimeInfo::deInitTask()
 {
     if (netTimeTaskHandle) {
         vTaskDelete(netTimeTaskHandle);
@@ -90,7 +90,7 @@ void HgmApplication::TimeInfo::begin()
     }
     component.waitStatus = true;
 
-    // this->InitTask();
+    this->initTask();
 }
 
 int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)

@@ -23,7 +23,7 @@
 #define ARDUINO 108013
 #define ARDUINO_ARCH_ESP32
 #define ESP32
-#define CORE_DEBUG_LEVEL 0
+#define CORE_DEBUG_LEVEL 1
 #define BOARD_HAS_PSRAM
 #define __cplusplus 201103L
 

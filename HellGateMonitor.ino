@@ -17,6 +17,7 @@
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 #include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
+#include "Source/HgmApp/HotakusMemUtil.h"
 
 #include <Arduino.h>
 #include <TFT_eSPI.h>
@@ -34,8 +35,8 @@
 #define SCREEN_BK_PIN   32
 
 #define HGM_VERSION_INFO  "dev"
-#define HGM_VERSION_MAJOR 1
-#define HGM_VERSION_MINOR 0
+#define HGM_VERSION_MAJOR 0
+#define HGM_VERSION_MINOR 1
 #define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
@@ -127,38 +128,38 @@ void setup()
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);
-
+    
     // Semaphore for BT and WiFi. Don't remove it
     wbs = xSemaphoreCreateBinary();
     xSemaphoreGive(wbs);
-
+    
     /* HGM LVGL initialize */
     hgmLvgl->HgmLvglbegin();
-
+    
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
-
+    
     HgmSetupUI* hgmSetupUI = new HgmSetupUI();
     hgmSetupUI->begin();
-
+    
     // Open bluetooth
     component.type = HGM_COMPONENT_BT;
     component.curStatus = true;
     component.waitStatus = false;
     hgmSetupUI->componentControl(&component);
-    hgmBT.SetName();
+    hgmBT.setName();
     hgmBT.begin();
     while (!hgmBT.bs->isReady())
         vTaskDelay(200);
     component.waitStatus = true;
     vTaskDelay(200);
-
+    
     // Check config file
     // TODO: move to HgmWiFi
     HgmSC hgmSC;
     hgmSC.begin();
     vTaskDelay(200);
-
+    
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;
     component.curStatus = true;
@@ -169,36 +170,36 @@ void setup()
         vTaskDelay(100);
     component.waitStatus = true;
     vTaskDelay(300);
-
+    
     // Check time
     ti.begin();
     vTaskDelay(300);
-
+    
     // Check bilibili component
     bili.begin();
     vTaskDelay(300);
-
+    
     // Check weather
     weatherInfo.begin();
     vTaskDelay(300);
-
+    
     // All done
     component.type = HGM_COMPONENT_DONE;
     component.curStatus = true;
     component.waitStatus = true;
     hgmSetupUI->componentControl(&component);
     vTaskDelay(500);
-    hgmSetupUI->ComponentInitDone();
+    hgmSetupUI->componentInitDone();
     delete hgmSetupUI;
-
+    
+    // launch default UI
     hgmLvgl->HgmLvglUIbegin();
 
-
-    char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
+    char* task_buf = (char*)hotakusAlloc(8192);
     vTaskList(task_buf);
     //vTaskGetRunTimeStats(task_buf);
     Serial.printf("%s\n", task_buf);
-    heap_caps_free(task_buf);
+    hotakusFree(task_buf);
 }
 
 

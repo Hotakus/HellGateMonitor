@@ -70,10 +70,10 @@ BiliInfoRecv::BiliInfoRecv()
 
 BiliInfoRecv::~BiliInfoRecv()
 {
-    this->DeInitTask();
+    this->deInitTask();
 }
 
-void HgmApplication::BiliInfoRecv::InitTask()
+void HgmApplication::BiliInfoRecv::initTask()
 {
     if (biliTaskHandle)
         return;
@@ -89,7 +89,7 @@ void HgmApplication::BiliInfoRecv::InitTask()
     );
 }
 
-void HgmApplication::BiliInfoRecv::DeInitTask()
+void HgmApplication::BiliInfoRecv::deInitTask()
 {
     while (gettingFlag && !getDoneFlag)
         vTaskDelay(100);
@@ -157,7 +157,7 @@ void HgmApplication::BiliInfoRecv::begin()
         }
     }
 
-    this->InitTask();
+    // this->initTask();
 }
 
 /**
@@ -218,18 +218,18 @@ static int _GetFollower()
  * @brief Get followers.
  * @return user's fans.
  */
-size_t HgmApplication::BiliInfoRecv::GetFollower()
+size_t HgmApplication::BiliInfoRecv::getFollower()
 {
     return userFans;
 }
 
-String& HgmApplication::BiliInfoRecv::GetUserName()
+String& HgmApplication::BiliInfoRecv::getUserName()
 {
     return userName;
 }
 
 
-uint8_t HgmApplication::BiliInfoRecv::GetLevel()
+uint8_t HgmApplication::BiliInfoRecv::getLevel()
 {
     return userLevel;
 }
@@ -288,10 +288,10 @@ static void _SaveUserFaceImg()
  * @param imgHeight
  * @return Error code
  */
-int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
+int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
 {
     if (!userFaceImgUrl || !getFlag) {
-        Serial.println("The URL of the user's face has not been get. please run \"GetBasicInfo()\"");
+        Serial.println("The URL of the user's face has not been get. please run \"getBasicInfo()\"");
         return -1;
     }
 
@@ -338,13 +338,13 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
     _SaveUserFaceImg();
 }
 
-uint8_t* HgmApplication::BiliInfoRecv::GetUserFaceImgBuf(size_t* imgSize)
+uint8_t* HgmApplication::BiliInfoRecv::getUserFaceImgBuf(size_t* imgSize)
 {
     *imgSize = userFaceImgBufSize;
     return userFaceImgBuf;
 }
 
-void* HgmApplication::BiliInfoRecv::GetUserFaceBitmap()
+void* HgmApplication::BiliInfoRecv::getUserFaceBitmap()
 {
     return userFaceBitmap;
 }
@@ -352,7 +352,7 @@ void* HgmApplication::BiliInfoRecv::GetUserFaceBitmap()
 /**
  * @brief Get basic bilibili user info.
  */
-void HgmApplication::BiliInfoRecv::GetBasicInfo()
+void HgmApplication::BiliInfoRecv::getBasicInfo()
 {
     String url = basicInfoAPI + _uid;
 
@@ -426,8 +426,8 @@ static void biliTask(void* params)
 
         xSemaphoreTake(wbs, portMAX_DELAY);
         gettingFlag = true;
-        bili.GetBasicInfo();
-        bili.GetUserFaceImg();
+        bili.getBasicInfo();
+        bili.getUserFaceImg();
         gettingFlag = false;
         xSemaphoreGive(wbs);
 

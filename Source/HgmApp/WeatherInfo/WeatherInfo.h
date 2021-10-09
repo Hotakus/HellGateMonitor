@@ -47,8 +47,8 @@ namespace HgmApplication {
 
 		void begin();
 
-		void InitTask();
-		void DeInitTask();
+		void initTask();
+		void deInitTask();
 
 		bool CheckWeatherconfig();
 

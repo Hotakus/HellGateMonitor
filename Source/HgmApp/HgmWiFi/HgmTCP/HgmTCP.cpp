@@ -69,7 +69,7 @@ HgmTCP::~HgmTCP()
 void HgmApplication::HgmTCP::begin()
 {
     beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
-    this->InitTask();
+    this->initTask();
 }
 
 void HgmApplication::HgmTCP::stop()
@@ -80,7 +80,7 @@ void HgmApplication::HgmTCP::stop()
     while (tcpServerTaskHandle || tcpClientTaskHandle)
         vTaskDelay(100);
 
-    this->DeInitTask();
+    this->deInitTask();
     if (beginMsgbox) {
         vQueueDelete(beginMsgbox);
         beginMsgbox = NULL;
@@ -90,7 +90,7 @@ void HgmApplication::HgmTCP::stop()
 /**
  * @brief Init TCP relative task.
  */
-void HgmApplication::HgmTCP::InitTask()
+void HgmApplication::HgmTCP::initTask()
 {
     xTaskCreatePinnedToCore(
         TcpControlTask,
@@ -103,7 +103,7 @@ void HgmApplication::HgmTCP::InitTask()
     );
 }
 
-void HgmApplication::HgmTCP::DeInitTask()
+void HgmApplication::HgmTCP::deInitTask()
 {
     if (tcpControlTaskHandle) {
         vTaskDelete(tcpControlTaskHandle);
@@ -161,7 +161,7 @@ WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
  * @param method
  * @return pack
  */
-String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod method)
+String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod method)
 {
     HotakusDynamicJsonDocument hgmPack(dataToPack.length() + 1024);
 
@@ -208,9 +208,9 @@ String HgmApplication::HgmTCP::PackRawData(String& dataToPack, HgmTcpPackMethod 
  * @param rawData
  * @param method
  */
-void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod method)
+void HgmApplication::HgmTCP::sendDatePack(String& rawData, HgmTcpPackMethod method)
 {
-    String s = HgmTCP::PackRawData(rawData, method);
+    String s = HgmTCP::packRawData(rawData, method);
     wc.write((uint8_t*)s.c_str(), s.length());
 }
 
@@ -221,7 +221,7 @@ void HgmApplication::HgmTCP::SendDatePack(String& rawData, HgmTcpPackMethod meth
  *
  * @return if OK return HGM_TCP_PACK_METHOD_OK else HGM_TCP_PACK_METHOD_ERROR
  */
-HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
+HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 {
     if (!wc.available())
         return HGM_TCP_PACK_METHOD_ERROR;
@@ -234,7 +234,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
     if (!buf) {
         Serial.println("TCP allocated error");
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
     }
     buf[packSize - 1] = '\0';
@@ -250,7 +250,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
     if (Header.compareTo(TCP_PACK_HEADER)) {
         str = "Header error. No a valid HGM TCP pack";
         Serial.println(str);
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
     }
 
@@ -264,16 +264,16 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
             wc.remoteIP().toString().c_str(),
             rawPack["Data"].as<String>().c_str());
 
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
 
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
         if (hrr.rCpu)
             ((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->Set(rawPack);
-        if (hrr.rGpu) 
+        if (hrr.rGpu)
             ((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->Set(rawPack);
-        if (hrr.rMemory) 
+        if (hrr.rMemory)
             ((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->Set(rawPack);
         if (hrr.rNetwork)
             ((HardwareMemData*)hgmHardObj[HGM_NETWORK]->params)->Set(rawPack);
@@ -286,20 +286,20 @@ HgmTcpPackMethod HgmApplication::HgmTCP::ReceiveDataPack()
         // Serial.println(((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->disk[1].name);
         // Serial.println(((HardwareNetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
 
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_PROJECTION: {
 
 
 
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_PROJECTION;
     }
     default:
         str = "DataType error. it's not a valid HGM TCP pack";
         Serial.println(str);
-        HgmTCP::SendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_OK;
     }
 
@@ -400,7 +400,7 @@ static void TcpServerListeningTask(void* params)
 
         while (wc.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
-            HgmTCP::ReceiveDataPack();
+            HgmTCP::receiveDataPack();
             xSemaphoreGive(wbs);
             vTaskDelay(10);
         }

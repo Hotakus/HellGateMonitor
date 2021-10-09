@@ -11,6 +11,7 @@
 #include "../HgmLvgl.h"
 #include "../../HgmApp/TimeInfo/TimeInfo.h"
 #include "../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "../../HgmApp/WeatherInfo/WeatherInfo.h"
 
 #include <Arduino.h>
 #include <ESP32Time.h>
@@ -90,10 +91,13 @@ static lv_anim_t* anim_tw_expand = NULL;
 static lv_timer_t* showTimeTimer = NULL;
 static lv_timer_t* showBiliTimer = NULL;
 
-extern TimeInfo ti;
-
 static TaskHandle_t showTaskHandle;
 static void ShowTime(lv_timer_t* timer);
+
+extern TimeInfo ti;
+extern BiliInfoRecv bili;
+extern WeatherInfo weatherInfo;
+
 
 HgmTwUI::HgmTwUI()
 {
@@ -112,8 +116,22 @@ static bool CheckChinese(String& str)
     return false;
 }
 
+static void _initTask()
+{
+    bili.initTask();
+    weatherInfo.initTask();
+}
+
+static void _deInitTask()
+{
+    bili.deInitTask();
+    weatherInfo.deInitTask();
+}
+
 void HgmGUI::HgmTwUI::begin()
 {
+
+    _initTask();
 
     tw_time = lv_img_create(lv_scr_act());
     lv_obj_align(tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
@@ -207,7 +225,7 @@ void HgmGUI::HgmTwUI::begin()
     face_dsc.header.h = 64;
     face_dsc.data_size = 4096 * 2;
     face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
     faceImg = lv_img_create(book);
     lv_img_set_src(faceImg, &face_dsc);
     lv_obj_align(faceImg, LV_ALIGN_TOP_MID, 0, 10);
@@ -220,13 +238,13 @@ void HgmGUI::HgmTwUI::begin()
     lv_label_set_recolor(biliName, true);
     lv_label_set_long_mode(biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
     // TODO: Check chinese
-    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
+    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
     lv_obj_set_style_text_align(biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
     biliFans = lv_label_create(book);
     lv_label_set_recolor(biliFans, true);
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::getFollower());
     lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
@@ -236,15 +254,16 @@ void HgmGUI::HgmTwUI::begin()
 void HgmGUI::HgmTwUI::stop()
 {
     // TODO: delete
+    _deInitTask();
 }
 
 static void ShowBili()
 {
-    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
     lv_img_set_src(faceImg, &face_dsc);
 
-    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
+    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::getFollower());
 }
 
 static void ShowTime(lv_timer_t* timer)

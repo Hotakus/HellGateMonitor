@@ -46,8 +46,8 @@ namespace HgmApplication {
         WiFiServer* wifiServer = nullptr;
         WiFiClient* wifiClient = nullptr;
 
-        void InitTask();
-        void DeInitTask();
+        void initTask();
+        void deInitTask();
 
     public:
         TcpControlMethod tcm = TCP_NULL;
@@ -68,10 +68,10 @@ namespace HgmApplication {
         static WiFiClient* GetWiFiClient();
 
         /* Pack the raw data as a data frame via designated method */
-        static String PackRawData(String& dataToPack, HgmTcpPackMethod method);
+        static String packRawData(String& dataToPack, HgmTcpPackMethod method);
         /* To send data pack, used by another Hgm App */
-        static void SendDatePack(String& rawData, HgmTcpPackMethod method);
-        static HgmTcpPackMethod ReceiveDataPack();
+        static void sendDatePack(String& rawData, HgmTcpPackMethod method);
+        static HgmTcpPackMethod receiveDataPack();
     };
 
 

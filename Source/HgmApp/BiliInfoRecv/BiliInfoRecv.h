@@ -26,8 +26,8 @@ namespace HgmApplication {
         BiliInfoRecv();
         ~BiliInfoRecv();
 
-        void InitTask();
-        void DeInitTask();
+        void initTask();
+        void deInitTask();
 
         void begin();
 
@@ -35,13 +35,13 @@ namespace HgmApplication {
         static void GetUID(String& uid);
         static bool Done();
 
-        static uint8_t GetLevel();
-        static size_t GetFollower();
-        static String& GetUserName();
-        static void GetBasicInfo();
-        static int GetUserFaceImg(uint16_t imgWidth = 64, uint16_t imgHeight = 64);
-        static uint8_t* GetUserFaceImgBuf(size_t* imgSize);
-        static void* GetUserFaceBitmap();
+        static uint8_t getLevel();
+        static size_t getFollower();
+        static String& getUserName();
+        static void getBasicInfo();
+        static int getUserFaceImg(uint16_t imgWidth = 64, uint16_t imgHeight = 64);
+        static uint8_t* getUserFaceImgBuf(size_t* imgSize);
+        static void* getUserFaceBitmap();
     };
 };
 

@@ -28,8 +28,8 @@ namespace HgmApplication {
 		TimeInfo();
 		~TimeInfo();
 
-		void InitTask();
-		void DeInitTask();
+		void initTask();
+		void deInitTask();
 
 		void begin();
 

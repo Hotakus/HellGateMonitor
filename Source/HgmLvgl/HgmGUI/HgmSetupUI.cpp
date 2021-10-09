@@ -155,7 +155,7 @@ void HgmGUI::HgmSetupUI::begin()
     this->componentControl(&com);
     vTaskDelay(1000);
 
-    this->ComponentInitDone();*/
+    this->componentInitDone();*/
 
 }
 
@@ -168,7 +168,7 @@ void HgmGUI::HgmSetupUI::componentControl(HgmComponent* component)
     xQueueSend(setupMsgBox, &component, portMAX_DELAY);
 }
 
-void HgmGUI::HgmSetupUI::ComponentInitDone()
+void HgmGUI::HgmSetupUI::componentInitDone()
 {
     lv_anim_t barAnim;
     lv_anim_init(&barAnim);

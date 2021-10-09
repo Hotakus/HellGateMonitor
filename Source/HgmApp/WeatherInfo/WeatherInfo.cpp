@@ -84,23 +84,27 @@ void HgmApplication::WeatherInfo::begin()
     this->CheckWeatherconfig();
 }
 
-void HgmApplication::WeatherInfo::InitTask()
+void HgmApplication::WeatherInfo::initTask()
 {
-    xTaskCreatePinnedToCore(
-        WeatherCheckTask,
-        "WeatherCheckTask",
-        8192,
-        NULL,
-        8,
-        &WeatherCheckTaskHandle,
-        1
-    );
+    if (!WeatherCheckTaskHandle) {
+        xTaskCreatePinnedToCore(
+            WeatherCheckTask,
+            "WeatherCheckTask",
+            8192,
+            NULL,
+            8,
+            &WeatherCheckTaskHandle,
+            1
+        );
+    }
 }
 
-void HgmApplication::WeatherInfo::DeInitTask()
+void HgmApplication::WeatherInfo::deInitTask()
 {
-    vTaskDelete(WeatherCheckTaskHandle);
-    WeatherCheckTaskHandle = NULL;
+    if (WeatherCheckTaskHandle) {
+        vTaskDelete(WeatherCheckTaskHandle);
+        WeatherCheckTaskHandle = NULL;
+    }
 }
 
 
@@ -173,7 +177,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
         }
     }
 
-    this->InitTask();
+    this->initTask();
 
     return true;
 }
