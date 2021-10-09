@@ -4,6 +4,8 @@
 ### [项目当前待实现目标](https://github.com/Hotakus/HellGateMonitor/issues/3)
 
 ---
+
+[![LICENSE](https://img.shields.io/github/v/release/Hotakus/HellGateMonitor?include_prereleases&logo=F&style=flat-square)](https://github.com/Hotakus/HellGateMonitor/releases)  
 [![LICENSE](https://img.shields.io/github/license/Hotakus/HellGateMonitor?label=LICENSE&logo=GNU&style=flat-square)](./LICENSE)
 [![BiliBili](https://img.shields.io/badge/Kicad-硬件原理图-yellow?style=flat-square&logo=Files)](Hardware)
 [![BiliBili](https://img.shields.io/badge/BiliBili-视频介绍-blue?style=flat-square&logo=Bilibili)](https://space.bilibili.com/341974201)
@@ -104,8 +106,11 @@ __最后：__
 那么可以直接使用我编译好的固件：[固件下载 TODO]()  
 然后按照以下流程配置并烧写固件：
 - 首先，进入目录：Tool/hgm_spiffs/base_dir/, 按照里面的文件模板进行配置，如WiFi的SSID和密码、B站配置等
-- 第二，双击运行目录下的bat脚本：Tool/hgm_spiffs/hgm_spiffs_gen.bat，它会自动生成适用于HGM的spiffs固件，
-
+- 第二，双击运行目录下的bat脚本：Tool/hgm_spiffs/hgm_spiffs_gen.bat，它会自动生成适用于HGM的spiffs固件
+- 第三，USB连接HellGateMonitor，文件和烧写地址要填对，选择正确的串口，
+使用Tool下的flash_download_tool工具按如下方式烧写👇。
+![](GuideImage/program.png)
+- 最后，按下HellGateMonitor的电源键复位，然后就可以开始使用咯✌
 
 ---
 
