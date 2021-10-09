@@ -12,8 +12,6 @@
 [![vs](https://img.shields.io/badge/IDE-VisualStudio-blueviolet?style=flat-square&logo=VisualStudio)](https://visualstudio.microsoft.com/zh-hans/vs/)
 [![release](https://img.shields.io/github/v/release/Hotakus/HellGateMonitor?include_prereleases&logo=F&style=flat-square)](https://github.com/Hotakus/HellGateMonitor/releases)
 
-![logo](GuideImage/HellGateMonitor.png)  
-
 <div align=center>
     <img src="GuideImage/HellGateMonitor.png"/>
 </div>
