@@ -37,7 +37,7 @@ HgmWiFi::HgmWiFi()
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
 
-    this->hgmTcp->Begin();
+    this->hgmTcp->begin();
 }
 
 HgmWiFi::HgmWiFi(String ssid, String password)
@@ -50,7 +50,7 @@ HgmWiFi::HgmWiFi(String ssid, String password)
     this->hgmTcp = new HgmTCP();
     this->WifiTaskInit();
 
-    this->hgmTcp->Begin();
+    this->hgmTcp->begin();
 }
 
 HgmWiFi::~HgmWiFi()
@@ -60,7 +60,7 @@ HgmWiFi::~HgmWiFi()
     vQueueDelete(wifiCtlMsgBox);
     delete https;
 
-    this->hgmTcp->Stop();
+    this->hgmTcp->stop();
 }
 
 /**
@@ -161,7 +161,7 @@ void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
 /**
  * @brief Begin the WiFi.
  */
-void HgmApplication::HgmWiFi::Begin()
+void HgmApplication::HgmWiFi::begin()
 {
     this->OpenWiFi();
 
@@ -174,7 +174,7 @@ void HgmApplication::HgmWiFi::Begin()
 /**
  * @brief Stop the WiFi and.
  */
-void HgmApplication::HgmWiFi::Stop()
+void HgmApplication::HgmWiFi::stop()
 {
     // this->OpenTCP(false, true);     // Close server
     // this->OpenTCP(false, false);    // Close client

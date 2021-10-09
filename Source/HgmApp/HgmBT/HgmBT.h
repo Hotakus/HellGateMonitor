@@ -17,7 +17,7 @@
 namespace HgmApplication {
 #define BT_DEFAULT_NAME "HellGateMonitorBT"
 #define BT_PACK_HEADER "HgmBT"
-	typedef enum HgmBTPackMethod
+	typedef enum _HgmBTPackMethod
 	{
 		HGM_BT_PACK_METHOD_GET_M,			// (0) Get max length of the "HgmBTPackMethod"
 		HGM_BT_PACK_METHOD_OK,				// (1) Ok pack
@@ -36,7 +36,7 @@ namespace HgmApplication {
 
 
 		HGM_BT_PACK_METHOD_NULL,			// (M) Null pack, and represent the max commands length
-	};
+	} HgmBTPackMethod;
 
 	class HgmBT
 	{
@@ -50,8 +50,8 @@ namespace HgmApplication {
 		HgmBT();
 		~HgmBT();
 
-		void Begin();
-		void Stop();
+		void begin();
+		void stop();
 
 		static void SetName(String _name = BT_DEFAULT_NAME);
 		

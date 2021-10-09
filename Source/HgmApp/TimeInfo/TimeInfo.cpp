@@ -25,7 +25,7 @@ using namespace HgmGUI;
 
 static String timeAPI = "http://quan.suning.com/getSysTime.do";
 
-static ESP32Time *_rtc;
+static ESP32Time* _rtc;
 static struct tm _timeStruct;
 
 // extern HTTPClient hgmHttpClient;
@@ -37,127 +37,127 @@ static void netTimeTask(void* params);
 
 extern HgmComponent component;
 
-extern HgmSetupUI *hgmSetupUI;
+extern HgmSetupUI* hgmSetupUI;
 
 TimeInfo ti;
 
 TimeInfo::TimeInfo()
 {
-	_rtc = &this->rtc;
+    _rtc = &this->rtc;
 }
 
 TimeInfo::~TimeInfo()
 {
-	this->DeInitTask();
+    this->DeInitTask();
 }
 
 void HgmApplication::TimeInfo::InitTask()
 {
-	if (netTimeTaskHandle)
-		return;
+    if (netTimeTaskHandle)
+        return;
 
-	xTaskCreatePinnedToCore(
-		netTimeTask,
-		"netTimeTask",
-		2048 + 256,
-		NULL,
-		8,
-		&netTimeTaskHandle,
-		1
-	);
+    xTaskCreatePinnedToCore(
+        netTimeTask,
+        "netTimeTask",
+        2048 + 256,
+        NULL,
+        8,
+        &netTimeTaskHandle,
+        1
+    );
 }
 
 void HgmApplication::TimeInfo::DeInitTask()
 {
-	if (netTimeTaskHandle) {
-		vTaskDelete(netTimeTaskHandle);
-		netTimeTaskHandle = NULL;
-	}
+    if (netTimeTaskHandle) {
+        vTaskDelete(netTimeTaskHandle);
+        netTimeTaskHandle = NULL;
+    }
 }
 
-void HgmApplication::TimeInfo::Begin()
+void HgmApplication::TimeInfo::begin()
 {
-	uint8_t timeout = 50;
+    uint8_t timeout = 50;
 
-	component.type = HGM_COMPONENT_NET_TIME;
-	component.curStatus = true;
-	component.waitStatus = false;
-	hgmSetupUI->ComponentControl(&component);
-	while (GetNetTime(0) != 0) {
-		if (!(--timeout))
-			return;
-		vTaskDelay(100);
-	}
-	component.waitStatus = true;
+    component.type = HGM_COMPONENT_NET_TIME;
+    component.curStatus = true;
+    component.waitStatus = false;
+    hgmSetupUI->componentControl(&component);
+    while (GetNetTime(0) != 0) {
+        if (!(--timeout))
+            return;
+        vTaskDelay(100);
+    }
+    component.waitStatus = true;
 
-	// this->InitTask();
+    // this->InitTask();
 }
 
-int HgmApplication::TimeInfo::GetNetTime(struct tm *timeStruct)
+int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
 {
-	if (https->connected()) {
-		Serial.print("[HTTPS] time https->connected()...\n");
-		https->end();
-	}
+    if (https->connected()) {
+        Serial.print("[HTTPS] time https->connected()...\n");
+        https->end();
+    }
 
-	https->setConnectTimeout(3 * 1000);
-	https->setTimeout(3 * 1000);
-	https->begin(timeAPI);
-	int code = https->GET();
+    https->setConnectTimeout(3 * 1000);
+    https->setTimeout(3 * 1000);
+    https->begin(timeAPI);
+    int code = https->GET();
 
-	if (code != HTTP_CODE_OK) {
-		Serial.printf("Net time HTTP code : %d\n", code);
-		https->end();
-		return -1;
-	}
-	String recv = https->getString();
-	HotakusDynamicJsonDocument doc(recv.length() + 512);
-	deserializeJson(doc, recv);
+    if (code != HTTP_CODE_OK) {
+        Serial.printf("Net time HTTP code : %d\n", code);
+        https->end();
+        return -1;
+    }
+    String recv = https->getString();
+    HotakusDynamicJsonDocument doc(recv.length() + 512);
+    deserializeJson(doc, recv);
 
 #if HGM_DEBUG == 1
-	Serial.println(recv);
+    Serial.println(recv);
 #endif
 
-	// {"sysTime2":"2021-08-21 04:55:48","sysTime1":"20210821045548"}
-	String sysTime1 = doc["sysTime1"];
-	if (!sysTime1) {
-		Serial.printf("Get time error.\n", code);
-		return -1;
-	}
+    // {"sysTime2":"2021-08-21 04:55:48","sysTime1":"20210821045548"}
+    String sysTime1 = doc["sysTime1"];
+    if (!sysTime1) {
+        Serial.printf("Get time error.\n", code);
+        return -1;
+    }
 
-	uint16_t year = sysTime1.substring(0, 4).toInt();
-	uint8_t mon = sysTime1.substring(4, 6).toInt();
-	uint8_t day = sysTime1.substring(6, 8).toInt();
-	uint8_t hour = sysTime1.substring(8, 10).toInt();
-	uint8_t min = sysTime1.substring(10, 12).toInt();
-	uint8_t sec = sysTime1.substring(12).toInt();
+    uint16_t year = sysTime1.substring(0, 4).toInt();
+    uint8_t mon = sysTime1.substring(4, 6).toInt();
+    uint8_t day = sysTime1.substring(6, 8).toInt();
+    uint8_t hour = sysTime1.substring(8, 10).toInt();
+    uint8_t min = sysTime1.substring(10, 12).toInt();
+    uint8_t sec = sysTime1.substring(12).toInt();
 
-	_rtc->setTime(sec, min, hour, day, mon, year);
-	_timeStruct = _rtc->getTimeStruct();
-	timeStruct = &_timeStruct;
+    _rtc->setTime(sec, min, hour, day, mon, year);
+    _timeStruct = _rtc->getTimeStruct();
+    timeStruct = &_timeStruct;
 
-	https->end();
-	return 0;
+    https->end();
+    return 0;
 }
 
 static void netTimeTask(void* params)
 {
-	static struct tm ts;
-	extern SemaphoreHandle_t wbs;
+    static struct tm ts;
+    extern SemaphoreHandle_t wbs;
 
-	Serial.println("netTimeTask");
+    Serial.println("netTimeTask");
 
-	while (true) {
+    while (true) {
 
-		if (!WiFi.isConnected()) {
-			vTaskDelay(1000);
-			continue;
-		}
+        if (!WiFi.isConnected()) {
+            vTaskDelay(1000);
+            continue;
+        }
 
-		xSemaphoreTake(wbs, portMAX_DELAY);
-		TimeInfo::GetNetTime(&ts);
-		xSemaphoreGive(wbs);
-		
-		vTaskDelay(NET_TIME_GAP);
-	}
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        TimeInfo::GetNetTime(&ts);
+        xSemaphoreGive(wbs);
+
+        vTaskDelay(NET_TIME_GAP);
+    }
 }

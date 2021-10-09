@@ -74,7 +74,7 @@ HgmSetupUI::~HgmSetupUI()
     vQueueDelete(setupMsgBox);
 }
 
-void HgmGUI::HgmSetupUI::Begin()
+void HgmGUI::HgmSetupUI::begin()
 {
     // logo
     logo = lv_img_create(lv_scr_act());
@@ -134,25 +134,25 @@ void HgmGUI::HgmSetupUI::Begin()
     com.waitStatus = true;
 
     com.type = HGM_COMPONENT_BT;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(600);
     com.type = HGM_COMPONENT_CONFIG_FILE;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(700);
     com.type = HGM_COMPONENT_WIFI;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(800);
     com.type = HGM_COMPONENT_NET_TIME;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(400);
     com.type = HGM_COMPONENT_WEATHER;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(900);
     com.type = HGM_COMPONENT_BILIBILI;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(500);
     com.type = HGM_COMPONENT_DONE;
-    this->ComponentControl(&com);
+    this->componentControl(&com);
     vTaskDelay(1000);
 
     this->ComponentInitDone();*/
@@ -163,7 +163,7 @@ void HgmGUI::HgmSetupUI::Begin()
  * @brief Use it to control SetupCheckTask().
  * @param component
  */
-void HgmGUI::HgmSetupUI::ComponentControl(HgmComponent* component)
+void HgmGUI::HgmSetupUI::componentControl(HgmComponent* component)
 {
     xQueueSend(setupMsgBox, &component, portMAX_DELAY);
 }

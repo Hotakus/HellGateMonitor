@@ -14,43 +14,43 @@
 
 namespace HgmGUI {
 
-	// HGM's components' type
-	typedef enum HgmComponentType
-	{
-		HGM_COMPONENT_BT,
-		HGM_COMPONENT_CONFIG_FILE,
-		HGM_COMPONENT_WIFI,
-		HGM_COMPONENT_NET_TIME,
-		HGM_COMPONENT_WEATHER,
-		HGM_COMPONENT_BILIBILI,
+    // HGM's components' type
+    typedef enum _HgmComponentType
+    {
+        HGM_COMPONENT_BT,
+        HGM_COMPONENT_CONFIG_FILE,
+        HGM_COMPONENT_WIFI,
+        HGM_COMPONENT_NET_TIME,
+        HGM_COMPONENT_WEATHER,
+        HGM_COMPONENT_BILIBILI,
 
-		HGM_COMPONENT_DONE,
+        HGM_COMPONENT_DONE,
 
-		HGM_COMPONENT_NULL,
-	};
+        HGM_COMPONENT_NULL,
+    } HgmComponentType;
 
-	// HGM's components
-	typedef struct HgmComponent
-	{
-		HgmComponentType type;
-		bool curStatus;			// Component's current status
-		bool waitStatus;		// Component's wait status
-	};
+    // HGM's components
+    typedef struct _HgmComponent
+    {
+        HgmComponentType type;
+        bool curStatus;			// Component's current status
+        bool waitStatus;		// Component's wait status
+    } HgmComponent;
 
-	class HgmSetupUI
-	{
-	private:
+    class HgmSetupUI
+    {
+    private:
 
-	public:
-		HgmSetupUI();
-		~HgmSetupUI();
+    public:
+        HgmSetupUI();
+        ~HgmSetupUI();
 
-		void Begin();
+        void begin();
 
-		// Be call for other class
-		static void ComponentControl(HgmComponent* component);
-		static void ComponentInitDone();
-	};
+        // Be call for other class
+        static void componentControl(HgmComponent* component);
+        static void ComponentInitDone();
+    };
 
 };
 
@@ -60,7 +60,7 @@ namespace HgmGUI {
 extern "C" {
 #endif
 
-/*...*/
+    /*...*/
 
 #ifdef __cplusplus
 }

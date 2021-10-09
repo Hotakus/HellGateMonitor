@@ -35,3 +35,18 @@ void HotakusMem::free(void* ptr)
 	heap_caps_free(ptr);
 }
 
+
+void* hotakusAlloc(size_t size)
+{
+    return heap_caps_calloc(1, size, MALLOC_CAP_SPIRAM);
+}
+
+void* hotakusRealloc(void* ptr, size_t size)
+{
+    return heap_caps_realloc(ptr, size, MALLOC_CAP_SPIRAM);
+}
+
+void hotakusFree(void* ptr)
+{
+    heap_caps_free(ptr);
+}

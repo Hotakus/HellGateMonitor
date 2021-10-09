@@ -7,12 +7,14 @@
  * @date 2021/8/31 22:54
  * @copyright Copyright (c) 2021/8/31
 *******************************************************************/
-#include <Arduino.h>
-#include <ESP32Time.h>
 #include "HgmTwUI.h"
 #include "../HgmLvgl.h"
 #include "../../HgmApp/TimeInfo/TimeInfo.h"
 #include "../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+
+#include <Arduino.h>
+#include <ESP32Time.h>
+
 
 using namespace HgmApplication;
 using namespace HgmGUI;
@@ -88,13 +90,10 @@ static lv_anim_t* anim_tw_expand = NULL;
 static lv_timer_t* showTimeTimer = NULL;
 static lv_timer_t* showBiliTimer = NULL;
 
-struct tm time_s;
-
 extern TimeInfo ti;
 
 static TaskHandle_t showTaskHandle;
 static void ShowTime(lv_timer_t* timer);
-static void ShowBili(lv_timer_t* timer);
 
 HgmTwUI::HgmTwUI()
 {
@@ -113,12 +112,9 @@ static bool CheckChinese(String& str)
     return false;
 }
 
-void HgmGUI::HgmTwUI::Begin()
+void HgmGUI::HgmTwUI::begin()
 {
 
-    // TODO: use SPI RAM
-
-    //
     tw_time = lv_img_create(lv_scr_act());
     lv_obj_align(tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
     lv_img_set_src(tw_time, &tw_t);
@@ -235,15 +231,21 @@ void HgmGUI::HgmTwUI::Begin()
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
 
-    showBiliTimer = lv_timer_create(ShowBili, (BILI_GET_GAP/10/10), NULL);
-
 }
 
-void HgmGUI::HgmTwUI::Stop()
+void HgmGUI::HgmTwUI::stop()
 {
     // TODO: delete
 }
 
+static void ShowBili()
+{
+    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
+    lv_img_set_src(faceImg, &face_dsc);
+
+    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
+}
 
 static void ShowTime(lv_timer_t* timer)
 {
@@ -269,6 +271,8 @@ static void ShowTime(lv_timer_t* timer)
     );
 
     lv_img_set_src(clock_img, clock_imgs_array[_tm.tm_hour / 2]);
+
+    ShowBili();
 }
 
 static void ShowWeather()
@@ -276,12 +280,5 @@ static void ShowWeather()
 
 }
 
-static void ShowBili(lv_timer_t* timer)
-{
-    face_dsc.data = (uint8_t*)BiliInfoRecv::GetUserFaceBitmap();
-    lv_img_set_src(faceImg, &face_dsc);
 
-    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUserName().c_str());
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::GetFollower());
-}
 

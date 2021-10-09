@@ -50,10 +50,10 @@
 /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
 #  define LV_MEM_ADR          0     /*0: unused*/
 #else       /*LV_MEM_CUSTOM*/
-#  define LV_MEM_CUSTOM_INCLUDE   "../../../../HotakusMemUtil.h"   /*Header for the dynamic memory function*/
-#  define LV_MEM_CUSTOM_ALLOC     HotakusAlloc
-#  define LV_MEM_CUSTOM_FREE      HotakusFree
-#  define LV_MEM_CUSTOM_REALLOC   HotakusRealloc
+#  define LV_MEM_CUSTOM_INCLUDE   "../../../../HgmApp/HotakusMemUtil.h"   /*Header for the dynamic memory function*/
+#  define LV_MEM_CUSTOM_ALLOC     hotakusAlloc
+#  define LV_MEM_CUSTOM_FREE      hotakusFree
+#  define LV_MEM_CUSTOM_REALLOC   hotakusRealloc
 #endif     /*LV_MEM_CUSTOM*/
 
 /*Use the standard `memcpy` and `memset` instead of LVGL's own functions. (Might or might not be faster).*/

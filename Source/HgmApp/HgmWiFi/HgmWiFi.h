@@ -36,8 +36,8 @@ namespace HgmApplication {
 		void OpenWiFi(bool sw = true);
 		void OpenTCP(bool sw = true, bool asServer = true);
 
-		void Begin();
-		void Stop();
+		void begin();
+		void stop();
 
 		static String GetSSID();
 		static String GetPassword();

@@ -63,7 +63,7 @@ namespace HGM {
 		HgmControlLogic(TwoWire& i2cPort);
 		~HgmControlLogic();
 
-		void HgmControlBegin();
+		void HgmControlbegin();
 
 		float GetTemperature();
 		void GetAccelRowParams();

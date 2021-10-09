@@ -44,17 +44,17 @@ HgmSC::~HgmSC()
     // TODO:
 }
 
-void HGM::HgmSC::Begin()
+void HGM::HgmSC::begin()
 {
     uint8_t i = 0;
     uint8_t timeout = 10;
     File file;
-    
+
     component.type = HGM_COMPONENT_CONFIG_FILE;
 
     /* Delay 500ms for PSRAM */
     delay(500);
-    
+
     Serial.println("SPIFFS beginning...");
     for (i = 0; i < timeout; i++) {
         if (SPIFFS.begin())
@@ -67,7 +67,7 @@ void HGM::HgmSC::Begin()
         this->CheckFlag = false;
         component.curStatus = false;
         component.waitStatus = false;
-        hgmSetupUI->ComponentControl(&component);
+        hgmSetupUI->componentControl(&component);
         vTaskDelay(2000);
         ESP.restart();
     }
@@ -122,7 +122,7 @@ void HGM::HgmSC::Begin()
             component.type = HGM_COMPONENT_CONFIG_FILE;
             component.curStatus = true;
             component.waitStatus = true;
-            hgmSetupUI->ComponentControl(&component);
+            hgmSetupUI->componentControl(&component);
 
             vTaskDelay(200);
         }
@@ -136,10 +136,10 @@ static void WiFiBTConfig()
     component.type = HGM_COMPONENT_CONFIG_FILE;
     component.curStatus = false;
     component.waitStatus = false;
-    hgmSetupUI->ComponentControl(&component);
+    hgmSetupUI->componentControl(&component);
 
     Serial.println("Waiting the BT config WiFi...");
-    while (!WiFi.isConnected()) 
+    while (!WiFi.isConnected())
         vTaskDelay(50);
     component.waitStatus = true;
 }

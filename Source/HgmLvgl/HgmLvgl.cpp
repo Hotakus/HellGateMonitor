@@ -54,7 +54,7 @@ HgmLvgl::~HgmLvgl()
 /**
  * @brief HGM LVGL begin.
  */
-void HGM::HgmLvgl::HgmLvglBegin()
+void HGM::HgmLvgl::HgmLvglbegin()
 {
     /* LCD init */
     _lcd->begin();
@@ -122,7 +122,7 @@ void HGM::HgmLvgl::HgmLvglBegin()
 /**
  * @brief Initialize basic UI.
  */
-void HGM::HgmLvgl::HgmLvglUIBegin()
+void HGM::HgmLvgl::HgmLvglUIbegin()
 {
     this->hgmFw->begin();
 }

@@ -79,7 +79,7 @@ WeatherData::~WeatherData()
 {
 }
 
-void HgmApplication::WeatherInfo::Begin()
+void HgmApplication::WeatherInfo::begin()
 {
     this->CheckWeatherconfig();
 }
@@ -123,7 +123,7 @@ static void WeatherConfig()
     component.type = HGM_COMPONENT_WEATHER;
     component.curStatus = false;
     component.waitStatus = false;
-    hgmSetupUI->ComponentControl(&component);
+    hgmSetupUI->componentControl(&component);
 
     Serial.println("Waiting the Weather config...");
     while (configFlag != true)

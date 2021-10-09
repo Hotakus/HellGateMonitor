@@ -28,7 +28,7 @@ HgmControlLogic::~HgmControlLogic()
     delete this->imu;
 }
 
-void HgmControlLogic::HgmControlBegin()
+void HgmControlLogic::HgmControlbegin()
 {
     this->imu->begin();
 }

@@ -61,10 +61,6 @@ HgmComponent component;
 
 float firmwareSize = 0;
 
-
-static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
-extern HTTPClient* https;
-
 // Show the init progress task
 static void backlightControl(void* params)
 {
@@ -97,11 +93,11 @@ void setup()
 {
     Serial.begin(115200);
 
-    hgmBT.Stop();
+    hgmBT.stop();
     while (hgmBT.bs->isReady())
         vTaskDelay(500);
 
-    //hgmWiFi.Stop();
+    //hgmWiFi.stop();
     //while (WiFi.isConnected())
     //    vTaskDelay(500);
 
@@ -130,71 +126,72 @@ void setup()
     Serial.printf("********************************************************\n");
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
-    xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024, NULL, 5, &bkHandle, 1);
+    xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);
 
     // Semaphore for BT and WiFi. Don't remove it
     wbs = xSemaphoreCreateBinary();
     xSemaphoreGive(wbs);
 
     /* HGM LVGL initialize */
-    hgmLvgl->HgmLvglBegin();
+    hgmLvgl->HgmLvglbegin();
 
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
     HgmSetupUI* hgmSetupUI = new HgmSetupUI();
-    hgmSetupUI->Begin();
+    hgmSetupUI->begin();
 
     // Open bluetooth
     component.type = HGM_COMPONENT_BT;
     component.curStatus = true;
     component.waitStatus = false;
-    hgmSetupUI->ComponentControl(&component);
+    hgmSetupUI->componentControl(&component);
     hgmBT.SetName();
-    hgmBT.Begin();
+    hgmBT.begin();
     while (!hgmBT.bs->isReady())
         vTaskDelay(200);
     component.waitStatus = true;
     vTaskDelay(200);
 
     // Check config file
+    // TODO: move to HgmWiFi
     HgmSC hgmSC;
-    hgmSC.Begin();
+    hgmSC.begin();
     vTaskDelay(200);
 
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;
     component.curStatus = true;
     component.waitStatus = false;
-    hgmSetupUI->ComponentControl(&component);
-    hgmWiFi.Begin();
+    hgmSetupUI->componentControl(&component);
+    hgmWiFi.begin();
     while (!hgmWiFi.wifi->isConnected())
         vTaskDelay(100);
     component.waitStatus = true;
     vTaskDelay(300);
 
     // Check time
-    ti.Begin();
+    ti.begin();
     vTaskDelay(300);
 
     // Check bilibili component
-    bili.Begin();
+    bili.begin();
     vTaskDelay(300);
 
     // Check weather
-    weatherInfo.Begin();
+    weatherInfo.begin();
     vTaskDelay(300);
 
     // All done
     component.type = HGM_COMPONENT_DONE;
     component.curStatus = true;
     component.waitStatus = true;
-    hgmSetupUI->ComponentControl(&component);
+    hgmSetupUI->componentControl(&component);
     vTaskDelay(500);
     hgmSetupUI->ComponentInitDone();
     delete hgmSetupUI;
 
-    hgmLvgl->HgmLvglUIBegin();
+    hgmLvgl->HgmLvglUIbegin();
 
 
     char* task_buf = (char*)heap_caps_calloc(1, 8192, MALLOC_CAP_SPIRAM);
@@ -202,9 +199,6 @@ void setup()
     //vTaskGetRunTimeStats(task_buf);
     Serial.printf("%s\n", task_buf);
     heap_caps_free(task_buf);
-    Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
-        heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-
 }
 
 

@@ -29,7 +29,7 @@ namespace HgmApplication {
         void InitTask();
         void DeInitTask();
 
-        void Begin();
+        void begin();
 
         static void SetUID(String uid);
         static void GetUID(String& uid);

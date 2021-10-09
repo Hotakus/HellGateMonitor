@@ -16,19 +16,31 @@
 
 namespace HgmGUI {
 
-#define TAB_NUMBER 4
+    typedef enum _HgmGuiType {
+        HGM_GUI_NULL,
 
-	class HgmFramework
-	{
-	private:
+        HGM_GUI_HARDWARE_MONITOR,
 
-	public:
+        HGM_GUI_MISC,
+        HGM_GUI_PROJECTION,
+    } HgmGuiType;
 
-		HgmFramework();
-		~HgmFramework();
+    class HgmFramework
+    {
+    private:
+    public:
+        HgmFramework();
+        ~HgmFramework();
 
-		void begin();
-	};
+        void begin();
+        void stop();
+
+        static void changeUI(HgmGuiType gui);
+
+        static void setDefaultGui(HgmGuiType def = HGM_GUI_MISC);
+        static HgmGuiType getDefaultGui();
+        static HgmGuiType getCurrentGui();
+    };
 
 };
 
@@ -37,9 +49,6 @@ namespace HgmGUI {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern lv_obj_t * hgmFwTabview;
-extern lv_obj_t * hgmTabList[TAB_NUMBER];
 
 #ifdef __cplusplus
 }

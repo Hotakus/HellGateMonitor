@@ -14,18 +14,17 @@
 
 
 namespace HgmGUI {
-	class HgmTwUI
-	{
-	private:
+    class HgmTwUI
+    {
+    private:
+    public:
+        HgmTwUI();
+        ~HgmTwUI();
 
-	public:
-		HgmTwUI();
-		~HgmTwUI();
+        void begin();
+        void stop();
 
-		void Begin();
-		void Stop();
-	
-	};
+    };
 
 };
 
@@ -34,7 +33,7 @@ namespace HgmGUI {
 extern "C" {
 #endif
 
-/*...*/
+    /*...*/
 
 #ifdef __cplusplus
 }

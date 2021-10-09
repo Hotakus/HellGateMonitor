@@ -63,16 +63,16 @@ HgmTCP::HgmTCP()
 
 HgmTCP::~HgmTCP()
 {
-    this->Stop();
+    this->stop();
 }
 
-void HgmApplication::HgmTCP::Begin()
+void HgmApplication::HgmTCP::begin()
 {
     beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
     this->InitTask();
 }
 
-void HgmApplication::HgmTCP::Stop()
+void HgmApplication::HgmTCP::stop()
 {
     this->StopServer();
     this->StopClient();

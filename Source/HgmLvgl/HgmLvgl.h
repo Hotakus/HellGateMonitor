@@ -47,8 +47,8 @@ namespace HGM {
 		HgmLvgl(int16_t width = HGM_MONITOR_WIDTH, int16_t height = HGM_MONITOR_HEIGHT);
 		~HgmLvgl();
 
-		void HgmLvglBegin();
-		void HgmLvglUIBegin();
+		void HgmLvglbegin();
+		void HgmLvglUIbegin();
 
 		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
 

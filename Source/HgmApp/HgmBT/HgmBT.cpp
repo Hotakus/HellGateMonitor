@@ -80,12 +80,12 @@ void HgmApplication::HgmBT::BluetoothTaskDelete()
 }
 
 bool sw = false;
-void HgmApplication::HgmBT::Begin()
+void HgmApplication::HgmBT::begin()
 {
     //sw = true;
-    //Serial.println("HgmBT::Begin() 0");
+    //Serial.println("HgmBT::begin() 0");
     //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
-    //Serial.println("HgmBT::Begin() 1");
+    //Serial.println("HgmBT::begin() 1");
 
     if (!bluetoothListeningTaskHandle) {
         Serial.println("BT Start to listening...");
@@ -104,7 +104,7 @@ void HgmApplication::HgmBT::Begin()
     }
 }
 
-void HgmApplication::HgmBT::Stop()
+void HgmApplication::HgmBT::stop()
 {
     //sw = false;
     //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
@@ -130,7 +130,7 @@ void HgmApplication::HgmBT::SetName(String _name)
 static void BeginWiFiWithConfig(String ssid, String password)
 {
     hgmWiFi.ConfigWiFi(ssid, password);
-    hgmWiFi.Begin();
+    hgmWiFi.begin();
 }
 
 /**
@@ -226,7 +226,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
 
-        hgmWiFi.Stop();
+        hgmWiFi.stop();
         vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
 
@@ -253,7 +253,7 @@ HgmBTPackMethod HgmApplication::HgmBT::ReceiveDataPack(String& dataToSave, HgmBT
         dataToSave = "null";
         *method = HGM_BT_PACK_METHOD_WIFI_CLOSE;
 
-        hgmWiFi.Stop();
+        hgmWiFi.stop();
 
         HgmBT::SendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;

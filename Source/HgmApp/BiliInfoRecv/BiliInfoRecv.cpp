@@ -105,7 +105,7 @@ static void BiliConfig()
     component.type = HGM_COMPONENT_BILIBILI;
     component.curStatus = false;
     component.waitStatus = false;
-    hgmSetupUI->ComponentControl(&component);
+    hgmSetupUI->componentControl(&component);
 
     Serial.println("Waiting the BiliBili config...");
     while (configFlag != true)
@@ -114,7 +114,7 @@ static void BiliConfig()
     component.waitStatus = true;
 }
 
-void HgmApplication::BiliInfoRecv::Begin()
+void HgmApplication::BiliInfoRecv::begin()
 {
     File file;
 
@@ -149,7 +149,7 @@ void HgmApplication::BiliInfoRecv::Begin()
             component.type = HGM_COMPONENT_BILIBILI;
             component.curStatus = true;
             component.waitStatus = true;
-            hgmSetupUI->ComponentControl(&component);
+            hgmSetupUI->componentControl(&component);
 
             this->SetUID(doc["Data"]["uid"]);
 
@@ -185,7 +185,7 @@ bool HgmApplication::BiliInfoRecv::Done()
 }
 
 
-static int _GetFollower() 
+static int _GetFollower()
 {
     String url = statAPI + _uid;
     HotakusDynamicJsonDocument userInfo(512);
@@ -302,7 +302,7 @@ int HgmApplication::BiliInfoRecv::GetUserFaceImg(uint16_t imgWidth, uint16_t img
 
     int code = -1;
 
-     
+
     https->setConnectTimeout(3 * 1000);
     https->setTimeout(3 * 1000);
     https->begin(imgUrl);
@@ -364,7 +364,7 @@ void HgmApplication::BiliInfoRecv::GetBasicInfo()
         Serial.print("[HTTPS] blil https->connected()...\n");
         https->end();
     }
-     
+
     https->setConnectTimeout(3 * 1000);
     https->setTimeout(3 * 1000);
     https->begin(url);
@@ -423,7 +423,7 @@ static void biliTask(void* params)
             vTaskDelay(1000);
             continue;
         }
-        
+
         xSemaphoreTake(wbs, portMAX_DELAY);
         gettingFlag = true;
         bili.GetBasicInfo();

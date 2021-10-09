@@ -31,7 +31,7 @@ namespace HgmApplication {
 		void InitTask();
 		void DeInitTask();
 
-		void Begin();
+		void begin();
 
 		static int GetNetTime(struct tm* timeStruct);
 	};

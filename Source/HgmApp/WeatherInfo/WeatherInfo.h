@@ -45,7 +45,7 @@ namespace HgmApplication {
 		WeatherInfo();
 		~WeatherInfo();
 
-		void Begin();
+		void begin();
 
 		void InitTask();
 		void DeInitTask();

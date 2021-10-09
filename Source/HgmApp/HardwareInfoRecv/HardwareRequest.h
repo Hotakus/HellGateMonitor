@@ -20,7 +20,7 @@ using namespace HgmApplication::HgmJsonParseUtil;
 namespace HgmApplication {
 
     /* HGM 所支持监控的硬件对象 */
-    typedef enum {
+    typedef enum _HgmHardware {
         HGM_CPU,
         HGM_GPU,
         HGM_MEMORY,
@@ -29,7 +29,7 @@ namespace HgmApplication {
     } HgmHardware;
 
     /* HGM 硬件监控对象的位置 */
-    typedef enum {
+    typedef enum _HgmHardwarePosition {
         HGM_LEFT_TOP,
         HGM_LEFT_BOTTOM,
         HGM_RIGHT_TOP,
@@ -39,7 +39,7 @@ namespace HgmApplication {
 
     /* HGM 受硬件监控对象。HGM会对 “受硬件监控对象” 发出参数请求，以此显示硬件参数 */
     /* "params" 参数指向对应硬件信息的数据类指针 */
-    typedef struct {
+    typedef struct _HgmHardwareObject {
         void* params;
         HgmHardware hardware;
         HgmHardwarePosition pos;
