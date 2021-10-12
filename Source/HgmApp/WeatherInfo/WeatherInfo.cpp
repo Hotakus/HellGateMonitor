@@ -14,6 +14,7 @@
 #include "../HgmJsonUtil.h"
 #include "../TimeInfo/TimeInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
+#include "../HotakusHttpUtil.h"
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -21,7 +22,10 @@
 #include <ESP32Time.h>
 #include <SPIFFS.h>
 
+#define TAG "Weather"
 #define HGM_DEBUG 1
+#include "../../HgmLogUtil.h"
+
 
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
@@ -81,7 +85,7 @@ WeatherData::~WeatherData()
 
 void HgmApplication::WeatherInfo::begin()
 {
-    this->CheckWeatherconfig();
+    this->checkWeatherconfig();
 }
 
 void HgmApplication::WeatherInfo::initTask()
@@ -137,7 +141,7 @@ static void WeatherConfig()
 }
 
 
-bool HgmApplication::WeatherInfo::CheckWeatherconfig()
+bool HgmApplication::WeatherInfo::checkWeatherconfig()
 {
     if (!SPIFFS.exists(WEATHER_CONFIG_FILE_PATH)) {
         Serial.printf("Can't find the config file for the weather component.\n");
@@ -182,7 +186,7 @@ bool HgmApplication::WeatherInfo::CheckWeatherconfig()
     return true;
 }
 
-void HgmApplication::WeatherInfo::SetWeatherConfig()
+void HgmApplication::WeatherInfo::setWeatherConfig()
 {
     // TODO: Send msg
     _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_WRITE);
@@ -204,24 +208,24 @@ void HgmApplication::WeatherInfo::SetWeatherConfig()
     configFlag = true;
 }
 
-void HgmApplication::WeatherInfo::SetAppKey(String key)
+void HgmApplication::WeatherInfo::setAppKey(String key)
 {
     _key = key;
 }
 
-void HgmApplication::WeatherInfo::SetWeatherConfig(String id)
+void HgmApplication::WeatherInfo::setWeatherConfig(String id)
 {
     _id = id;
 }
 
-void HgmApplication::WeatherInfo::SetWeatherConfig(String adm, String adm2, String location)
+void HgmApplication::WeatherInfo::setWeatherConfig(String adm, String adm2, String location)
 {
     _adm = adm;
     _adm2 = adm2;
     _location = location;
 }
 
-void HgmApplication::WeatherInfo::SetWeatherConfig(String latitude, String longitude)
+void HgmApplication::WeatherInfo::setWeatherConfig(String latitude, String longitude)
 {
     Serial.println(latitude);
     Serial.println(longitude);
@@ -230,32 +234,36 @@ void HgmApplication::WeatherInfo::SetWeatherConfig(String latitude, String longi
     _lon = longitude;
 }
 
-void HgmApplication::WeatherInfo::GetWeatherConfig(String& id)
+void HgmApplication::WeatherInfo::getWeatherConfig(String& id)
 {
     id = _id;
 }
 
-void HgmApplication::WeatherInfo::GetWeatherConfig(String& adm, String& adm2, String& location)
+void HgmApplication::WeatherInfo::getWeatherConfig(String& adm, String& adm2, String& location)
 {
     adm = _adm;
     adm2 = _adm2;
     location = _location;
 }
 
-void HgmApplication::WeatherInfo::GetWeatherConfig(String& latitude, String& longitude)
+void HgmApplication::WeatherInfo::getWeatherConfig(String& latitude, String& longitude)
 {
     latitude = _lat;
     longitude = _lon;
 }
 
+static bool httpGetUtil(String& url, uint8_t* rBuf)
+{
+    
+}
 
 
-void HgmApplication::WeatherInfo::GetWeather()
+void HgmApplication::WeatherInfo::getWeather()
 {
 #if HGM_DEBUG == 1
     String __lat = "23.172";
     String __lon = "108.241";
-    String __key = "bc1f1bdefb944930bef0208ecd03f66a"; // TODO: delete
+    String __key = "bc1f1bdefb944930bef0208ecd03f66a";
 #else
     String& __lat = _lat;
     String& __lon = _lon;
@@ -275,16 +283,19 @@ void HgmApplication::WeatherInfo::GetWeather()
     Serial.println(airApi);
 #endif
 
-
+    
+    uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
     /* Air */
-
+    HotakusHttpUtil::GET(airApi, buf, 8192);
+    Serial.printf("%s\n", buf);
 
     /* Now */
 
     /* Three days */
 
+    hotakusFree(buf);
+    
 }
-
 
 static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
 
@@ -295,26 +306,30 @@ static void WeatherCheckTask(void* params)
 
     while (true) {
         xSemaphoreTake(wbs, portMAX_DELAY);
-        HTTPClient* https = new HTTPClient();
-        https->setConnectTimeout(50 * 1000);
-        https->setTimeout(50 * 1000);
-        if (https->begin(wurl)) {  // HTTPS
-            Serial.printf("[Weather/HTTPS] GET %d...\n", https->connected());
-            int httpCode = https->GET();
-            if (httpCode > 0) {
-                Serial.printf("[Weather/HTTPS] GET... code: %d\n", httpCode);
-                if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-                    Serial.println(https->getString());
-                }
-            } else {
-                Serial.printf("[Weather/HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
-            }
-            https->end();
-        } else {
-            Serial.printf("[Weather/HTTPS] Unable to connect\n");
-        }
 
-        delete https;
+        // HTTPClient* https = new HTTPClient();
+        // https->setConnectTimeout(50 * 1000);
+        // https->setTimeout(50 * 1000);
+        // if (https->begin(wurl)) {  // HTTPS
+        //     Serial.printf("[Weather/HTTPS] GET %d...\n", https->connected());
+        //     int httpCode = https->GET();
+        //     if (httpCode > 0) {
+        //         Serial.printf("[Weather/HTTPS] GET... code: %d\n", httpCode);
+        //         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+        //             Serial.println(https->getString());
+        //         }
+        //     } else {
+        //         Serial.printf("[Weather/HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
+        //     }
+        //     https->end();
+        // } else {
+        //     Serial.printf("[Weather/HTTPS] Unable to connect\n");
+        // }
+        // delete https;
+
+
+        WeatherInfo::getWeather();
+
         xSemaphoreGive(wbs);
 
         vTaskDelay(WEATHER_GET_GAP);

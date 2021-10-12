@@ -72,10 +72,8 @@ static void backlightControl(void* params)
     ledcWrite(0, 0);
 
     while (true) {
-        if (xQueueReceive(bkMsgBox, &flag, portMAX_DELAY) != pdPASS) {
-
-        }
-
+        if (xQueueReceive(bkMsgBox, &flag, portMAX_DELAY) != pdPASS)
+            continue;
         if (flag) {
             for (size_t i = 0; i < 127; i++) {
                 ledcWrite(0, i);

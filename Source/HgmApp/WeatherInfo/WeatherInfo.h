@@ -50,20 +50,20 @@ namespace HgmApplication {
 		void initTask();
 		void deInitTask();
 
-		bool CheckWeatherconfig();
+		bool checkWeatherconfig();
 
-		static void SetAppKey(String key);
+		static void setAppKey(String key);
 		// two method to set the location info
-		static void SetWeatherConfig();
-		static void SetWeatherConfig(String id);
-		static void SetWeatherConfig(String adm, String adm2, String location);
-		static void SetWeatherConfig(String latitude, String longitude);
+		static void setWeatherConfig();
+		static void setWeatherConfig(String id);
+		static void setWeatherConfig(String adm, String adm2, String location);
+		static void setWeatherConfig(String latitude, String longitude);
 		// two method to get the location info
-		static void GetWeatherConfig(String& id);
-		static void GetWeatherConfig(String& adm, String& adm2, String& location);
-		static void GetWeatherConfig(String& latitude, String& longitude);
+		static void getWeatherConfig(String& id);
+		static void getWeatherConfig(String& adm, String& adm2, String& location);
+		static void getWeatherConfig(String& latitude, String& longitude);
 
-		static void GetWeather();
+		static void getWeather();
 	};
 
 

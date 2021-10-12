@@ -270,12 +270,12 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBT
         String lon = rawPack["Data"]["lon"];
         String appKey = rawPack["Data"]["key"];
 
-        WeatherInfo::SetAppKey(appKey);
-        WeatherInfo::SetWeatherConfig(id);
-        WeatherInfo::SetWeatherConfig(adm, adm2, location);
-        WeatherInfo::SetWeatherConfig(lat, lon);
+        WeatherInfo::setAppKey(appKey);
+        WeatherInfo::setWeatherConfig(id);
+        WeatherInfo::setWeatherConfig(adm, adm2, location);
+        WeatherInfo::setWeatherConfig(lat, lon);
 
-        WeatherInfo::SetWeatherConfig();
+        WeatherInfo::setWeatherConfig();
 
         HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
