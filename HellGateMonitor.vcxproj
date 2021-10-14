@@ -199,6 +199,7 @@
     <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h" />
     <ClInclude Include="Source\HgmApp\WeatherInfo\WeatherInfo.h" />
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
+    <ClInclude Include="Source\HgmLogUtil.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h" />

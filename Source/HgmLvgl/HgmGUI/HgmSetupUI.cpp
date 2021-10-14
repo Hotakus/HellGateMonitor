@@ -60,7 +60,7 @@ HgmSetupUI::HgmSetupUI()
     xTaskCreatePinnedToCore(
         SetupCheckTask,
         "SetupCheckTask",
-        1024 + 256,
+        1024 + 512,
         NULL,
         15,
         &setupTaskHandle,

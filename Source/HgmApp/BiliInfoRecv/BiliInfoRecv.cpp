@@ -152,7 +152,7 @@ void HgmApplication::BiliInfoRecv::begin()
             component.waitStatus = true;
             hgmSetupUI->componentControl(&component);
 
-            this->SetUID(doc["Data"]["uid"]);
+            this->SetUID(doc["Data"]["uid"].as<String>());
 
             file.close();
         }
@@ -176,9 +176,9 @@ void HgmApplication::BiliInfoRecv::SetUID(String uid)
  * @brief Get UID.
  * @param uid
  */
-void HgmApplication::BiliInfoRecv::GetUID(String& uid)
+String HgmApplication::BiliInfoRecv::GetUID()
 {
-    uid = _uid;
+    return _uid;
 }
 
 /**
@@ -341,7 +341,7 @@ void HgmApplication::BiliInfoRecv::getBasicInfo()
     uint8_t* recvBuf = (uint8_t*)hotakusAlloc(8192);
     uint8_t* pRecvBuf = recvBuf;
     size_t ret = HotakusHttpUtil::GET(*https, url, recvBuf, 8192);
-    hotakusRealloc(recvBuf, ret + 1);
+    //hotakusRealloc(recvBuf, ret + 1);
 
     /* Check begin characters */
     while (*pRecvBuf != '{' && (*pRecvBuf != recvBuf[ret - 1]))

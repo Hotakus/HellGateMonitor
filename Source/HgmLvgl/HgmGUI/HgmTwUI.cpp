@@ -93,6 +93,7 @@ static lv_timer_t* showBiliTimer = NULL;
 
 static TaskHandle_t showTaskHandle;
 static void ShowTime(lv_timer_t* timer);
+static void ShowBili();
 
 extern TimeInfo ti;
 extern BiliInfoRecv bili;
@@ -151,14 +152,12 @@ void HgmGUI::HgmTwUI::begin()
     lv_label_set_recolor(main_time_label, true);
     lv_label_set_text(main_time_label, "#59493f --:--#");
     lv_obj_align(main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
-    lv_obj_set_style_opa(main_time_label, LV_OPA_0, 0);
     lv_obj_set_style_text_font(main_time_label, &k12x8_14px_time, 0);
 
     date_label = lv_label_create(tw_time);
     lv_label_set_recolor(date_label, true);
     lv_label_set_text(date_label, "#59493f 1970.01.01 ---#");
     lv_obj_align(date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
-    lv_obj_set_style_opa(date_label, LV_OPA_0, 0);
     lv_obj_set_style_text_font(date_label, &k12x8_6px, 0);
 
 
@@ -211,8 +210,6 @@ void HgmGUI::HgmTwUI::begin()
 
     // TODO: add animation
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-    lv_obj_set_style_opa(main_time_label, LV_OPA_100, 0);
-    lv_obj_set_style_opa(date_label, LV_OPA_100, 0);
 
     // clock image
     clock_img = lv_img_create(tw_time);
@@ -249,6 +246,8 @@ void HgmGUI::HgmTwUI::begin()
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
 
+
+    // showBiliTimer = lv_timer_create(ShowBili, 2000, NULL);
 }
 
 void HgmGUI::HgmTwUI::stop()
@@ -257,13 +256,61 @@ void HgmGUI::HgmTwUI::stop()
     _deInitTask();
 }
 
+static uint8_t _digitOfNumber(int num)
+{
+    uint8_t digit = 0;
+    if (num < 10)
+        return 1;
+    do {
+        num /= 10;
+        digit += 1;
+    } while (num > 0);
+    return digit;
+}
+
+
+static String _numWithUnit(size_t fans)
+{
+    uint8_t digit = _digitOfNumber(fans);
+    uint8_t pd = 0; // 要保留的整数位数
+    uint8_t times = 0;
+
+    if (digit < 5)
+        return String(fans);
+
+    switch (digit)
+    {
+    case 5:
+    case 6: {   // 百万以下
+        pd = 3;
+        times = digit - pd;
+        for (size_t i = 0; i < times; i++)
+            fans /= 10;
+        return (String(fans) + String("K"));
+    }
+    case 7:
+    case 8:
+    case 9: {   // 百万及以上
+        // TODO: 
+    }
+    default:
+        break;
+    }
+
+}
+
 static void ShowBili()
 {
     face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
     lv_img_set_src(faceImg, &face_dsc);
 
-    lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::getFollower());
+    if (CheckChinese(BiliInfoRecv::getUserName())) {
+        lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUID().c_str());
+    } else {
+        lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
+    }
+
+    lv_label_set_text_fmt(biliFans, "#59493f Fans:%s#", _numWithUnit(BiliInfoRecv::getFollower()).c_str());
 }
 
 static void ShowTime(lv_timer_t* timer)

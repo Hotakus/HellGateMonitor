@@ -173,11 +173,6 @@ void setup()
     bili.initTask();
     vTaskDelay(300);
 
-    // String url = "https://api.bilibili.com/x/relation/stat?vmid=2";
-    // uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
-    // HotakusHttpUtil::GET(url, buf, 8192);
-    // hotakusFree(buf);
-
     // Check weather
     weatherInfo.begin();
     vTaskDelay(300);
@@ -190,7 +185,7 @@ void setup()
     vTaskDelay(500);
     hgmSetupUI->componentInitDone();
     delete hgmSetupUI;
-
+    
     // launch default UI
     hgmLvgl->HgmLvglUIbegin();
 
