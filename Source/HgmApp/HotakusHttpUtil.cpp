@@ -28,45 +28,57 @@ HotakusHttpUtil::~HotakusHttpUtil()
 
 }
 
-bool HotakusHttpUtil::GET(String& url, uint8_t* buf, size_t bufSize)
+static bool _GET(HTTPClient& https, String& url, uint8_t* buf, size_t bufSize)
 {
     int httpCode = 0;
-    HTTPClient* https = new HTTPClient();
-    https->setConnectTimeout(3 * 1000);
-    https->setTimeout(3 * 1000);
-    https->setReuse(false);
-
     WiFiClient* client = NULL;
     size_t packSize = 0;
 
-    hgm_log_d(TAG, "GET begin...\n");
-    if (https->begin(url)) {
-        httpCode = https->GET();
-        if (httpCode != HTTP_CODE_OK)
-            goto _http_util_out0;
-        else {
-            client = https->getStreamPtr();
+    hgm_log_d(TAG, "begin...");
+    if (https.begin(url)) {
+        httpCode = https.GET();
+        if (httpCode != HTTP_CODE_OK) {
+            hgm_log_e(TAG, "error code: %d", httpCode);
+            https.end();
+            return false;
+        } else {
+            client = https.getStreamPtr();
             packSize = client->available();
-            if (bufSize < packSize + 1) 
-                goto _http_util_out0;
+            if (bufSize < packSize + 1) {
+                
+            }
 
             memset(buf, 0, packSize + 1);
             buf[packSize] = '\0';
             client->readBytes(buf, packSize);
+
+            hgm_log_d(TAG, "sucssessfully");
         }
     }
-    hgm_log_d(TAG, "GET sucssessfully\n");
-    delete https;
-    return true;
-
-_http_util_out0:
-    hgm_log_e(TAG, "GET error code: %d\n", httpCode);
-    https->end();
-    delete https;
-    return false;
 }
 
-bool HotakusHttpUtil::GET(HTTPClient& httpClient, String& url, uint8_t* rBuf)
+bool HotakusHttpUtil::GET(String& url, uint8_t* buf, size_t bufSize, size_t timeout)
 {
+    if (!buf || bufSize == 0) {
+        hgm_log_e(TAG, "GET buffer is null");
+        return false;
+    }
 
+    HTTPClient* https = new HTTPClient();
+    https->setConnectTimeout(3 * 1000);
+    https->setTimeout(3 * 1000);
+    https->setReuse(false);
+    bool ret = _GET(*https, url, buf, bufSize);
+    delete https;
+    return ret;
+}
+
+bool HotakusHttpUtil::GET(HTTPClient& https, String& url, uint8_t* buf, size_t bufSize, size_t timeout)
+{
+    if (!buf || bufSize == 0) {
+        hgm_log_e(TAG, "GET buffer is null");
+        return false;
+    }
+    bool ret = _GET(https, url, buf, bufSize);
+    return ret;
 }

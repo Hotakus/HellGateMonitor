@@ -18,6 +18,7 @@
 #include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
 #include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
 #include "Source/HgmApp/HotakusMemUtil.h"
+#include "Source/HgmApp/HotakusHttpUtil.h"
 
 #include <Arduino.h>
 #include <TFT_eSPI.h>
@@ -53,6 +54,8 @@ extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern HgmLvgl* hgmLvgl;
+
+extern HTTPClient* https;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -92,14 +95,6 @@ void setup()
 {
     Serial.begin(115200);
 
-    hgmBT.stop();
-    while (hgmBT.bs->isReady())
-        vTaskDelay(500);
-
-    //hgmWiFi.stop();
-    //while (WiFi.isConnected())
-    //    vTaskDelay(500);
-
     firmwareSize = ESP.getSketchSize() / 1024.0 / 1024.0;
 
     Serial.printf("\n****************** Hell Gate Monitor ******************\n");
@@ -126,20 +121,20 @@ void setup()
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);
-    
+
     // Semaphore for BT and WiFi. Don't remove it
     wbs = xSemaphoreCreateBinary();
     xSemaphoreGive(wbs);
-    
+
     /* HGM LVGL initialize */
     hgmLvgl->HgmLvglbegin();
-    
+
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
-    
+
     HgmSetupUI* hgmSetupUI = new HgmSetupUI();
     hgmSetupUI->begin();
-    
+
     // Open bluetooth
     component.type = HGM_COMPONENT_BT;
     component.curStatus = true;
@@ -151,13 +146,13 @@ void setup()
         vTaskDelay(200);
     component.waitStatus = true;
     vTaskDelay(200);
-    
+
     // Check config file
     // TODO: move to HgmWiFi
     HgmSC hgmSC;
     hgmSC.begin();
     vTaskDelay(200);
-    
+
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;
     component.curStatus = true;
@@ -168,30 +163,36 @@ void setup()
         vTaskDelay(100);
     component.waitStatus = true;
     vTaskDelay(300);
-    
-    // Check time
-    ti.begin();
-    vTaskDelay(300);
-    
+
+    // // Check time
+    // ti.begin();
+    // vTaskDelay(300);
+
     // Check bilibili component
-    bili.begin();
-    vTaskDelay(300);
-    
-    // Check weather
-    weatherInfo.begin();
-    vTaskDelay(300);
-    
-    // All done
-    component.type = HGM_COMPONENT_DONE;
-    component.curStatus = true;
-    component.waitStatus = true;
-    hgmSetupUI->componentControl(&component);
-    vTaskDelay(500);
-    hgmSetupUI->componentInitDone();
-    delete hgmSetupUI;
-    
-    // launch default UI
-    hgmLvgl->HgmLvglUIbegin();
+    // bili.begin();
+    // bili.initTask();
+    // vTaskDelay(300);
+
+    String url = "https://api.bilibili.com/x/relation/stat?vmid=2";
+    uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
+    HotakusHttpUtil::GET(url, buf, 8192);
+    hotakusFree(buf);
+
+    // // Check weather
+    // weatherInfo.begin();
+    // vTaskDelay(300);
+    // 
+    // // All done
+    // component.type = HGM_COMPONENT_DONE;
+    // component.curStatus = true;
+    // component.waitStatus = true;
+    // hgmSetupUI->componentControl(&component);
+    // vTaskDelay(500);
+    // hgmSetupUI->componentInitDone();
+    // delete hgmSetupUI;
+
+    // // launch default UI
+    // hgmLvgl->HgmLvglUIbegin();
 
     char* task_buf = (char*)hotakusAlloc(8192);
     vTaskList(task_buf);

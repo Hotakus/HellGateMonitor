@@ -455,6 +455,9 @@
     <ClInclude Include="Source\HgmApp\HotakusMemUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmApp\HotakusHttpUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -1190,6 +1193,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HotakusMemUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\HotakusHttpUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

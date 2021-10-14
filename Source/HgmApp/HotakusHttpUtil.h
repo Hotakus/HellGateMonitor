@@ -20,8 +20,8 @@ namespace HgmApplication {
         HotakusHttpUtil();
         ~HotakusHttpUtil();
 
-        static bool GET(HTTPClient& httpClient, String& url, uint8_t* rBuf);
-        static bool GET(String& url, uint8_t* buf, size_t bufSize);
+        static bool GET(HTTPClient& httpClient, String& url, uint8_t* buf, size_t bufSize, size_t timeout = (10 * 1000));
+        static bool GET(String& url, uint8_t* buf, size_t bufSize, size_t timeout = (10 * 1000));
 	};
 }
 

@@ -81,7 +81,7 @@ void HgmApplication::BiliInfoRecv::initTask()
     xTaskCreatePinnedToCore(
         biliTask,
         "biliTask",
-        2048 + 256,
+        2048 + 512,
         NULL,
         8,
         &biliTaskHandle,
