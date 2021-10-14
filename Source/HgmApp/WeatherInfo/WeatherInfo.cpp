@@ -96,7 +96,7 @@ void HgmApplication::WeatherInfo::initTask()
             "WeatherCheckTask",
             8192,
             NULL,
-            8,
+            4,
             &WeatherCheckTaskHandle,
             1
         );
@@ -181,7 +181,7 @@ bool HgmApplication::WeatherInfo::checkWeatherconfig()
         }
     }
 
-    this->initTask();
+    // this->initTask();
 
     return true;
 }
@@ -285,7 +285,9 @@ void HgmApplication::WeatherInfo::getWeather()
 
     
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
+
     /* Air */
+    memset(buf, 0, 8192);
     HotakusHttpUtil::GET(airApi, buf, 8192);
     Serial.printf("%s\n", buf);
 

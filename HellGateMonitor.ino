@@ -164,35 +164,35 @@ void setup()
     component.waitStatus = true;
     vTaskDelay(300);
 
-    // // Check time
-    // ti.begin();
-    // vTaskDelay(300);
+    // Check time
+    ti.begin();
+    vTaskDelay(300);
 
     // Check bilibili component
-    // bili.begin();
-    // bili.initTask();
-    // vTaskDelay(300);
+    bili.begin();
+    bili.initTask();
+    vTaskDelay(300);
 
-    String url = "https://api.bilibili.com/x/relation/stat?vmid=2";
-    uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
-    HotakusHttpUtil::GET(url, buf, 8192);
-    hotakusFree(buf);
+    // String url = "https://api.bilibili.com/x/relation/stat?vmid=2";
+    // uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
+    // HotakusHttpUtil::GET(url, buf, 8192);
+    // hotakusFree(buf);
 
-    // // Check weather
-    // weatherInfo.begin();
-    // vTaskDelay(300);
-    // 
-    // // All done
-    // component.type = HGM_COMPONENT_DONE;
-    // component.curStatus = true;
-    // component.waitStatus = true;
-    // hgmSetupUI->componentControl(&component);
-    // vTaskDelay(500);
-    // hgmSetupUI->componentInitDone();
-    // delete hgmSetupUI;
+    // Check weather
+    weatherInfo.begin();
+    vTaskDelay(300);
+    
+    // All done
+    component.type = HGM_COMPONENT_DONE;
+    component.curStatus = true;
+    component.waitStatus = true;
+    hgmSetupUI->componentControl(&component);
+    vTaskDelay(500);
+    hgmSetupUI->componentInitDone();
+    delete hgmSetupUI;
 
-    // // launch default UI
-    // hgmLvgl->HgmLvglUIbegin();
+    // launch default UI
+    hgmLvgl->HgmLvglUIbegin();
 
     char* task_buf = (char*)hotakusAlloc(8192);
     vTaskList(task_buf);
@@ -206,5 +206,6 @@ void loop()
 {
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    vTaskDelay(10 * 60 * 1000);
+    // vTaskDelay(10 * 60 * 1000);
+    vTaskDelay(2000);
 }

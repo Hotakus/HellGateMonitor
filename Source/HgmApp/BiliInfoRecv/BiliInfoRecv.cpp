@@ -13,6 +13,8 @@
 #include "../HgmWiFi/HgmWiFi.h"
 #include "../HgmJsonUtil.h"
 #include "BiliInfoRecv.h"
+#include "../HotakusHttpUtil.h"
+#include "../HotakusMemUtil.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -23,7 +25,9 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
-#define HGM_DEBUG 0
+#define TAG "bili"
+#define HGM_DEBUG 1
+#include "../../HgmLogUtil.h"
 
 using namespace fs;
 using namespace HgmGUI;
@@ -36,12 +40,13 @@ extern HgmSetupUI* hgmSetupUI;
 
 BiliInfoRecv bili;
 
-//extern  
 extern HTTPClient* https;
+
+static SemaphoreHandle_t biliSemaphore;
 
 static String _uid = "";
 static String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
-static String statAPI = "https://api.bilibili.com/x/relation/stat?vmid=";
+static String statAPI = "http://api.bilibili.com/x/relation/stat?vmid=";
 
 static String userName = "";
 static String userFaceImgUrl = "";
@@ -54,10 +59,7 @@ static uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
 
 extern HgmComponent component;
 
-static bool getFlag = false;
 static bool configFlag = false;
-static bool getDoneFlag = false;
-static bool gettingFlag = false;
 
 // TODO: add task
 TaskHandle_t biliTaskHandle;
@@ -78,6 +80,7 @@ void HgmApplication::BiliInfoRecv::initTask()
     if (biliTaskHandle)
         return;
 
+    biliSemaphore = xSemaphoreCreateBinary();
     xTaskCreatePinnedToCore(
         biliTask,
         "biliTask",
@@ -91,13 +94,11 @@ void HgmApplication::BiliInfoRecv::initTask()
 
 void HgmApplication::BiliInfoRecv::deInitTask()
 {
-    while (gettingFlag && !getDoneFlag)
-        vTaskDelay(100);
-
     if (biliTaskHandle) {
         vTaskDelete(biliTaskHandle);
         biliTaskHandle = NULL;
     }
+    vSemaphoreDelete(biliSemaphore);
 }
 
 static void BiliConfig()
@@ -158,6 +159,7 @@ void HgmApplication::BiliInfoRecv::begin()
     }
 
     // this->initTask();
+
 }
 
 /**
@@ -177,41 +179,6 @@ void HgmApplication::BiliInfoRecv::SetUID(String uid)
 void HgmApplication::BiliInfoRecv::GetUID(String& uid)
 {
     uid = _uid;
-}
-
-bool HgmApplication::BiliInfoRecv::Done()
-{
-    return getDoneFlag;
-}
-
-
-static int _GetFollower()
-{
-    String url = statAPI + _uid;
-    HotakusDynamicJsonDocument userInfo(512);
-
-    if (https->connected()) {
-        Serial.print("[HTTPS] blil https->connected()...\n");
-        https->end();
-    }
-
-    https->setConnectTimeout(3 * 1000);
-    https->setTimeout(3 * 1000);
-    https->begin(url);
-    int code = https->GET();
-
-    if (code != HTTP_CODE_OK) {
-        Serial.printf("HTTP code : %d", code);
-        https->end();
-        return -1;
-    }
-    String recv = https->getString();
-    deserializeJson(userInfo, recv);
-
-    userFans = userInfo["data"]["follower"].as<size_t>();
-
-    https->end();
-    return userFans;
 }
 
 /**
@@ -279,7 +246,6 @@ static void _SaveUserFaceImg()
     Serial.print(t); Serial.println(" ms");
 
     Serial.printf("User face image was decoded.\n");
-    getDoneFlag = true;
 }
 
 /**
@@ -290,7 +256,7 @@ static void _SaveUserFaceImg()
  */
 int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
 {
-    if (!userFaceImgUrl || !getFlag) {
+    if (!userFaceImgUrl) {
         Serial.println("The URL of the user's face has not been get. please run \"getBasicInfo()\"");
         return -1;
     }
@@ -301,7 +267,6 @@ int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t img
     Serial.println(imgUrl);
 
     int code = -1;
-
 
     https->setConnectTimeout(3 * 1000);
     https->setTimeout(3 * 1000);
@@ -349,57 +314,45 @@ void* HgmApplication::BiliInfoRecv::getUserFaceBitmap()
     return userFaceBitmap;
 }
 
+
+
+static int _GetFollower()
+{
+    String url = statAPI + _uid;
+    HotakusDynamicJsonDocument userInfo(1024);
+
+    uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
+    HotakusHttpUtil::GET(*https, url, buf, 1024);
+    deserializeJson(userInfo, buf);
+    hotakusFree(buf);
+
+    userFans = userInfo["data"]["follower"].as<size_t>();
+    return userFans;
+}
+
 /**
  * @brief Get basic bilibili user info.
  */
 void HgmApplication::BiliInfoRecv::getBasicInfo()
 {
     String url = basicInfoAPI + _uid;
-
     Serial.println(url);
 
-    getDoneFlag = false;
-
-    if (https->connected()) {
-        Serial.print("[HTTPS] blil https->connected()...\n");
-        https->end();
-    }
-
-    https->setConnectTimeout(3 * 1000);
-    https->setTimeout(3 * 1000);
-    https->begin(url);
-    int code = https->GET();
-
-    if (code != HTTP_CODE_OK) {
-        Serial.printf("%s HTTP code : %d", __func__, code);
-        https->end();
-        getFlag = false;
-        return;
-    }
-
-    WiFiClient* wc = https->getStreamPtr();
-    size_t size = wc->available();
-    uint8_t* recvBuf = (uint8_t*)heap_caps_calloc(size + 1, 1, MALLOC_CAP_SPIRAM);
+    uint8_t* recvBuf = (uint8_t*)hotakusAlloc(8192);
     uint8_t* pRecvBuf = recvBuf;
-    recvBuf[size] = '\0';
-    wc->readBytes(recvBuf, size);
+    size_t ret = HotakusHttpUtil::GET(*https, url, recvBuf, 8192);
+    hotakusRealloc(recvBuf, ret + 1);
 
     /* Check begin characters */
-    while (*pRecvBuf != '{' && (*pRecvBuf != recvBuf[size]))
+    while (*pRecvBuf != '{' && (*pRecvBuf != recvBuf[ret - 1]))
         pRecvBuf++;
 
-#if HGM_DEBUG == 1
-    Serial.printf("%s", pRecvBuf);
-#endif
-
-    HotakusDynamicJsonDocument userInfo(8192);
+    HotakusDynamicJsonDocument userInfo(ret + 1024);
     deserializeJson(userInfo, pRecvBuf);
-    heap_caps_free(recvBuf);
+    hotakusFree(recvBuf);
 
     if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
-        Serial.printf("Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
-        https->end();
-        getFlag = false;
+        hgm_log_e(TAG, "Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
         return;
     }
 
@@ -407,11 +360,7 @@ void HgmApplication::BiliInfoRecv::getBasicInfo()
     userLevel = userInfo["data"]["level"].as<uint8_t>();
     userFaceImgUrl = userInfo["data"]["face"].as<String>();
 
-    https->end();
-
     _GetFollower();
-
-    getFlag = true;
 }
 
 static void biliTask(void* params)
@@ -425,10 +374,16 @@ static void biliTask(void* params)
         }
 
         xSemaphoreTake(wbs, portMAX_DELAY);
-        gettingFlag = true;
         bili.getBasicInfo();
+
+        // String statAPI2 = "http://api.bilibili.com/x/relation/stat?vmid=2";
+        // String url = statAPI2;
+        // uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
+        // https->end();
+        // HotakusHttpUtil::GET(*https, url, buf, 1024);
+        // hotakusFree(buf);
+
         bili.getUserFaceImg();
-        gettingFlag = false;
         xSemaphoreGive(wbs);
 
         vTaskDelay(BILI_GET_GAP);
