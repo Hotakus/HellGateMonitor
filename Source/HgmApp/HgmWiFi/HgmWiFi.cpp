@@ -247,12 +247,11 @@ static void wifiControlTask(void* params)
 
                     _wifi.disconnect();
                     _wifi.mode(WIFI_OFF);
-                    return;
+                } else {
+                    Serial.println("\nWiFi Connected successfully.");
+                    Serial.printf("Local IP Address: %s\n", WiFi.localIP().toString().c_str());
+                    Serial.printf("RSSI : %d\n", WiFi.RSSI());
                 }
-
-                Serial.println("\nWiFi Connected successfully.");
-                Serial.printf("Local IP Address: %s\n", WiFi.localIP().toString().c_str());
-                Serial.printf("RSSI : %d\n", WiFi.RSSI());
             } else {
                 Serial.println("WiFi open already.");
             }
