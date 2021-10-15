@@ -24,13 +24,13 @@ namespace HgmApplication {
 	{
 	public:
 		// Unit: Celsius
-		float temp = 0;
+        uint8_t temp = 0;
 
-		int16_t aqi = -1;
-		int16_t icon = -1;
+		uint16_t aqi = -1;
+		uint16_t icon = -1;
 
 		// Unit: %
-		float humidity = 0;
+        uint8_t humidity = 0;
 
 		WeatherData();
 		~WeatherData();

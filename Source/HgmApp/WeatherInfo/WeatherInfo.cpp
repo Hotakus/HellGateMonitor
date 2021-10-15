@@ -61,7 +61,9 @@ static void WeatherCheckTask(void* params);
 static bool configFlag = false;
 
 WeatherInfo weatherInfo;
-WeatherData weatherToday;
+WeatherData weatherDataToday;
+
+extern HTTPClient* https;
 
 WeatherInfo::WeatherInfo()
 {
@@ -254,9 +256,10 @@ void HgmApplication::WeatherInfo::getWeatherConfig(String& latitude, String& lon
 
 static bool httpGetUtil(String& url, uint8_t* rBuf)
 {
-    
+
 }
 
+static HTTPClient hc;
 
 void HgmApplication::WeatherInfo::getWeather()
 {
@@ -283,57 +286,42 @@ void HgmApplication::WeatherInfo::getWeather()
     Serial.println(airApi);
 #endif
 
-    
+    HotakusDynamicJsonDocument doc(8192);
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
 
     /* Air */
     memset(buf, 0, 8192);
-    HotakusHttpUtil::GET(airApi, buf, 8192);
-    Serial.printf("%s\n", buf);
+    size_t ret = HotakusHttpUtil::GET(hc, airApi, buf, 8192);
+    if (ret) {
+        deserializeJson(doc, buf);
+        weatherDataToday.aqi = doc["now"]["aqi"].as<uint16_t>();
+    }
 
     /* Now */
-
+    memset(buf, 0, 8192);
+    ret = HotakusHttpUtil::GET(hc, nowApi, buf, 8192);
+    if (ret) {
+        deserializeJson(doc, buf);
+        weatherDataToday.temp = doc["now"]["temp"].as<uint16_t>();
+        weatherDataToday.humidity = doc["now"]["humidity"].as<uint16_t>();
+        weatherDataToday.icon = doc["now"]["icon"].as<uint16_t>();
+    }
     /* Three days */
 
-    hotakusFree(buf);
-    
-}
 
-static String wurl = "https://devapi.qweather.com/v7/air/now?gzip=n&location=108.241,23.172&key=bc1f1bdefb944930bef0208ecd03f66a";
+    hotakusFree(buf);
+
+}
 
 static void WeatherCheckTask(void* params)
 {
-
-    Serial.println("WeatherCheckTask");
-
     while (true) {
+        while (!WiFi.isConnected())
+            vTaskDelay(1000);
+
         xSemaphoreTake(wbs, portMAX_DELAY);
-
-        // HTTPClient* https = new HTTPClient();
-        // https->setConnectTimeout(50 * 1000);
-        // https->setTimeout(50 * 1000);
-        // if (https->begin(wurl)) {  // HTTPS
-        //     Serial.printf("[Weather/HTTPS] GET %d...\n", https->connected());
-        //     int httpCode = https->GET();
-        //     if (httpCode > 0) {
-        //         Serial.printf("[Weather/HTTPS] GET... code: %d\n", httpCode);
-        //         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-        //             Serial.println(https->getString());
-        //         }
-        //     } else {
-        //         Serial.printf("[Weather/HTTPS] GET... failed, error: %s\n", https->errorToString(httpCode).c_str());
-        //     }
-        //     https->end();
-        // } else {
-        //     Serial.printf("[Weather/HTTPS] Unable to connect\n");
-        // }
-        // delete https;
-
-
         WeatherInfo::getWeather();
-
         xSemaphoreGive(wbs);
-
         vTaskDelay(WEATHER_GET_GAP);
     }
 }

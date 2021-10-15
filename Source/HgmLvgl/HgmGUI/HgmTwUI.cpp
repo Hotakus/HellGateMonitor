@@ -90,14 +90,18 @@ static lv_anim_t* anim_tw_expand = NULL;
 
 static lv_timer_t* showTimeTimer = NULL;
 static lv_timer_t* showBiliTimer = NULL;
+static lv_timer_t* showWeatherTimer = NULL;
 
-static TaskHandle_t showTaskHandle;
+
 static void ShowTime(lv_timer_t* timer);
-static void ShowBili();
+static void ShowWeather(lv_timer_t* timer);
 
 extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
+extern WeatherData weatherDataToday;
+
+static void weatherInfoJump();
 
 
 HgmTwUI::HgmTwUI()
@@ -108,13 +112,6 @@ HgmTwUI::HgmTwUI()
 HgmTwUI::~HgmTwUI()
 {
 
-}
-
-static bool CheckChinese(String& str)
-{
-    for (int ch : str)
-        if (ch < 0) return true;
-    return false;
 }
 
 static void _initTask()
@@ -133,6 +130,8 @@ void HgmGUI::HgmTwUI::begin()
 {
 
     _initTask();
+
+    vTaskDelay(500);
 
     tw_time = lv_img_create(lv_scr_act());
     lv_obj_align(tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
@@ -241,20 +240,80 @@ void HgmGUI::HgmTwUI::begin()
 
     biliFans = lv_label_create(book);
     lv_label_set_recolor(biliFans, true);
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%d#", BiliInfoRecv::getFollower());
+    lv_label_set_text_fmt(biliFans, "#59493f %d#", BiliInfoRecv::getFollower());
     lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(biliFans, &k12x8_6px, 0);
 
+    weatherInfoJump();
+    showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
 
-    // showBiliTimer = lv_timer_create(ShowBili, 2000, NULL);
+    
 }
+
 
 void HgmGUI::HgmTwUI::stop()
 {
     // TODO: delete
     _deInitTask();
 }
+
+
+typedef struct _wLabelObj {
+    lv_obj_t* label;        // label主体
+    lv_obj_t* bar;          // 指示条
+} wLabelObj;
+
+wLabelObj tempLabel;
+wLabelObj aqiLabel;
+wLabelObj humidityLabel;
+
+static void weatherUpdate()
+{
+    if (weatherDataToday.temp >= 0)
+        lv_label_set_text_fmt(tempLabel.label, "#59493f Now:%s%02d℃#", " ", weatherDataToday.temp);
+    else
+        lv_label_set_text_fmt(tempLabel.label, "#59493f Now:%s%02d℃#", "-", weatherDataToday.temp);
+
+    lv_label_set_text_fmt(aqiLabel.label, "#59493f AQI: %02d#", weatherDataToday.aqi);
+    lv_label_set_text_fmt(humidityLabel.label, "#59493f RH : %02d%%#", weatherDataToday.humidity);
+}
+
+static void weatherInfoJump()
+{
+    tempLabel.label = lv_label_create(tw_weather);
+    lv_obj_set_style_text_font(tempLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(tempLabel.label, true);
+    lv_label_set_text_fmt(tempLabel.label, "#59493f Now:%c%02d℃#", ' ', 0);
+    lv_obj_set_style_text_align(tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
+
+    aqiLabel.label = lv_label_create(tw_weather);
+    lv_obj_set_style_text_font(aqiLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(aqiLabel.label, true);
+    lv_label_set_text_fmt(aqiLabel.label, "#59493f AQI: %02d#", 72);
+    lv_obj_set_style_text_align(aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align_to(aqiLabel.label, tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+
+    humidityLabel.label = lv_label_create(tw_weather);
+    lv_obj_set_style_text_font(humidityLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(humidityLabel.label, true);
+    lv_label_set_text_fmt(humidityLabel.label, "#59493f RH : %02d%%#", 80);
+    lv_obj_set_style_text_align(humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align_to(humidityLabel.label, aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+
+    lv_obj_t* label = lv_label_create(tw_weather);
+    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_label_set_text_fmt(label, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
+    lv_obj_align_to(label, tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
+}
+
+
+static void ShowWeather(lv_timer_t* timer)
+{
+    weatherUpdate();
+}
+
 
 static uint8_t _digitOfNumber(int num)
 {
@@ -274,6 +333,7 @@ static String _numWithUnit(size_t fans)
     uint8_t digit = _digitOfNumber(fans);
     uint8_t pd = 0; // 要保留的整数位数
     uint8_t times = 0;
+    float ffans = (float)fans;
 
     if (digit < 5)
         return String(fans);
@@ -285,8 +345,8 @@ static String _numWithUnit(size_t fans)
         pd = 3;
         times = digit - pd;
         for (size_t i = 0; i < times; i++)
-            fans /= 10;
-        return (String(fans) + String("K"));
+            ffans /= 10;
+        return (String(ffans) + String("K"));
     }
     case 7:
     case 8:
@@ -299,18 +359,27 @@ static String _numWithUnit(size_t fans)
 
 }
 
+
+static bool CheckNoEn(String& str)
+{
+    for (int ch : str)
+        if (ch < 0 || ch > 127) return true;
+    return false;
+}
+
+
 static void ShowBili()
 {
     face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
     lv_img_set_src(faceImg, &face_dsc);
 
-    if (CheckChinese(BiliInfoRecv::getUserName())) {
+    if (CheckNoEn(BiliInfoRecv::getUserName())) {
         lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::GetUID().c_str());
     } else {
         lv_label_set_text_fmt(biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
     }
 
-    lv_label_set_text_fmt(biliFans, "#59493f Fans:%s#", _numWithUnit(BiliInfoRecv::getFollower()).c_str());
+    lv_label_set_text_fmt(biliFans, "#59493f %s#", _numWithUnit(BiliInfoRecv::getFollower()).c_str());
 }
 
 static void ShowTime(lv_timer_t* timer)
@@ -339,11 +408,6 @@ static void ShowTime(lv_timer_t* timer)
     lv_img_set_src(clock_img, clock_imgs_array[_tm.tm_hour / 2]);
 
     ShowBili();
-}
-
-static void ShowWeather()
-{
-
 }
 
 

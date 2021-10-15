@@ -170,7 +170,6 @@ void setup()
 
     // Check bilibili component
     bili.begin();
-    bili.initTask();
     vTaskDelay(300);
 
     // Check weather
