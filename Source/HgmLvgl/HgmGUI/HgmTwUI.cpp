@@ -15,6 +15,7 @@
 
 #include <Arduino.h>
 #include <ESP32Time.h>
+#include <WiFi.h>
 
 
 using namespace HgmApplication;
@@ -80,8 +81,10 @@ static lv_obj_t* book = NULL;
 static lv_obj_t* main_time_label = NULL;
 static lv_obj_t* date_label = NULL;
 
-lv_obj_t* biliName = NULL;
-lv_obj_t* biliFans = NULL;
+static lv_obj_t* biliName = NULL;
+static lv_obj_t* biliFans = NULL;
+static lv_obj_t* wifiLabel = NULL;
+static lv_obj_t* batLabel;
 
 static lv_anim_t* anim_book = NULL;
 static lv_anim_t* anim_t = NULL;
@@ -131,6 +134,7 @@ void HgmGUI::HgmTwUI::begin()
 
     _initTask();
 
+    // To avoid crush when LVGL running busy
     vTaskDelay(500);
 
     tw_time = lv_img_create(lv_scr_act());
@@ -238,7 +242,7 @@ void HgmGUI::HgmTwUI::begin()
     lv_obj_set_style_text_align(biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
-    biliFans = lv_label_create(book);
+    biliFans = lv_label_create(book); 
     lv_label_set_recolor(biliFans, true);
     lv_label_set_text_fmt(biliFans, "#59493f %d#", BiliInfoRecv::getFollower());
     lv_obj_set_style_text_align(biliFans, LV_TEXT_ALIGN_CENTER, 0);
@@ -248,7 +252,10 @@ void HgmGUI::HgmTwUI::begin()
     weatherInfoJump();
     showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
 
-    
+    wifiLabel = lv_label_create(tw_weather);
+    lv_obj_set_style_opa(wifiLabel, LV_OPA_0, 0);
+    lv_label_set_text(wifiLabel, LV_SYMBOL_WIFI);
+    lv_obj_align(wifiLabel, LV_ALIGN_TOP_LEFT, 3, 3);
 }
 
 
@@ -302,10 +309,11 @@ static void weatherInfoJump()
     lv_obj_set_style_text_align(humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align_to(humidityLabel.label, aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
-    lv_obj_t* label = lv_label_create(tw_weather);
-    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, 0);
-    lv_label_set_text_fmt(label, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
-    lv_obj_align_to(label, tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
+    batLabel = lv_label_create(tw_weather);
+    lv_obj_set_style_text_align(batLabel, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_label_set_text_fmt(batLabel, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
+    lv_obj_align_to(batLabel, tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
+
 }
 
 
@@ -406,6 +414,11 @@ static void ShowTime(lv_timer_t* timer)
     );
 
     lv_img_set_src(clock_img, clock_imgs_array[_tm.tm_hour / 2]);
+
+    if (WiFi.isConnected())
+        lv_obj_set_style_opa(wifiLabel, LV_OPA_70, 0);
+    else
+        lv_obj_set_style_opa(wifiLabel, LV_OPA_0, 0);
 
     ShowBili();
 }
