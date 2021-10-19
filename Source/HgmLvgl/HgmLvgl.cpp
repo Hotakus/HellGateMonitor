@@ -87,7 +87,7 @@ void HGM::HgmLvgl::HgmLvglbegin()
     xTaskCreatePinnedToCore(
         HgmLvglTask,
         "HgmLvglTask",
-        2256,
+        2512,
         NULL,
         5,
         &hgmLvglTaskHandle,
@@ -135,6 +135,7 @@ void HGM::HgmLvgl::HgmLvglTask(void* params)
     }
 }
 
+#if LV_TICK_CUSTOM != 1
 void HGM::HgmLvgl::HgmLvglTick(void* params)
 {
     uint16_t tick = *(uint16_t*)params;
@@ -143,6 +144,7 @@ void HGM::HgmLvgl::HgmLvglTick(void* params)
         vTaskDelay(HGM_LVGL_TICK);
     }
 }
+#endif
 
 void HGM::HgmLvgl::HgmControlCheckTask(void* params)
 {
