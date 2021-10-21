@@ -10,6 +10,7 @@
 #ifndef HELLGATEMONITOR_HGMSETUPUI_H
 #define HELLGATEMONITOR_HGMSETUPUI_H
 
+#include "../../LvglSrc/lvgl/lvgl.h"
 #include <TJpg_Decoder.h>
 
 namespace HgmGUI {
@@ -42,6 +43,23 @@ namespace HgmGUI {
     private:
 
     public:
+
+        struct _frtos {
+            QueueHandle_t msgBox;
+            TaskHandle_t taskHandle;
+        } frtos;
+
+        struct _widget {
+            lv_obj_t* pb;
+            lv_obj_t* logo;
+            lv_obj_t* prevCheckLabel;
+            lv_obj_t* curCheckLabel;
+            lv_style_t clStyle;
+        } widget;
+
+        String prevText = "";
+        String curText = "";
+
         HgmSetupUI();
         ~HgmSetupUI();
 
