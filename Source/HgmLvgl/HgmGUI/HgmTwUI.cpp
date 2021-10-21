@@ -83,7 +83,7 @@ static void ShowWeather(lv_timer_t* timer);
 static void weatherWidgetsCreate();
 static void biliWidgetsCreate();
 
-static HgmTwUI* instance;
+static HgmTwUI* instance = NULL;
 
 HgmTwUI::HgmTwUI()
 {
