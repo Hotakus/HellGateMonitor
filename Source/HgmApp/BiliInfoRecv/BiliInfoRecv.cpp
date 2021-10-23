@@ -44,18 +44,6 @@ extern HTTPClient* https;
 
 static SemaphoreHandle_t biliSemaphore;
 
-static String _uid = "";
-static String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
-static String statAPI = "http://api.bilibili.com/x/relation/stat?vmid=";
-
-static String userName = "";
-static String userFaceImgUrl = "";
-static uint8_t userLevel = 0;
-static size_t userFans = 0;
-
-static size_t userFaceImgBufSize = 0;
-static uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
-static uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
 
 extern HgmComponent component;
 
@@ -66,13 +54,17 @@ TaskHandle_t biliTaskHandle;
 static void biliTask(void* params);
 
 
+static BiliInfoRecv* instance = NULL;
+
 BiliInfoRecv::BiliInfoRecv()
 {
+    instance = this;
 }
 
 BiliInfoRecv::~BiliInfoRecv()
 {
     this->deInitTask();
+    instance = NULL;
 }
 
 void HgmApplication::BiliInfoRecv::initTask()
@@ -168,7 +160,7 @@ void HgmApplication::BiliInfoRecv::begin()
  */
 void HgmApplication::BiliInfoRecv::SetUID(String uid)
 {
-    _uid = uid;
+    instance->info._uid = uid;
     configFlag = true;
 }
 
@@ -178,7 +170,7 @@ void HgmApplication::BiliInfoRecv::SetUID(String uid)
  */
 String HgmApplication::BiliInfoRecv::GetUID()
 {
-    return _uid;
+    return instance->info._uid;
 }
 
 /**
@@ -187,18 +179,18 @@ String HgmApplication::BiliInfoRecv::GetUID()
  */
 size_t HgmApplication::BiliInfoRecv::getFollower()
 {
-    return userFans;
+    return instance->info.userFans;
 }
 
 String& HgmApplication::BiliInfoRecv::getUserName()
 {
-    return userName;
+    return instance->info.userName;
 }
 
 
 uint8_t HgmApplication::BiliInfoRecv::getLevel()
 {
-    return userLevel;
+    return instance->info.userLevel;
 }
 
 
@@ -206,7 +198,7 @@ typedef uint16_t(*_fb_t)[64];
 static bool _DecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap)
 {
     // 强制为二维数组
-    uint16_t(*_faceBuf)[64] = (_fb_t)userFaceBitmap;
+    uint16_t(*_faceBuf)[64] = (_fb_t)instance->info.userFaceBitmap;
 
     size_t pos = 0;
     for (size_t _h = 0; _h < h; _h++) {
@@ -226,8 +218,8 @@ static bool _DecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16
  */
 static void _SaveUserFaceImg()
 {
-    if (!userFaceBitmap) {
-        userFaceBitmap = (uint16_t*)heap_caps_calloc(64 * 64, 2, MALLOC_CAP_SPIRAM);
+    if (!instance->info.userFaceBitmap) {
+        instance->info.userFaceBitmap = (uint16_t*)heap_caps_calloc(64 * 64, 2, MALLOC_CAP_SPIRAM);
     }
 
     TJpgDec.setJpgScale(1);
@@ -236,9 +228,9 @@ static void _SaveUserFaceImg()
 
     uint32_t t = millis();
     uint16_t w = 0, h = 0;
-    TJpgDec.getJpgSize(&w, &h, userFaceImgBuf, userFaceImgBufSize);
+    TJpgDec.getJpgSize(&w, &h, instance->info.userFaceImgBuf, instance->info.userFaceImgBufSize);
     Serial.printf("Width = %d, height = %d\n", w, h);
-    TJpgDec.drawJpg(0, 0, userFaceImgBuf, userFaceImgBufSize);
+    TJpgDec.drawJpg(0, 0, instance->info.userFaceImgBuf, instance->info.userFaceImgBufSize);
 
     // hgmLvgl->lcd->pushImage(0, 0, 64, 64, userFaceBitmap);
 
@@ -256,14 +248,14 @@ static void _SaveUserFaceImg()
  */
 int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t imgHeight)
 {
-    if (!userFaceImgUrl) {
+    if (!instance->info.userFaceImgUrl) {
         Serial.println("The URL of the user's face has not been get. please run \"getBasicInfo()\"");
         return -1;
     }
 
     String width = String(imgWidth) + "w";
     String height = String(imgHeight) + "h";
-    String imgUrl = userFaceImgUrl + "@" + width + "_" + height + "_1o" + ".jpg";    // get the face image URL with the designated size
+    String imgUrl = instance->info.userFaceImgUrl + "@" + width + "_" + height + "_1o" + ".jpg";    // get the face image URL with the designated size
     Serial.println(imgUrl);
 
     int code = -1;
@@ -276,19 +268,19 @@ int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t img
     WiFiClient* client = https->getStreamPtr();
     if (client->available()) {
         size_t size = client->available();
-        userFaceImgBufSize = size;
+        instance->info.userFaceImgBufSize = size;
         Serial.printf("Face image size : %d Bytes\n", size);
 
-        if (userFaceImgBuf)
-            heap_caps_free(userFaceImgBuf);
-        userFaceImgBuf = (uint8_t*)heap_caps_calloc(size, 1, MALLOC_CAP_SPIRAM);
-        if (!userFaceImgBuf) {
+        if (instance->info.userFaceImgBuf)
+            heap_caps_free(instance->info.userFaceImgBuf);
+        instance->info.userFaceImgBuf = (uint8_t*)heap_caps_calloc(size, 1, MALLOC_CAP_SPIRAM);
+        if (!instance->info.userFaceImgBuf) {
             Serial.println("Face image buffer allocated failed.");
             https->end();
             return -1;
         }
 
-        if (client->readBytes(userFaceImgBuf, size) != size) {
+        if (client->readBytes(instance->info.userFaceImgBuf, size) != size) {
             Serial.println("Face image buffer save failed.");
             https->end();
             return -1;
@@ -305,20 +297,20 @@ int HgmApplication::BiliInfoRecv::getUserFaceImg(uint16_t imgWidth, uint16_t img
 
 uint8_t* HgmApplication::BiliInfoRecv::getUserFaceImgBuf(size_t* imgSize)
 {
-    *imgSize = userFaceImgBufSize;
-    return userFaceImgBuf;
+    *imgSize = instance->info.userFaceImgBufSize;
+    return instance->info.userFaceImgBuf;
 }
 
 void* HgmApplication::BiliInfoRecv::getUserFaceBitmap()
 {
-    return userFaceBitmap;
+    return instance->info.userFaceBitmap;
 }
 
 
 
 static int _GetFollower()
 {
-    String url = statAPI + _uid;
+    String url = instance->info.statAPI + instance->info._uid;
     HotakusDynamicJsonDocument userInfo(1024);
 
     uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
@@ -326,8 +318,8 @@ static int _GetFollower()
     deserializeJson(userInfo, buf);
     hotakusFree(buf);
 
-    userFans = userInfo["data"]["follower"].as<size_t>();
-    return userFans;
+    instance->info.userFans = userInfo["data"]["follower"].as<size_t>();
+    return instance->info.userFans;
 }
 
 /**
@@ -335,7 +327,7 @@ static int _GetFollower()
  */
 void HgmApplication::BiliInfoRecv::getBasicInfo()
 {
-    String url = basicInfoAPI + _uid;
+    String url = instance->info.basicInfoAPI + instance->info._uid;
     Serial.println(url);
 
     uint8_t* recvBuf = (uint8_t*)hotakusAlloc(8192);
@@ -351,14 +343,14 @@ void HgmApplication::BiliInfoRecv::getBasicInfo()
     deserializeJson(userInfo, pRecvBuf);
     hotakusFree(recvBuf);
 
-    if (userInfo["data"]["mid"].as<String>().compareTo(_uid) != 0) {
+    if (userInfo["data"]["mid"].as<String>().compareTo(instance->info._uid) != 0) {
         hgm_log_e(TAG, "Get user info is no correct : %s\n", userInfo["data"]["mid"].as<String>().c_str());
         return;
     }
 
-    userName = userInfo["data"]["name"].as<String>();
-    userLevel = userInfo["data"]["level"].as<uint8_t>();
-    userFaceImgUrl = userInfo["data"]["face"].as<String>();
+    instance->info.userName = userInfo["data"]["name"].as<String>();
+    instance->info.userLevel = userInfo["data"]["level"].as<uint8_t>();
+    instance->info.userFaceImgUrl = userInfo["data"]["face"].as<String>();
 
     _GetFollower();
 }

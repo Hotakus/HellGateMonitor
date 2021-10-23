@@ -23,6 +23,21 @@ namespace HgmApplication {
 
     public:
 
+        struct _info {
+            String _uid = "";
+            String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
+            String statAPI = "http://api.bilibili.com/x/relation/stat?vmid=";
+
+            String userName = "";
+            String userFaceImgUrl = "";
+            uint8_t userLevel = 0;
+            size_t userFans = 0;
+
+            size_t userFaceImgBufSize = 0;
+            uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
+            uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
+        } info;
+
         BiliInfoRecv();
         ~BiliInfoRecv();
 
