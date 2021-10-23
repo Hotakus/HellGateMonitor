@@ -7,13 +7,13 @@
  * @date 2021/8/10 11:21
  * @copyright Copyright (c) 2021/8/10
 *******************************************************************/
-#include <Arduino.h>
 #include "HgmLvgl.h"
-#include <Wire.h>
-
 #include "HgmGUI/HgmFramework.h"
 #include "LvglPort/lv_port_disp.h"
 #include "LvglPort/lv_port_indev.h"
+
+#include <Arduino.h>
+#include <Wire.h>
 
 using namespace HGM;
 using namespace HgmGUI;
@@ -27,16 +27,16 @@ xTaskHandle hgmControlHandle;
 xTaskHandle hgmLvglTaskHandle;
 xTaskHandle hgmLvglTickHandle;
 
-HgmLvgl* hgmLvgl = new HgmLvgl(HGM_MONITOR_HEIGHT, HGM_MONITOR_WIDTH);
+HgmLvgl hgmLvgl(HGM_MONITOR_HEIGHT, HGM_MONITOR_WIDTH);
 
-static TFT_eSPI* _lcd = nullptr;
+static HgmLvgl* instance = NULL;
 
 HGM::HgmLvgl::HgmLvgl(int16_t width, int16_t height)
 {
+    instance = this;
     this->_width = width;
     this->_height = height;
-    _lcd = new TFT_eSPI(this->_width, this->_height);
-    this->lcd = _lcd;
+    this->lcd = new TFT_eSPI(this->_width, this->_height);
 
     this->hcl = new HgmControlLogic(Wire1);
     this->hgmFw = new HgmFramework();
@@ -44,10 +44,11 @@ HGM::HgmLvgl::HgmLvgl(int16_t width, int16_t height)
 
 HgmLvgl::~HgmLvgl()
 {
-    delete _lcd;
+    delete this->lcd;
     delete this->hcl;
     delete this->hgmFw;
     vTaskDelete(hgmLvglTaskHandle);
+    instance = NULL;
 }
 
 /* public function */
@@ -57,13 +58,13 @@ HgmLvgl::~HgmLvgl()
 void HGM::HgmLvgl::HgmLvglbegin()
 {
     /* LCD init */
-    _lcd->begin();
-    _lcd->setRotation(1);
-    _lcd->fillScreen(TFT_BLACK);
+    instance->lcd->begin();
+    instance->lcd->setRotation(1);
+    instance->lcd->fillScreen(TFT_BLACK);
 
 #if HGM_LVGL_USE_DMA == 1
-    _lcd->setSwapBytes(true);
-    _lcd->initDMA();
+    instance->lcd->setSwapBytes(true);
+    instance->lcd->initDMA();
 #endif
 
     /* LVGL init */
@@ -169,15 +170,15 @@ void HGM::HgmLvgl::HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* ar
     //size_t end = 0;
     //size_t start = millis();
 
-    _lcd->startWrite();
+    instance->lcd->startWrite();
 #if HGM_LVGL_USE_DMA == 0
-    _lcd->setAddrWindow(area->x1, area->y1, w, h);
-    _lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
+    instance->lcd->setAddrWindow(area->x1, area->y1, w, h);
+    instance->lcd->pushColors((uint16_t*)&color_p->full, w * h, true);
 #else
-    _lcd->pushImageDMA(area->x1, area->y1, w, h, (uint16_t*)disp_drv->draw_buf->buf_act);
-    while (_lcd->dmaBusy());
+    instance->lcd->pushImageDMA(area->x1, area->y1, w, h, (uint16_t*)disp_drv->draw_buf->buf_act);
+    while (instance->lcd->dmaBusy());
 #endif
-    _lcd->endWrite();
+    instance->lcd->endWrite();
 
     //end = millis();
     //Serial.printf("elapse : %d\n", end - start);

@@ -53,7 +53,7 @@ extern HgmBT hgmBT;
 extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
-extern HgmLvgl* hgmLvgl;
+extern HgmLvgl hgmLvgl;
 
 extern HTTPClient* https;
 
@@ -127,7 +127,7 @@ void setup()
     xSemaphoreGive(wbs);
 
     /* HGM LVGL initialize */
-    hgmLvgl->HgmLvglbegin();
+    hgmLvgl.HgmLvglbegin();
 
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
@@ -186,7 +186,7 @@ void setup()
     delete hgmSetupUI;
     
     // launch default UI
-    hgmLvgl->HgmLvglUIbegin();
+    hgmLvgl.HgmLvglUIbegin();
 
     char* task_buf = (char*)hotakusAlloc(8192);
     vTaskList(task_buf);
