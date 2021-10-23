@@ -26,6 +26,8 @@ namespace HgmApplication {
         HGM_MEMORY,
         HGM_HARD_DISK,
         HGM_NETWORK,
+
+        HGM_HARD_NULL
     } HgmHardware;
 
     /* HGM 硬件监控对象的位置 */
@@ -41,24 +43,34 @@ namespace HgmApplication {
     /* "params" 参数指向对应硬件信息的数据类指针 */
     typedef struct _HgmHardwareObject {
         void* params;
+        bool request;
         HgmHardware hardware;
         HgmHardwarePosition pos;
     } HgmHardwareObject;
 
     class HardwareRequest {
     private:
-    public:
-        bool rCpu = true;
-        bool rGpu = true;
-        bool rMemory = true;
-        bool rHardDisk = false;
-        bool rNetwork = true;
+    public: 
+
+        HgmHardwareObject hgmCpu;
+        HgmHardwareObject hgmGpu;
+        HgmHardwareObject hgmMem;
+        HgmHardwareObject hgmDisk;
+        HgmHardwareObject hgmNet;
+        HgmHardwareObject** hgmHardObj;
+        const uint8_t supportHardwareCnt = HGM_HARD_NULL;
 
         HardwareRequest();
         ~HardwareRequest();
 
         void UseDefault();
 
+        /* Register a new hardware into manager */
+        bool RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHardwarePosition pos);
+        bool UnregisterHardware(HgmHardware ht);
+        HgmHardwareObject* GetHardwareObj(HgmHardware ht);
+        void SetHardwareRequest(HgmHardware ht, bool request);
+        void FlushRequestList();
     };
 }
 

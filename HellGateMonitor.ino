@@ -19,6 +19,7 @@
 #include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
 #include "Source/HgmApp/HotakusMemUtil.h"
 #include "Source/HgmApp/HotakusHttpUtil.h"
+#include "Source/HgmApp/HardwareInfoRecv/HardwareRequest.h"
 
 #include <Arduino.h>
 #include <TFT_eSPI.h>
@@ -54,8 +55,7 @@ extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern HgmLvgl hgmLvgl;
-
-extern HTTPClient* https;
+HardwareRequest* hrr;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
@@ -152,6 +152,8 @@ void setup()
     HgmSC hgmSC;
     hgmSC.begin();
     vTaskDelay(200);
+
+    hrr = new HardwareRequest();
 
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;

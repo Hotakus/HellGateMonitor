@@ -32,7 +32,7 @@ using namespace HgmApplication::HgmJsonParseUtil;
 // extern HardwareGpuData hardwareGpuData;
 // extern HardwareMemData hardwareMemData;
 
-extern HardwareRequest hrr;
+extern HardwareRequest* hrr;
 extern HgmHardwareObject* hgmHardObj[];
 
 extern SemaphoreHandle_t wbs;
@@ -185,11 +185,11 @@ String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod 
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
-        hgmPack["Data"]["CPU"] = String(hrr.rCpu);
-        hgmPack["Data"]["GPU"] = String(hrr.rGpu);
-        hgmPack["Data"]["Memory"] = String(hrr.rMemory);
-        hgmPack["Data"]["HardDisk"] = String(hrr.rHardDisk);
-        hgmPack["Data"]["Network"] = String(hrr.rNetwork);
+        hgmPack["Data"]["CPU"] = String(hrr->GetHardwareObj(HGM_CPU)->request);
+        hgmPack["Data"]["GPU"] = String(hrr->GetHardwareObj(HGM_GPU)->request);
+        hgmPack["Data"]["Memory"] = String(hrr->GetHardwareObj(HGM_MEMORY)->request);
+        hgmPack["Data"]["HardDisk"] = String(hrr->GetHardwareObj(HGM_HARD_DISK)->request);
+        hgmPack["Data"]["Network"] = String(hrr->GetHardwareObj(HGM_NETWORK)->request);
         break;
     }
     default:
@@ -269,16 +269,17 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-        if (hrr.rCpu)
-            ((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->Set(rawPack);
-        if (hrr.rGpu)
-            ((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->Set(rawPack);
-        if (hrr.rMemory)
-            ((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->Set(rawPack);
-        if (hrr.rNetwork)
-            ((HardwareMemData*)hgmHardObj[HGM_NETWORK]->params)->Set(rawPack);
-        if (hrr.rHardDisk)
-            ((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->Set(rawPack);
+        // if (hrr->rCpu)
+        //     ((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->Set(rawPack);
+        // if (hrr->rGpu)
+        //     ((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->Set(rawPack);
+        // if (hrr->rMemory)
+        //     ((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->Set(rawPack);
+        // if (hrr->rNetwork)
+        //     ((HardwareMemData*)hgmHardObj[HGM_NETWORK]->params)->Set(rawPack);
+        // if (hrr->rHardDisk)
+        //     ((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->Set(rawPack);
+
 
         // Serial.println(((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->name);
         // Serial.println(((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->name);
