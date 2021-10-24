@@ -16,7 +16,6 @@
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-HardwareGpuData hardwareGpuData;
 
 HgmApplication::HardwareGpuData::HardwareGpuData()
 {

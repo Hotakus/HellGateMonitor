@@ -27,11 +27,7 @@
 using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmApplication;
 
-extern HardwareCpuData hardwareCpuData;
-extern HardwareGpuData hardwareGpuData;
-extern HardwareMemData hardwareMemData;
-extern HardwareGpuData hardwareNetData;
-extern HardwareMemData hardwareDiskData;
+static String test_str = "{\"Header\":\"HgmTCP\",\"DataType\":\"4\",\"Data\":{\"CPU\":{\"name\":\"Intel Core i7-8700\",\"coreCount\":6,\"freq\":{\"bus\":99.75,\"current\":[4289.25,4289.25,4289.25,4289.25,4289.25,4289.25]},\"temp\":{\"current\":[54.0,53.0,54.0,55.0,55.0,70.0],\"max\":70.0,\"average\":56.83},\"load\":{\"total\":6.41,\"current\":[8.33,3.21,3.21,1.92,3.21,18.59]},\"power\":{\"current\":34.55,\"max\":34.55}}}}";
 
 HgmApplication::HardwareRequest::HardwareRequest()
 {
@@ -44,28 +40,61 @@ HgmApplication::HardwareRequest::HardwareRequest()
         hgmHardObj[i]->params = NULL;
         hgmHardObj[i]->request = true;
     }
-
-    RegisterNewHardware(&hardwareCpuData, HGM_CPU, HGM_LEFT_TOP);
-
-    (hgmHardObj[HGM_CPU]->params) = &hardwareCpuData;
-    (hgmHardObj[HGM_GPU]->params) = &hardwareGpuData;
-    (hgmHardObj[HGM_MEMORY]->params) = &hardwareMemData;
-    (hgmHardObj[HGM_HARD_DISK]->params) = &hardwareDiskData;
-    (hgmHardObj[HGM_NETWORK]->params) = &hardwareNetData;
-
 }
 
 HgmApplication::HardwareRequest::~HardwareRequest()
 {
-    (hgmHardObj[HGM_CPU]->params) = NULL;
-    (hgmHardObj[HGM_GPU]->params) = NULL;
-    (hgmHardObj[HGM_MEMORY]->params) = NULL;
-    (hgmHardObj[HGM_HARD_DISK]->params) = NULL;
-    (hgmHardObj[HGM_NETWORK]->params) = NULL;
-
     for (uint8_t i = 0; i < supportHardwareCnt; i++)
         hotakusFree(hgmHardObj[i]);
     hotakusFree(hgmHardObj);
+}
+
+void HardwareRequest::begin()
+{
+    hd = (_hardData*)hotakusAlloc(sizeof(_hardData));
+    hd->cpuData = new HardwareCpuData();
+    hd->gpuData = new HardwareGpuData();
+    hd->memData = new HardwareMemData();
+    hd->diskData = new HardwareDiskData();
+    hd->netData = new HardwareNetData();
+
+    RegisterNewHardware(hd->cpuData, HGM_CPU, HGM_LEFT_TOP);
+    RegisterNewHardware(hd->gpuData, HGM_GPU, HGM_RIGHT_TOP);
+    RegisterNewHardware(hd->memData, HGM_MEMORY, HGM_LEFT_BOTTOM);
+    RegisterNewHardware(hd->diskData, HGM_HARD_DISK, HGM_RIGHT_BOTTOM);
+    RegisterNewHardware(hd->netData, HGM_NETWORK, HGM_POS_NULL);
+
+    SetHardwareRequest(HGM_CPU, true);
+    SetHardwareRequest(HGM_GPU, true);
+    SetHardwareRequest(HGM_MEMORY, true);
+    SetHardwareRequest(HGM_HARD_DISK, true);
+    SetHardwareRequest(HGM_NETWORK, true);
+
+    hgm_log_e(TAG, "begin...");
+}
+
+void HardwareRequest::stop()
+{
+    SetHardwareRequest(HGM_CPU, false);
+    SetHardwareRequest(HGM_GPU, false);
+    SetHardwareRequest(HGM_MEMORY, false);
+    SetHardwareRequest(HGM_HARD_DISK, false);
+    SetHardwareRequest(HGM_NETWORK, false);
+
+    UnregisterHardware(HGM_CPU);
+    UnregisterHardware(HGM_GPU);
+    UnregisterHardware(HGM_MEMORY);
+    UnregisterHardware(HGM_HARD_DISK);
+    UnregisterHardware(HGM_NETWORK);
+
+    delete hd->cpuData;
+    delete hd->gpuData;
+    delete hd->memData;
+    delete hd->diskData;
+    delete hd->netData;
+    hotakusFree(hd);
+
+    hgm_log_e(TAG, "stop");
 }
 
 void HgmApplication::HardwareRequest::UseDefault()
@@ -85,7 +114,7 @@ void HgmApplication::HardwareRequest::UseDefault()
  * @param pHardData
  * @param ht
  * @param pos
- * @return 
+ * @return
  */
 bool HardwareRequest::RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHardwarePosition pos)
 {
@@ -108,6 +137,7 @@ bool HardwareRequest::RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHa
         hgmHardObj[nullIndex]->hardware = ht;
         hgmHardObj[nullIndex]->params = pHardData;
         hgmHardObj[nullIndex]->pos = pos;
+        hgmHardObj[nullIndex]->request = false;
         return true;
     } else {
         for (nullIndex = 0; nullIndex < supportHardwareCnt; nullIndex++) {
@@ -115,18 +145,20 @@ bool HardwareRequest::RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHa
                 hgmHardObj[nullIndex]->hardware = ht;
                 hgmHardObj[nullIndex]->params = pHardData;
                 hgmHardObj[nullIndex]->pos = pos;
+                hgmHardObj[nullIndex]->request = false;
                 return true;
             }
         }
     }
 
+    hgm_log_e(TAG, "Register failed, Hardware obj is full.");
     return false;
 }
 
 /**
  * @brief Unregister a hardware.
  * @param ht
- * @return 
+ * @return
  */
 bool HardwareRequest::UnregisterHardware(HgmHardware ht)
 {
@@ -136,10 +168,11 @@ bool HardwareRequest::UnregisterHardware(HgmHardware ht)
     }
 
     for (uint8_t i = 0; i < supportHardwareCnt; i++) {
-        if (hgmHardObj[i]->hardware == ht) {
+        if (hgmHardObj[i]->params && hgmHardObj[i]->hardware == ht) {
             hgmHardObj[i]->hardware = HGM_HARD_NULL;
             hgmHardObj[i]->params = NULL;
             hgmHardObj[i]->pos = HGM_POS_NULL;
+            hgmHardObj[i]->request = false;
             return true;
         }
     }
@@ -179,4 +212,24 @@ void HardwareRequest::FlushRequestList()
 {
     for (uint8_t i = 0; i < supportHardwareCnt; i++) {
     }
+}
+
+template <typename t> 
+t* HardwareRequest::GetParams(HgmHardware ht)
+{
+    HgmHardwareObject* hho = this->GetHardwareObj(ht);
+    if (hho)
+        return ((t*)hho->params);
+    else
+        return NULL;
+}
+
+
+bool HardwareRequest::isRequest(HgmHardware ht)
+{
+    HgmHardwareObject* hho = this->GetHardwareObj(ht);
+    if (hho)
+        return hho->request;
+    else
+        return false;
 }

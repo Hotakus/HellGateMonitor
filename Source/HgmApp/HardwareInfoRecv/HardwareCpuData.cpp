@@ -9,14 +9,13 @@
 *******************************************************************/
 #include "HardwareCpuData.h"
 #include "../HgmJsonUtil.h"
+#include "../HotakusMemUtil.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
-
-HardwareCpuData hardwareCpuData;
 
 HardwareCpuData::HardwareCpuData()
 {
@@ -25,9 +24,9 @@ HardwareCpuData::HardwareCpuData()
 
 HardwareCpuData::~HardwareCpuData()
 {
-    free(coreFreq);
-    free(coreTemp);
-    free(coreLoad);
+    hotakusFree(coreFreq);
+    hotakusFree(coreTemp);
+    hotakusFree(coreLoad);
 }
 
 
@@ -36,13 +35,13 @@ void HgmApplication::HardwareCpuData::Set(HotakusDynamicJsonDocument& hdjd)
     this->coreCount = hdjd["Data"]["CPU"]["coreCount"].as<int8_t>();
 
     if (!coreFreq || !coreTemp || !coreLoad) {
-        coreFreq = (float*)malloc(coreCount * sizeof(float));
-        coreTemp = (float*)malloc(coreCount * sizeof(float));
-        coreLoad = (float*)malloc(coreCount * sizeof(float));
+        coreFreq = (float*)hotakusAlloc(coreCount * sizeof(float));
+        coreTemp = (float*)hotakusAlloc(coreCount * sizeof(float));
+        coreLoad = (float*)hotakusAlloc(coreCount * sizeof(float));
     } else {
-        coreFreq = (float*)realloc(coreFreq, coreCount * sizeof(float));
-        coreTemp = (float*)realloc(coreTemp, coreCount * sizeof(float));
-        coreLoad = (float*)realloc(coreLoad, coreCount * sizeof(float));
+        coreFreq = (float*)hotakusRealloc(coreFreq, coreCount * sizeof(float));
+        coreTemp = (float*)hotakusRealloc(coreTemp, coreCount * sizeof(float));
+        coreLoad = (float*)hotakusRealloc(coreLoad, coreCount * sizeof(float));
     }
 
     this->name = hdjd["Data"]["CPU"]["name"].as<String>();

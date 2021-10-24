@@ -112,7 +112,7 @@ void HgmGUI::HgmTwUI::begin()
     _initTask();
 
     // To avoid crush when LVGL running busy
-    vTaskDelay(500);
+    vTaskDelay(300);
 
     widget.time.tw_time = lv_img_create(lv_scr_act());
     lv_obj_align(widget.time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);

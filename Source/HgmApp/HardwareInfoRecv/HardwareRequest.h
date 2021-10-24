@@ -9,7 +9,11 @@
 *******************************************************************/
 #ifndef HELLGATEMONITOR_HARDWAREREQUEST_H
 #define HELLGATEMONITOR_HARDWAREREQUEST_H
-
+#include "HardwareCpuData.h"
+#include "HardwareGpuData.h"
+#include "HardwareMemData.h"
+#include "HardwareNetData.h"
+#include "HardwareDiskData.h"
 #include "../HgmJsonUtil.h"
 
 #include <Arduino.h>
@@ -52,16 +56,21 @@ namespace HgmApplication {
     private:
     public: 
 
-        HgmHardwareObject hgmCpu;
-        HgmHardwareObject hgmGpu;
-        HgmHardwareObject hgmMem;
-        HgmHardwareObject hgmDisk;
-        HgmHardwareObject hgmNet;
+        struct _hardData {
+            HardwareCpuData* cpuData;
+            HardwareGpuData* gpuData;
+            HardwareMemData* memData;
+            HardwareNetData* netData;
+            HardwareDiskData* diskData;
+        } *hd;
         HgmHardwareObject** hgmHardObj;
         const uint8_t supportHardwareCnt = HGM_HARD_NULL;
 
         HardwareRequest();
         ~HardwareRequest();
+
+        void begin();
+        void stop();
 
         void UseDefault();
 
@@ -71,6 +80,11 @@ namespace HgmApplication {
         HgmHardwareObject* GetHardwareObj(HgmHardware ht);
         void SetHardwareRequest(HgmHardware ht, bool request);
         void FlushRequestList();
+
+        bool isRequest(HgmHardware ht);
+
+        template <typename t> t* GetParams(HgmHardware ht);
+
     };
 }
 

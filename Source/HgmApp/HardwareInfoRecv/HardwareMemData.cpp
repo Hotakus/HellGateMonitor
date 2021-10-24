@@ -16,7 +16,6 @@
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-HardwareMemData hardwareMemData;
 
 HgmApplication::HardwareMemData::HardwareMemData()
 {

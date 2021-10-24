@@ -18,6 +18,8 @@
 
 using namespace HgmApplication;
 
+
+
 HotakusHttpUtil::HotakusHttpUtil()
 {
 

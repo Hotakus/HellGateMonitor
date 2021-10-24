@@ -16,7 +16,6 @@
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-HardwareNetData hardwareNetData;
 
 HgmApplication::HardwareNetData::HardwareNetData()
 {

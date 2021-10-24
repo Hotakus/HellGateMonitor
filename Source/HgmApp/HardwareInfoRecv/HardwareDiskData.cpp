@@ -16,7 +16,6 @@
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-HardwareDiskData hardwareDiskData;
 
 HardwareDiskData::HardwareDiskData()
 {

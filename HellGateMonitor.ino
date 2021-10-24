@@ -154,6 +154,7 @@ void setup()
     vTaskDelay(200);
 
     hrr = new HardwareRequest();
+    hrr->begin();
 
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;
