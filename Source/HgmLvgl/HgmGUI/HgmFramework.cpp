@@ -64,32 +64,21 @@ bool HgmGUI::HgmFramework::RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb
         return false;
     }
 
-    int nullIndex = -1;
     for (uint8_t i = 0; i < MAX_VIEWS; i++) {
-        if (viewsGroup[i] == NULL) {
-            nullIndex = i;
+        if (viewsGroup[i] == NULL)
             continue;
-        }
         if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
-            hgm_log_e(TAG, "The same view had been registered.");
+            hgm_log_e(TAG, "The same view had been registered."); 
             return true;
         }
     }
     
-    if (nullIndex > -1) {
-        viewsGroup[nullIndex] = (HgmViews*)hotakusAlloc(sizeof(HgmViews));
-        viewsGroup[nullIndex]->SetName(viewName);
-        viewsGroup[nullIndex]->BindCreateBehavior(vcb);
-        viewsGroup[nullIndex]->BindDestroyBehavior(vdb);
-        return true;
-    }
-
-    for (nullIndex = 0; nullIndex < MAX_VIEWS; nullIndex++) {
-        if (viewsGroup[nullIndex] == NULL) {
-            viewsGroup[nullIndex] = (HgmViews*)hotakusAlloc(sizeof(HgmViews));
-            viewsGroup[nullIndex]->SetName(viewName);
-            viewsGroup[nullIndex]->BindCreateBehavior(vcb);
-            viewsGroup[nullIndex]->BindDestroyBehavior(vdb);
+    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
+        if (viewsGroup[i] == NULL) {
+            viewsGroup[i] = (HgmViews*)hotakusAlloc(sizeof(HgmViews));
+            viewsGroup[i]->SetName(viewName);
+            viewsGroup[i]->BindCreateBehavior(vcb);
+            viewsGroup[i]->BindDestroyBehavior(vdb);
             return true;
         }
     }
