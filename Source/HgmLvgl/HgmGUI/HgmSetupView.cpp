@@ -1,5 +1,5 @@
 /******************************************************************
- * @file HgmSetupUI.cpp
+ * @file HgmSetupView.cpp
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
  * @brief ...
@@ -7,7 +7,7 @@
  * @date 2021/8/18 23:18
  * @copyright Copyright (c) 2021/8/18
 *******************************************************************/
-#include "HgmSetupUI.h"
+#include "HgmSetupView.h"
 #include "../../LvglSrc/lvgl/lvgl.h"
 
 #include <TJpg_Decoder.h>
@@ -18,9 +18,9 @@ LV_IMG_DECLARE(HGM_LOGO);
 
 static void SetupCheckTask(void* params);
 
-static HgmSetupUI* instance = NULL;
+static HgmSetupView* instance = NULL;
 
-HgmSetupUI::HgmSetupUI()
+HgmSetupView::HgmSetupView()
 {
 
     instance = this;
@@ -36,14 +36,14 @@ HgmSetupUI::HgmSetupUI()
     );
 }
 
-HgmSetupUI::~HgmSetupUI()
+HgmSetupView::~HgmSetupView()
 {
     vTaskDelete(instance->frtos.taskHandle);
     vQueueDelete(instance->frtos.msgBox);
     instance = NULL;
 }
 
-void HgmGUI::HgmSetupUI::begin()
+void HgmGUI::HgmSetupView::begin()
 {
     // logo
     instance->widget.logo = lv_img_create(lv_scr_act());
@@ -132,12 +132,12 @@ void HgmGUI::HgmSetupUI::begin()
  * @brief Use it to control SetupCheckTask().
  * @param component
  */
-void HgmGUI::HgmSetupUI::componentControl(HgmComponent* component)
+void HgmGUI::HgmSetupView::componentControl(HgmComponent* component)
 {
     xQueueSend(instance->frtos.msgBox, &component, portMAX_DELAY);
 }
 
-void HgmGUI::HgmSetupUI::componentInitDone()
+void HgmGUI::HgmSetupView::componentInitDone()
 {
     lv_anim_t barAnim;
     lv_anim_init(&barAnim);

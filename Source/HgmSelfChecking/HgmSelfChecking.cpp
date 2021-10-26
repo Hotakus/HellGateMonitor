@@ -10,7 +10,7 @@
 
 #include "../HgmApp/HgmWiFi/HgmWiFi.h"
 #include "HgmSelfChecking.h"
-#include "../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmApp/WeatherInfo/WeatherInfo.h"
 
 #include <Arduino.h>
@@ -25,7 +25,7 @@ using namespace HGM;
 using namespace fs;
 
 extern HgmWiFi hgmWiFi;
-extern HgmSetupUI* hgmSetupUI;
+extern HgmSetupView* hgmSetupUI;
 static HgmComponent component;
 
 String ssid;

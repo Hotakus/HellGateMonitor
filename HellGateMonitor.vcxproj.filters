@@ -407,9 +407,6 @@
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -437,9 +434,6 @@
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -459,6 +453,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\HgmLogUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmViews.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -904,9 +904,6 @@
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -932,9 +929,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareNetData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmHardwareUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.cpp">
@@ -1199,6 +1193,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HotakusHttpUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmViews.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

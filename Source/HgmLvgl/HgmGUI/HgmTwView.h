@@ -15,7 +15,7 @@
 #include <Arduino.h>
 
 namespace HgmGUI {
-    class HgmTwUI
+    class HgmTwView
     {
     private:
  
@@ -56,12 +56,11 @@ namespace HgmGUI {
             } anim;
         } widget;
         
+        HgmTwView();
+        ~HgmTwView();
 
-        HgmTwUI();
-        ~HgmTwUI();
-
-        void begin();
-        void stop();
+        static void begin();
+        static void stop();
 
     };
 

@@ -15,24 +15,21 @@
 #include "Source/HgmSelfChecking/HgmSelfChecking.h"
 #include "Source/HgmApp/TimeInfo/TimeInfo.h"
 #include "Source/HgmApp/BiliInfoRecv/BiliInfoRecv.h"
-#include "Source/HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "Source/HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "Source/HgmApp/WeatherInfo/WeatherInfo.h"
 #include "Source/HgmApp/HotakusMemUtil.h"
 #include "Source/HgmApp/HotakusHttpUtil.h"
 #include "Source/HgmApp/HardwareInfoRecv/HardwareRequest.h"
 
-#include <Arduino.h>
 #include <TFT_eSPI.h>
 #include <User_Setup.h>
 #include <User_Setup_Select.h>
 #include <I2C_MPU6886.h>
 #include <ArduinoJson.h>
 #include <iostream>
-#include <string>
 #include <TJpg_Decoder.h>
 #include <SPIFFS.h>
 #include <freertos/FreeRTOSConfig.h>
-
 
 #define SCREEN_BK_PIN   32
 
@@ -127,12 +124,12 @@ void setup()
     xSemaphoreGive(wbs);
 
     /* HGM LVGL initialize */
-    hgmLvgl.HgmLvglbegin();
+    hgmLvgl.begin();
 
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    HgmSetupUI* hgmSetupUI = new HgmSetupUI();
+    HgmSetupView* hgmSetupUI = new HgmSetupView();
     hgmSetupUI->begin();
 
     // Open bluetooth

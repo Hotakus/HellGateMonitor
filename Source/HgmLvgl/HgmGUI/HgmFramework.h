@@ -11,35 +11,30 @@
 #define LVGL_HGM_FRAMEWORK_H
 
 #include "../../LvglSrc/lvgl/lvgl.h"
-#include "HgmSetupUI.h"
 
+#include "HgmSetupView.h"
+#include "HgmViews.h"
 
 namespace HgmGUI {
-
-    typedef enum _HgmGuiType {
-        HGM_GUI_NULL,
-
-        HGM_GUI_HARDWARE_MONITOR,
-
-        HGM_GUI_MISC,
-        HGM_GUI_PROJECTION,
-    } HgmGuiType;
-
+#define MAX_VIEWS 32
     class HgmFramework
     {
     private:
+        HgmViews* prevView = NULL;
+        HgmViews* currView = NULL;
     public:
+        HgmViews** viewsGroup;
+
         HgmFramework();
         ~HgmFramework();
 
         void begin();
         void stop();
 
-        static void changeUI(HgmGuiType gui);
+        bool RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb);
+        bool UnRegisterView(String viewName);
 
-        static void setDefaultGui(HgmGuiType def = HGM_GUI_MISC);
-        static HgmGuiType getDefaultGui();
-        static HgmGuiType getCurrentGui();
+        void ChangeView(String viewName);
     };
 
 };

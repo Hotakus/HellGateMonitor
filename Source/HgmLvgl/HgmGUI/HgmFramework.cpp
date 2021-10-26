@@ -8,76 +8,109 @@
  * @copyright Copyright (c) 2021/8/8
 *******************************************************************/
 #include "../../LvglSrc/lvgl/lvgl.h"
-#include "HgmFramework.h"
-#include "HgmTwUI.h"
-#include <Arduino.h>
+#include "../../HgmApp/HotakusMemUtil.h"
 
+#include "HgmViews.h"
+#include "HgmFramework.h"
+#include "HgmTwView.h"
+
+#define TAG "HgmFramework"
+#define HGM_DEBUG 1
+#include "../../HgmLogUtil.h"
+
+#include <Arduino.h>
 
 using namespace HgmGUI;
 
-static HgmGuiType _defGui;
-static HgmGuiType _curGui;
-static HgmGuiType _prevGui;
+static HgmFramework* instance = NULL;
 
-HgmTwUI* hgmTwUI = NULL;
-
+HgmTwView* hgmTwView = NULL;
 
 HgmFramework::HgmFramework()
 {
-    /* Create All UI */
-    hgmTwUI = new HgmTwUI();
+    instance = this;
 
-    this->setDefaultGui();
+    viewsGroup = (HgmViews**)malloc(sizeof(HgmViews*) * MAX_VIEWS);
+    memset(viewsGroup, NULL, sizeof(HgmViews*) * MAX_VIEWS);
+
+    /* Create All UI */
+    hgmTwView = new HgmTwView();
 }
 
 HgmFramework::~HgmFramework()
 {
     /* Remove All UI */
-    delete hgmTwUI;
-}
+    delete hgmTwView;
 
+    for (uint8_t i = 0; i < MAX_VIEWS; i++)
+        if (!viewsGroup[i])
+            hotakusFree(viewsGroup);
+    instance = NULL;
+}
 
 /**
  * @brief initialize the hgm framework
  */
 void HgmGUI::HgmFramework::begin()
 {
-    /* ui init */
-    _curGui = _defGui;
-    switch (_curGui)
-    {
-    case HGM_GUI_MISC:
-        hgmTwUI->begin();
-        break;
-    case HGM_GUI_HARDWARE_MONITOR:
-        break;
-    case HGM_GUI_PROJECTION:
-        break;
-    default:
-        break;
+    this->RegisterNewView("MiscView", (vcb_t)HgmTwView::begin, (vdb_t)HgmTwView::stop);
+    this->ChangeView("MiscView");
+}
+
+bool HgmGUI::HgmFramework::RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb)
+{
+    if (!vcb || !vdb) {
+        hgm_log_e(TAG, "vcb and vdb must be assign.");
+        return false;
     }
+
+    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
+        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
+            
+        }
+    }
+    
+    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
+        if (viewsGroup[i] == NULL) {
+            viewsGroup[i] = (HgmViews*)hotakusAlloc(sizeof(HgmViews));
+            viewsGroup[i]->SetName(viewName);
+            viewsGroup[i]->BindCreateBehavior(vcb);
+            viewsGroup[i]->BindDestroyBehavior(vdb);
+            return true;
+        }
+    }
+
+    return false;
 }
 
-void HgmFramework::setDefaultGui(HgmGuiType def)
+bool HgmGUI::HgmFramework::UnRegisterView(String viewName)
 {
-    _defGui = def;
+    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
+        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
+            hotakusFree(viewsGroup[i]);
+            viewsGroup[i] = NULL;
+            return true;
+        }
+    }
+
+    return false;
 }
 
-HgmGuiType HgmFramework::getDefaultGui()
+void HgmFramework::ChangeView(String viewName)
 {
-    return _defGui;
-}
-
-HgmGuiType HgmFramework::getCurrentGui()
-{
-    // TODO:
-    return _curGui;
-}
-
-void HgmFramework::changeUI(HgmGuiType gui)
-{
-    _prevGui = _curGui;
-    _curGui = gui;
-
-    // TODO:
+    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
+        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
+            if (currView) {
+                currView->end();
+                prevView = currView;
+                currView = viewsGroup[i];
+                currView->begin();
+            } else {
+                prevView = NULL;
+                currView = viewsGroup[i];
+                currView->begin();
+            }
+            return;
+        }
+    }
 }

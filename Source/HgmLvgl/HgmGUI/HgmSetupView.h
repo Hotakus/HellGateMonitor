@@ -1,5 +1,5 @@
 /******************************************************************
- * @file HgmSetupUI.h
+ * @file HgmSetupView.h
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
  * @brief ...
@@ -38,7 +38,7 @@ namespace HgmGUI {
         bool waitStatus;		// Component's wait status
     } HgmComponent;
 
-    class HgmSetupUI
+    class HgmSetupView
     {
     private:
 
@@ -60,8 +60,8 @@ namespace HgmGUI {
         String prevText = "";
         String curText = "";
 
-        HgmSetupUI();
-        ~HgmSetupUI();
+        HgmSetupView();
+        ~HgmSetupView();
 
         void begin();
 

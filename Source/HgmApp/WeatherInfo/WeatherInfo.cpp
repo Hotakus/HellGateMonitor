@@ -10,7 +10,7 @@
 #include "WeatherInfo.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
 #include "../HgmBT/HgmBT.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmJsonUtil.h"
 #include "../TimeInfo/TimeInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
@@ -33,7 +33,7 @@ using namespace HgmGUI;
 using namespace fs;
 
 extern HgmBT hgmBT;
-extern HgmSetupUI* hgmSetupUI;
+extern HgmSetupView* hgmSetupUI;
 static HgmComponent component;
 
 extern SemaphoreHandle_t wbs;

@@ -28,10 +28,6 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 #define SERVER_DEFAULT_PORT 20
 
-// extern HardwareCpuData hardwareCpuData;
-// extern HardwareGpuData hardwareGpuData;
-// extern HardwareMemData hardwareMemData;
-
 extern HardwareRequest* hrr;
 extern SemaphoreHandle_t wbs;
 
@@ -278,11 +274,11 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         if (hrr->isRequest(HGM_NETWORK))
             hrr->hd->netData->Set(rawPack);
 
-        // Serial.println(((HardwareCpuData*)hgmHardObj[HGM_CPU]->params)->name);
-        // Serial.println(((HardwareGpuData*)hgmHardObj[HGM_GPU]->params)->name);
-        // Serial.println(((HardwareMemData*)hgmHardObj[HGM_MEMORY]->params)->free);
+        // Serial.println(((CpuData*)hgmHardObj[HGM_CPU]->params)->name);
+        // Serial.println(((GpuData*)hgmHardObj[HGM_GPU]->params)->name);
+        // Serial.println(((MemData*)hgmHardObj[HGM_MEMORY]->params)->free);
         // Serial.println(((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->disk[1].name);
-        // Serial.println(((HardwareNetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
+        // Serial.println(((NetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
 
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_OK;

@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2021/8/15
 *******************************************************************/
 #include "../../HgmLvgl/HgmLvgl.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
 #include "../HgmWiFi/HgmWiFi.h"
 #include "../HgmJsonUtil.h"
@@ -36,7 +36,7 @@ using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HGM;
 
 extern HgmLvgl* hgmLvgl;
-extern HgmSetupUI* hgmSetupUI;
+extern HgmSetupView* hgmSetupUI;
 
 BiliInfoRecv bili;
 

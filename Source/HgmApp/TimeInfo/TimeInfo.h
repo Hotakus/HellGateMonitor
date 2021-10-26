@@ -11,7 +11,7 @@
 #define HELLGATEMONITOR_TIMEINFO_H
 
 #include <Arduino.h>
-#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include <ESP32Time.h>
 
 namespace HgmApplication {

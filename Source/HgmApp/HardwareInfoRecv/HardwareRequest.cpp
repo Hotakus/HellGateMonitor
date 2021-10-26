@@ -27,8 +27,6 @@
 using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmApplication;
 
-static String test_str = "{\"Header\":\"HgmTCP\",\"DataType\":\"4\",\"Data\":{\"CPU\":{\"name\":\"Intel Core i7-8700\",\"coreCount\":6,\"freq\":{\"bus\":99.75,\"current\":[4289.25,4289.25,4289.25,4289.25,4289.25,4289.25]},\"temp\":{\"current\":[54.0,53.0,54.0,55.0,55.0,70.0],\"max\":70.0,\"average\":56.83},\"load\":{\"total\":6.41,\"current\":[8.33,3.21,3.21,1.92,3.21,18.59]},\"power\":{\"current\":34.55,\"max\":34.55}}}}";
-
 HgmApplication::HardwareRequest::HardwareRequest()
 {
 

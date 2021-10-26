@@ -55,7 +55,7 @@ HgmLvgl::~HgmLvgl()
 /**
  * @brief HGM LVGL begin.
  */
-void HGM::HgmLvgl::HgmLvglbegin()
+void HGM::HgmLvgl::begin()
 {
     /* LCD init */
     instance->lcd->begin();

@@ -1,5 +1,5 @@
 /******************************************************************
- * @file HgmTwUI.cpp
+ * @file HgmTwView.cpp
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
  * @brief ...
@@ -7,7 +7,7 @@
  * @date 2021/8/31 22:54
  * @copyright Copyright (c) 2021/8/31
 *******************************************************************/
-#include "HgmTwUI.h"
+#include "HgmTwView.h"
 #include "../HgmLvgl.h"
 #include "../../HgmApp/TimeInfo/TimeInfo.h"
 #include "../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
@@ -83,14 +83,14 @@ static void ShowWeather(lv_timer_t* timer);
 static void weatherWidgetsCreate();
 static void biliWidgetsCreate();
 
-static HgmTwUI* instance = NULL;
+static HgmTwView* instance = NULL;
 
-HgmTwUI::HgmTwUI()
+HgmTwView::HgmTwView()
 {
     instance = this;
 }
 
-HgmTwUI::~HgmTwUI()
+HgmTwView::~HgmTwView()
 {
     instance = NULL;
 }
@@ -107,83 +107,83 @@ static void _deInitTask()
     weatherInfo.deInitTask();
 }
 
-void HgmGUI::HgmTwUI::begin()
+void HgmGUI::HgmTwView::begin()
 {
     _initTask();
 
     // To avoid crush when LVGL running busy
     vTaskDelay(300);
 
-    widget.time.tw_time = lv_img_create(lv_scr_act());
-    lv_obj_align(widget.time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
-    lv_img_set_src(widget.time.tw_time, &tw_t);
+    instance->widget.time.tw_time = lv_img_create(lv_scr_act());
+    lv_obj_align(instance->widget.time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(instance->widget.time.tw_time, &tw_t);
 
-    widget.weather.tw_weather = lv_img_create(lv_scr_act());
-    lv_obj_align(widget.weather.tw_weather, LV_ALIGN_TOP_LEFT, -132, 6);
-    lv_img_set_src(widget.weather.tw_weather, &tw_w);
+    instance->widget.weather.tw_weather = lv_img_create(lv_scr_act());
+    lv_obj_align(instance->widget.weather.tw_weather, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(instance->widget.weather.tw_weather, &tw_w);
 
-    widget.bili.book = lv_imgbtn_create(lv_scr_act());
-    lv_obj_align(widget.bili.book, LV_ALIGN_LEFT_MID, -97, 0);
-    lv_imgbtn_set_src(widget.bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
-    lv_obj_set_width(widget.bili.book, 97);
+    instance->widget.bili.book = lv_imgbtn_create(lv_scr_act());
+    lv_obj_align(instance->widget.bili.book, LV_ALIGN_LEFT_MID, -97, 0);
+    lv_imgbtn_set_src(instance->widget.bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
+    lv_obj_set_width(instance->widget.bili.book, 97);
 
     /* Label */
-    widget.time.main_time_label = lv_label_create(widget.time.tw_time);
-    lv_label_set_recolor(widget.time.main_time_label, true);
-    lv_label_set_text(widget.time.main_time_label, "#59493f --:--#");
-    lv_obj_align(widget.time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
-    lv_obj_set_style_text_font(widget.time.main_time_label, &k12x8_14px_time, 0);
+    instance->widget.time.main_time_label = lv_label_create(instance->widget.time.tw_time);
+    lv_label_set_recolor(instance->widget.time.main_time_label, true);
+    lv_label_set_text(instance->widget.time.main_time_label, "#59493f --:--#");
+    lv_obj_align(instance->widget.time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
+    lv_obj_set_style_text_font(instance->widget.time.main_time_label, &k12x8_14px_time, 0);
 
-    widget.time.date_label = lv_label_create(widget.time.tw_time);
-    lv_label_set_recolor(widget.time.date_label, true);
-    lv_label_set_text(widget.time.date_label, "#59493f 1970.01.01 ---#");
-    lv_obj_align(widget.time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
-    lv_obj_set_style_text_font(widget.time.date_label, &k12x8_6px, 0);
+    instance->widget.time.date_label = lv_label_create(instance->widget.time.tw_time);
+    lv_label_set_recolor(instance->widget.time.date_label, true);
+    lv_label_set_text(instance->widget.time.date_label, "#59493f 1970.01.01 ---#");
+    lv_obj_align(instance->widget.time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
+    lv_obj_set_style_text_font(instance->widget.time.date_label, &k12x8_6px, 0);
 
 
     /* Animations */
-    widget.anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget.anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget.anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget.anim.anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget.anim.anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
 
-    // widget.anim.anim_book
-    lv_anim_init(widget.anim.anim_book);
-    lv_anim_set_var(widget.anim.anim_book, widget.bili.book);
-    lv_anim_set_values(widget.anim.anim_book, -97, 2);
-    lv_anim_set_early_apply(widget.anim.anim_book, false);
-    lv_anim_set_exec_cb(widget.anim.anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.anim_book, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.anim_book, 900);
+    // instance->widget.anim.anim_book
+    lv_anim_init(instance->widget.anim.anim_book);
+    lv_anim_set_var(instance->widget.anim.anim_book, instance->widget.bili.book);
+    lv_anim_set_values(instance->widget.anim.anim_book, -97, 2);
+    lv_anim_set_early_apply(instance->widget.anim.anim_book, false);
+    lv_anim_set_exec_cb(instance->widget.anim.anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget.anim.anim_book, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget.anim.anim_book, 900);
 
     // anim_tw
-    lv_anim_init(widget.anim.anim_t);
-    lv_anim_set_var(widget.anim.anim_t, widget.time.tw_time);
-    lv_anim_set_values(widget.anim.anim_t, -132, 103);
-    lv_anim_set_exec_cb(widget.anim.anim_t, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.anim_t, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.anim_t, 1000);
+    lv_anim_init(instance->widget.anim.anim_t);
+    lv_anim_set_var(instance->widget.anim.anim_t, instance->widget.time.tw_time);
+    lv_anim_set_values(instance->widget.anim.anim_t, -132, 103);
+    lv_anim_set_exec_cb(instance->widget.anim.anim_t, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget.anim.anim_t, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget.anim.anim_t, 1000);
 
-    lv_anim_init(widget.anim.anim_w);
-    lv_anim_set_var(widget.anim.anim_w, widget.weather.tw_weather);
-    lv_anim_set_values(widget.anim.anim_w, -132, 104);
-    lv_anim_set_exec_cb(widget.anim.anim_w, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.anim_w, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.anim_w, 1000);
+    lv_anim_init(instance->widget.anim.anim_w);
+    lv_anim_set_var(instance->widget.anim.anim_w, instance->widget.weather.tw_weather);
+    lv_anim_set_values(instance->widget.anim.anim_w, -132, 104);
+    lv_anim_set_exec_cb(instance->widget.anim.anim_w, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget.anim.anim_w, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget.anim.anim_w, 1000);
 
-    lv_anim_init(widget.anim.anim_tw_expand);
-    lv_anim_set_var(widget.anim.anim_tw_expand, widget.weather.tw_weather);
-    lv_anim_set_values(widget.anim.anim_tw_expand, 6, 63);
-    lv_anim_set_exec_cb(widget.anim.anim_tw_expand, (lv_anim_exec_xcb_t)lv_obj_set_y);
-    lv_anim_set_path_cb(widget.anim.anim_tw_expand, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.anim_tw_expand, 500);
+    lv_anim_init(instance->widget.anim.anim_tw_expand);
+    lv_anim_set_var(instance->widget.anim.anim_tw_expand, instance->widget.weather.tw_weather);
+    lv_anim_set_values(instance->widget.anim.anim_tw_expand, 6, 63);
+    lv_anim_set_exec_cb(instance->widget.anim.anim_tw_expand, (lv_anim_exec_xcb_t)lv_obj_set_y);
+    lv_anim_set_path_cb(instance->widget.anim.anim_tw_expand, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget.anim.anim_tw_expand, 500);
 
     // anim time line
     lv_anim_timeline_t* at = lv_anim_timeline_create();
-    lv_anim_timeline_add(at, 0, widget.anim.anim_book);
-    lv_anim_timeline_add(at, 800, widget.anim.anim_t);
-    lv_anim_timeline_add(at, 800, widget.anim.anim_w);
-    lv_anim_timeline_add(at, 1800, widget.anim.anim_tw_expand);
+    lv_anim_timeline_add(at, 0, instance->widget.anim.anim_book);
+    lv_anim_timeline_add(at, 800, instance->widget.anim.anim_t);
+    lv_anim_timeline_add(at, 800, instance->widget.anim.anim_w);
+    lv_anim_timeline_add(at, 1800, instance->widget.anim.anim_tw_expand);
 
     vTaskDelay(lv_anim_timeline_start(at));
 
@@ -191,22 +191,22 @@ void HgmGUI::HgmTwUI::begin()
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
 
     // clock image
-    widget.time.clock_img = lv_img_create(widget.time.tw_time);
-    lv_obj_align(widget.time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
+    instance->widget.time.clock_img = lv_img_create(instance->widget.time.tw_time);
+    lv_obj_align(instance->widget.time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
 
 
     biliWidgetsCreate();
     weatherWidgetsCreate();
     showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
 
-    widget.weather.wifiLabel = lv_label_create(widget.weather.tw_weather);
-    lv_obj_set_style_opa(widget.weather.wifiLabel, LV_OPA_0, 0);
-    lv_label_set_text(widget.weather.wifiLabel, LV_SYMBOL_WIFI);
-    lv_obj_align(widget.weather.wifiLabel, LV_ALIGN_TOP_LEFT, 3, 3);
+    instance->widget.weather.wifiLabel = lv_label_create(instance->widget.weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget.weather.wifiLabel, LV_OPA_0, 0);
+    lv_label_set_text(instance->widget.weather.wifiLabel, LV_SYMBOL_WIFI);
+    lv_obj_align(instance->widget.weather.wifiLabel, LV_ALIGN_TOP_LEFT, 3, 3);
 }
 
 
-void HgmGUI::HgmTwUI::stop()
+void HgmGUI::HgmTwView::stop()
 {
     // TODO: delete
     _deInitTask();

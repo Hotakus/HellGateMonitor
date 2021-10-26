@@ -14,7 +14,7 @@
 #include <ESP32Time.h>
 #include "TimeInfo.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupUI.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmJsonUtil.h"
 
 #define HGM_DEBUG 0
@@ -37,7 +37,7 @@ static void netTimeTask(void* params);
 
 extern HgmComponent component;
 
-extern HgmSetupUI* hgmSetupUI;
+extern HgmSetupView* hgmSetupUI;
 
 TimeInfo ti;
 
