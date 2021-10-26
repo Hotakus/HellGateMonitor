@@ -123,8 +123,10 @@ bool HardwareRequest::RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHa
 
     int nullIndex = -1;
     for (uint8_t i = 0; i < supportHardwareCnt; i++) {
-        if (!hgmHardObj[i]->params)
+        if (!hgmHardObj[i]->params) {
             nullIndex = i;
+            continue;
+        }
         if (hgmHardObj[i]->hardware == ht) {
             hgm_log_e(TAG, "Hardware Data obj is existing.");
             return false;
@@ -137,17 +139,18 @@ bool HardwareRequest::RegisterNewHardware(void* pHardData, HgmHardware ht, HgmHa
         hgmHardObj[nullIndex]->pos = pos;
         hgmHardObj[nullIndex]->request = false;
         return true;
-    } else {
-        for (nullIndex = 0; nullIndex < supportHardwareCnt; nullIndex++) {
-            if (!hgmHardObj[nullIndex]->params) {
-                hgmHardObj[nullIndex]->hardware = ht;
-                hgmHardObj[nullIndex]->params = pHardData;
-                hgmHardObj[nullIndex]->pos = pos;
-                hgmHardObj[nullIndex]->request = false;
-                return true;
-            }
+    }
+
+    for (nullIndex = 0; nullIndex < supportHardwareCnt; nullIndex++) {
+        if (!hgmHardObj[nullIndex]->params) {
+            hgmHardObj[nullIndex]->hardware = ht;
+            hgmHardObj[nullIndex]->params = pHardData;
+            hgmHardObj[nullIndex]->pos = pos;
+            hgmHardObj[nullIndex]->request = false;
+            return true;
         }
     }
+
 
     hgm_log_e(TAG, "Register failed, Hardware obj is full.");
     return false;
@@ -212,7 +215,7 @@ void HardwareRequest::FlushRequestList()
     }
 }
 
-template <typename t> 
+template <typename t>
 t* HardwareRequest::GetParams(HgmHardware ht)
 {
     HgmHardwareObject* hho = this->GetHardwareObj(ht);
