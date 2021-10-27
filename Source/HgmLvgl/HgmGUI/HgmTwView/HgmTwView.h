@@ -10,7 +10,7 @@
 #ifndef HELLGATEMONITOR_HGMTWUI_H
 #define HELLGATEMONITOR_HGMTWUI_H
 
-#include "../../LvglSrc/lvgl/lvgl.h"
+#include "../../../LvglSrc/lvgl/lvgl.h"
 
 #include <Arduino.h>
 

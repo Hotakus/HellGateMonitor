@@ -8,10 +8,10 @@
  * @copyright Copyright (c) 2021/8/31
 *******************************************************************/
 #include "HgmTwView.h"
-#include "../HgmLvgl.h"
-#include "../../HgmApp/TimeInfo/TimeInfo.h"
-#include "../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
-#include "../../HgmApp/WeatherInfo/WeatherInfo.h"
+#include "../../HgmLvgl.h"
+#include "../../../HgmApp/TimeInfo/TimeInfo.h"
+#include "../../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "../../../HgmApp/WeatherInfo/WeatherInfo.h"
 
 #include <Arduino.h>
 #include <ESP32Time.h>

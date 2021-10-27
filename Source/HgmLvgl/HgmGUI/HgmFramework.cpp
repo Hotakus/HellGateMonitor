@@ -12,7 +12,7 @@
 
 #include "HgmViews.h"
 #include "HgmFramework.h"
-#include "HgmTwView.h"
+#include "HgmTwView/HgmTwView.h"
 
 #define TAG "HgmFramework"
 #define HGM_DEBUG 1
