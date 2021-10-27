@@ -18,7 +18,9 @@ namespace HgmGUI {
     class HgmTwView
     {
     private:
- 
+        void frameCreate();
+        void widgetCreate();
+        void animRun();
     public:
         struct _widget {
             struct _biliWidget {

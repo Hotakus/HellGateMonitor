@@ -34,7 +34,7 @@ namespace HgmGUI {
         bool RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb);
         bool UnRegisterView(String viewName);
 
-        void ChangeView(String viewName);
+        bool ChangeView(String viewName);
     };
 
 };

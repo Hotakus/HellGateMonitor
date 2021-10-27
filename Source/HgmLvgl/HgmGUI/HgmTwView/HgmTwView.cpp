@@ -82,6 +82,7 @@ static void ShowWeather(lv_timer_t* timer);
 
 static void weatherWidgetsCreate();
 static void biliWidgetsCreate();
+static void timeWidgetsCreate();
 
 static HgmTwView* instance = NULL;
 
@@ -110,10 +111,36 @@ static void _deInitTask()
 void HgmGUI::HgmTwView::begin()
 {
     _initTask();
+    vTaskDelay(500);
 
-    // To avoid crush when LVGL running busy
-    vTaskDelay(300);
+    instance->frameCreate();
+    instance->widgetCreate();
+    instance->animRun();
 
+    showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
+    showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
+}
+
+
+void HgmGUI::HgmTwView::stop()
+{
+    // TODO: delete
+    _deInitTask();
+}
+
+void HgmGUI::HgmTwView::widgetCreate()
+{
+    timeWidgetsCreate();
+    biliWidgetsCreate();
+    weatherWidgetsCreate();
+}
+
+void HgmGUI::HgmTwView::animRun()
+{
+}
+
+void HgmGUI::HgmTwView::frameCreate()
+{
     instance->widget.time.tw_time = lv_img_create(lv_scr_act());
     lv_obj_align(instance->widget.time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
     lv_img_set_src(instance->widget.time.tw_time, &tw_t);
@@ -127,27 +154,12 @@ void HgmGUI::HgmTwView::begin()
     lv_imgbtn_set_src(instance->widget.bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
     lv_obj_set_width(instance->widget.bili.book, 97);
 
-    /* Label */
-    instance->widget.time.main_time_label = lv_label_create(instance->widget.time.tw_time);
-    lv_label_set_recolor(instance->widget.time.main_time_label, true);
-    lv_label_set_text(instance->widget.time.main_time_label, "#59493f --:--#");
-    lv_obj_align(instance->widget.time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
-    lv_obj_set_style_text_font(instance->widget.time.main_time_label, &k12x8_14px_time, 0);
-
-    instance->widget.time.date_label = lv_label_create(instance->widget.time.tw_time);
-    lv_label_set_recolor(instance->widget.time.date_label, true);
-    lv_label_set_text(instance->widget.time.date_label, "#59493f 1970.01.01 ---#");
-    lv_obj_align(instance->widget.time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
-    lv_obj_set_style_text_font(instance->widget.time.date_label, &k12x8_6px, 0);
-
-
     /* Animations */
     instance->widget.anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     instance->widget.anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     instance->widget.anim.anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     instance->widget.anim.anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
 
-    // instance->widget.anim.anim_book
     lv_anim_init(instance->widget.anim.anim_book);
     lv_anim_set_var(instance->widget.anim.anim_book, instance->widget.bili.book);
     lv_anim_set_values(instance->widget.anim.anim_book, -97, 2);
@@ -184,44 +196,26 @@ void HgmGUI::HgmTwView::begin()
     lv_anim_timeline_add(at, 800, instance->widget.anim.anim_t);
     lv_anim_timeline_add(at, 800, instance->widget.anim.anim_w);
     lv_anim_timeline_add(at, 1800, instance->widget.anim.anim_tw_expand);
-
     vTaskDelay(lv_anim_timeline_start(at));
+}
 
-    // TODO: add animation
-    showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
+static void timeWidgetsCreate()
+{
+    instance->widget.time.main_time_label = lv_label_create(instance->widget.time.tw_time);
+    lv_label_set_recolor(instance->widget.time.main_time_label, true);
+    lv_label_set_text(instance->widget.time.main_time_label, "#59493f --:--#");
+    lv_obj_align(instance->widget.time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
+    lv_obj_set_style_text_font(instance->widget.time.main_time_label, &k12x8_14px_time, 0);
+
+    instance->widget.time.date_label = lv_label_create(instance->widget.time.tw_time);
+    lv_label_set_recolor(instance->widget.time.date_label, true);
+    lv_label_set_text(instance->widget.time.date_label, "#59493f 1970.01.01 ---#");
+    lv_obj_align(instance->widget.time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
+    lv_obj_set_style_text_font(instance->widget.time.date_label, &k12x8_6px, 0);
 
     // clock image
     instance->widget.time.clock_img = lv_img_create(instance->widget.time.tw_time);
     lv_obj_align(instance->widget.time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
-
-
-    biliWidgetsCreate();
-    weatherWidgetsCreate();
-    showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
-
-    instance->widget.weather.wifiLabel = lv_label_create(instance->widget.weather.tw_weather);
-    lv_obj_set_style_opa(instance->widget.weather.wifiLabel, LV_OPA_0, 0);
-    lv_label_set_text(instance->widget.weather.wifiLabel, LV_SYMBOL_WIFI);
-    lv_obj_align(instance->widget.weather.wifiLabel, LV_ALIGN_TOP_LEFT, 3, 3);
-}
-
-
-void HgmGUI::HgmTwView::stop()
-{
-    // TODO: delete
-    _deInitTask();
-}
-
-
-static void weatherUpdate()
-{
-    if (weatherDataToday.temp >= 0)
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", weatherDataToday.temp);
-    else
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", weatherDataToday.temp);
-
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", weatherDataToday.aqi);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", weatherDataToday.humidity);
 }
 
 static void biliWidgetsCreate()
@@ -257,6 +251,18 @@ static void biliWidgetsCreate()
     lv_obj_set_style_text_font(instance->widget.bili.biliFans, &k12x8_6px, 0);
 }
 
+
+static void weatherUpdate()
+{
+    if (weatherDataToday.temp >= 0)
+        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", weatherDataToday.temp);
+    else
+        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", weatherDataToday.temp);
+
+    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", weatherDataToday.aqi);
+    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", weatherDataToday.humidity);
+}
+
 static void weatherWidgetsCreate()
 {
     instance->widget.weather.tempLabel.label = lv_label_create(instance->widget.weather.tw_weather);
@@ -269,14 +275,14 @@ static void weatherWidgetsCreate()
     instance->widget.weather.aqiLabel.label = lv_label_create(instance->widget.weather.tw_weather);
     lv_obj_set_style_text_font(instance->widget.weather.aqiLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget.weather.aqiLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", 72);
+    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", 0);
     lv_obj_set_style_text_align(instance->widget.weather.aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align_to(instance->widget.weather.aqiLabel.label, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
     instance->widget.weather.humidityLabel.label = lv_label_create(instance->widget.weather.tw_weather);
     lv_obj_set_style_text_font(instance->widget.weather.humidityLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget.weather.humidityLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", 80);
+    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", 0);
     lv_obj_set_style_text_align(instance->widget.weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align_to(instance->widget.weather.humidityLabel.label, instance->widget.weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
@@ -284,7 +290,6 @@ static void weatherWidgetsCreate()
     lv_obj_set_style_text_align(instance->widget.weather.batLabel, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_text_fmt(instance->widget.weather.batLabel, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
     lv_obj_align_to(instance->widget.weather.batLabel, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
-
 }
 
 
@@ -387,11 +392,6 @@ static void ShowTime(lv_timer_t* timer)
     );
 
     lv_img_set_src(instance->widget.time.clock_img, clock_imgs_array[_tm.tm_hour / 2]);
-
-    if (WiFi.isConnected())
-        lv_obj_set_style_opa(instance->widget.weather.wifiLabel, LV_OPA_70, 0);
-    else
-        lv_obj_set_style_opa(instance->widget.weather.wifiLabel, LV_OPA_0, 0);
 
     ShowBili();
 }

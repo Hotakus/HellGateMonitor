@@ -99,7 +99,7 @@ bool HgmGUI::HgmFramework::UnRegisterView(String viewName)
     return false;
 }
 
-void HgmFramework::ChangeView(String viewName)
+bool HgmFramework::ChangeView(String viewName)
 {
     for (uint8_t i = 0; i < MAX_VIEWS; i++) {
         if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
@@ -113,7 +113,9 @@ void HgmFramework::ChangeView(String viewName)
                 currView = viewsGroup[i];
                 currView->begin();
             }
-            return;
+            return true;
         }
     }
+
+    return false;
 }
