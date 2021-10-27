@@ -13,7 +13,7 @@ using namespace HgmGUI;
 
 HgmViews::HgmViews()
 {
-
+	
 }
 
 HgmViews::~HgmViews()
