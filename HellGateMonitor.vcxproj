@@ -202,7 +202,6 @@
     <ClInclude Include="Source\HgmLogUtil.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h" />
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwUI.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmViews.h" />
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h" />
@@ -353,7 +352,6 @@
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp" />
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwUI.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmViews.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />

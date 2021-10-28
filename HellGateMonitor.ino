@@ -20,6 +20,8 @@
 #include "Source/HgmApp/HotakusMemUtil.h"
 #include "Source/HgmApp/HotakusHttpUtil.h"
 #include "Source/HgmApp/HardwareInfoRecv/HardwareRequest.h"
+#include "Source/Utils/MsgCenter/MsgCenter.h"
+
 
 #include <TFT_eSPI.h>
 #include <User_Setup.h>
@@ -45,6 +47,7 @@ using namespace HGM;
 using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace fs;
+using namespace msgmanager;
 
 extern HgmWiFi hgmWiFi;
 extern HgmBT hgmBT;
@@ -88,6 +91,39 @@ static void backlightControl(void* params)
     }
 }
 
+
+static void ttest(msg_t* msg)
+{
+    auto* str = (String*)msg->pData;
+    Serial.println(*str);
+}
+
+
+static void msg_test()
+{
+    MsgCenter mc;
+    mc.begin();
+
+    subscriber_t subscriber;
+    String name = "testSubscriber";
+    String msg_id = "testMsg";
+    subscriber.set(name, msg_id, ttest);
+
+    String str = "Hotakus.";
+    msg_t msg;
+    msg.set(msg_id, &str);
+
+    mc.subscribe(&subscriber);
+    mc.addMsg(msg.id, msg.pData);
+    mc.notify(subscriber.name);
+    mc.removeMsg(msg.id);
+    // mc.unsubscribe(&subscriber);
+    // 
+    // mc.end();
+}
+
+
+
 void setup()
 {
     Serial.begin(115200);
@@ -115,6 +151,8 @@ void setup()
         HGM_VERSION_INFO, firmwareSize);
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
+
+    msg_test();
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);

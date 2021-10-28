@@ -413,9 +413,6 @@
     <ClInclude Include="Source\HgmApp\WeatherInfo\WeatherInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmApp\HgmJsonUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -920,9 +917,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\HgmJsonUtil.cpp">
