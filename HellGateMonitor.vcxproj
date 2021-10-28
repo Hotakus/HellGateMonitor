@@ -210,6 +210,8 @@
     <ClInclude Include="Source\HgmApp\HotakusMemUtil.h" />
     <ClInclude Include="Source\LvglSrc\Assets\clock_img\clock_declare.h" />
     <ClInclude Include="Source\LvglSrc\Assets\clock_img\lvgl\lvgl.h" />
+    <ClInclude Include="Source\LvglSrc\libs\lv_lib_png\lodepng.h" />
+    <ClInclude Include="Source\LvglSrc\libs\lv_lib_png\lv_png.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\lvgl.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\core\lv_disp.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\core\lv_event.h" />
@@ -241,8 +243,6 @@
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\layouts\flex\lv_flex.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\layouts\grid\lv_grid.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\layouts\lv_layouts.h" />
-    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lodepng.h" />
-    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\lv_extra.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\others\lv_others.h" />
@@ -445,6 +445,9 @@
     <ClCompile Include="Source\LvglSrc\Assets\img\TW.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\tw_t.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\tw_w.c" />
+    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\lodepng.c" />
+    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\lv_png.c" />
+    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\png_decoder_test.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_event.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\core\lv_group.c" />
@@ -473,8 +476,6 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_img_decoder.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\layouts\flex\lv_flex.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\layouts\grid\lv_grid.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lodepng.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\lv_extra.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\others\snapshot\lv_snapshot.c" />
