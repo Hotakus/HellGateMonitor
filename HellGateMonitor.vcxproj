@@ -331,6 +331,9 @@
     <ClInclude Include="Source\LvglSrc\lvgl\tests\unity\unity.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\tests\unity\unity_internals.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\tests\unity\unity_support.h" />
+    <ClInclude Include="Source\Utils\MsgCenter\chain\Chain.h" />
+    <ClInclude Include="Source\Utils\MsgCenter\chain\chain_node_t.h" />
+    <ClInclude Include="Source\Utils\MsgCenter\conf.h" />
     <ClInclude Include="Source\Utils\MsgCenter\MsgCenter.h" />
     <ClInclude Include="__vm\.HellGateMonitor.vsarduino.h" />
   </ItemGroup>
@@ -583,6 +586,9 @@
     <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_fonts\font_3.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\tests\unity\unity.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\tests\unity\unity_support.c" />
+    <ClCompile Include="Source\LvglSrc\w_100_png.c" />
+    <ClCompile Include="Source\Utils\MsgCenter\chain\Chain.cpp" />
+    <ClCompile Include="Source\Utils\MsgCenter\chain\chain_node_t.cpp" />
     <ClCompile Include="Source\Utils\MsgCenter\MsgCenter.cpp" />
   </ItemGroup>
   <PropertyGroup>

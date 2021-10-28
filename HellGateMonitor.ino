@@ -37,7 +37,7 @@
 
 #define HGM_VERSION_INFO  "dev"
 #define HGM_VERSION_MAJOR 0
-#define HGM_VERSION_MINOR 1
+#define HGM_VERSION_MINOR 2
 #define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
@@ -69,7 +69,7 @@ float firmwareSize = 0;
 static void backlightControl(void* params)
 {
     bool flag = false;
-
+    
     ledcAttachPin(SCREEN_BK_PIN, 0);
     ledcSetup(0, (10 * 1000), 8);   // PWM 10kHz
     ledcWrite(0, 0);

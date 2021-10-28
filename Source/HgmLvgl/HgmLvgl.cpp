@@ -72,6 +72,9 @@ void HGM::HgmLvgl::begin()
     this->HgmLvglDispInit();
     // this->HgmLvglIndevInit();
     // this->HgmLvglFsInit();
+
+    extern void lv_png_init(void);
+    lv_png_init();
     
     /* Create All basic UI */
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
@@ -88,7 +91,7 @@ void HGM::HgmLvgl::begin()
     xTaskCreatePinnedToCore(
         HgmLvglTask,
         "HgmLvglTask",
-        2512,
+        3072,
         NULL,
         5,
         &hgmLvglTaskHandle,

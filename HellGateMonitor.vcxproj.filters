@@ -467,6 +467,15 @@
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Utils\MsgCenter\chain\Chain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\MsgCenter\chain\chain_node_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\MsgCenter\conf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Utils\MsgCenter\MsgCenter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1216,7 +1225,16 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Utils\MsgCenter\chain\Chain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\MsgCenter\chain\chain_node_t.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Utils\MsgCenter\MsgCenter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\w_100_png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
