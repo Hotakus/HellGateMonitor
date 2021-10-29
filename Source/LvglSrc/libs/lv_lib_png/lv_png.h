@@ -3,41 +3,17 @@
  *
  */
 
-#ifndef LV_PNG_H
-#define LV_PNG_H
+#ifndef LV_PNG2_H
+#define LV_PNG2_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*********************
- *      INCLUDES
- *********************/
-
-/*********************
- *      DEFINES
- *********************/
-
-/**********************
- *      TYPEDEFS
- **********************/
-
-/**********************
- * GLOBAL PROTOTYPES
- **********************/
-
-/**
- * Register the PNG decoder functions in LittlevGL
- */
-void lv_png_init(void);
-
-/**********************
- *      MACROS
- **********************/
-
+    void lv_png_init(void);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /*LV_PNG_H*/
+#endif /*LV_PNG2_H*/
