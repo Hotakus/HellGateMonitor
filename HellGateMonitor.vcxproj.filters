@@ -455,9 +455,6 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmViews.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -477,6 +474,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\LvglSrc\libs\lv_lib_png\lv_png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1213,9 +1216,6 @@
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmViews.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1238,6 +1238,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\png_decoder_test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

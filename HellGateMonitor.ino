@@ -22,7 +22,6 @@
 #include "Source/HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "Source/Utils/MsgCenter/MsgCenter.h"
 
-
 #include <TFT_eSPI.h>
 #include <User_Setup.h>
 #include <User_Setup_Select.h>
@@ -37,7 +36,7 @@
 
 #define HGM_VERSION_INFO  "dev"
 #define HGM_VERSION_MAJOR 0
-#define HGM_VERSION_MINOR 2
+#define HGM_VERSION_MINOR 5
 #define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
@@ -55,13 +54,11 @@ extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern HgmLvgl hgmLvgl;
-HardwareRequest* hrr;
 
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
 
 SemaphoreHandle_t wbs;
-HgmComponent component;
 
 float firmwareSize = 0;
 
@@ -119,7 +116,7 @@ void setup()
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
 
-    MsgCenter::msg_center_test();
+    // MsgCenter::msg_center_test();
 
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);
@@ -138,6 +135,7 @@ void setup()
     hgmSetupUI->begin();
 
     // Open bluetooth
+    HgmComponent component;
     component.type = HGM_COMPONENT_BT;
     component.curStatus = true;
     component.waitStatus = false;
@@ -154,9 +152,6 @@ void setup()
     HgmSC hgmSC;
     hgmSC.begin();
     vTaskDelay(200);
-
-    hrr = new HardwareRequest();
-    hrr->begin();
 
     // Check WiFi
     component.type = HGM_COMPONENT_WIFI;
@@ -190,16 +185,14 @@ void setup()
     hgmSetupUI->componentInitDone();
     delete hgmSetupUI;
     
-    // launch default UI
     hgmLvgl.HgmLvglUIbegin();
 
-    char* task_buf = (char*)hotakusAlloc(8192);
+    char* task_buf = (char*)hotakusAlloc(8192); 
     vTaskList(task_buf);
     //vTaskGetRunTimeStats(task_buf);
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
 }
-
 
 void loop()
 {

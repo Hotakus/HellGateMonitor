@@ -202,8 +202,9 @@
     <ClInclude Include="Source\HgmLogUtil.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.h" />
-    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmViews.h" />
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h" />
     <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_disp.h" />
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h" />
@@ -355,8 +356,9 @@
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.cpp" />
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmViews.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp" />
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp" />
