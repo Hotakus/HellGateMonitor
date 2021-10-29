@@ -13,29 +13,17 @@
 #include <Arduino.h>
 
 namespace HgmGUI {
-    typedef void (*viewsCreateBehavior_t)(void);
-    typedef void (*viewsDestroyBehavior_t)(void);
-    typedef viewsCreateBehavior_t(*vcb_t)(void);
-    typedef viewsDestroyBehavior_t(*vdb_t)(void);
     class HgmViews
     {
     private:
-        vcb_t Create  = NULL;
-        vcb_t Destroy = NULL;
 
-        String name = "";
     public:
 
-        HgmViews();
-        ~HgmViews();
+        HgmViews() = default;
+        ~HgmViews() = default;
 
-        void begin();
-        void end();
-
-        void SetName(String viewName);
-        String& GetName();
-        void BindCreateBehavior(vcb_t vcb);
-        void BindDestroyBehavior(vdb_t vdb);
+        virtual void begin();
+        virtual void end();
     };
 };
 

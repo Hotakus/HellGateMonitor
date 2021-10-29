@@ -19,33 +19,3 @@ HgmViews::HgmViews()
 HgmViews::~HgmViews()
 {
 }
-
-void HgmViews::begin()
-{
-    this->Create();
-}
-
-void HgmViews::end()
-{
-    this->Destroy();
-}
-
-void HgmGUI::HgmViews::SetName(String viewName)
-{
-    name = viewName;
-}
-
-void HgmViews::BindCreateBehavior(vcb_t vcb)
-{
-    this->Create = vcb;
-}
-
-void HgmViews::BindDestroyBehavior(vdb_t vdb)
-{
-    this->Destroy = vdb;
-}
-
-String& HgmViews::GetName()
-{
-    return this->name;
-}

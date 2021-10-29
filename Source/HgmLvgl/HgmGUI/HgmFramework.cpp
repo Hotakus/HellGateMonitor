@@ -12,7 +12,7 @@
 
 #include "HgmViews.h"
 #include "HgmFramework.h"
-#include "HgmTwView/HgmTwView.h"
+#include "HgmTwView/HgmTw.h"
 
 #define TAG "HgmFramework"
 #define HGM_DEBUG 1
@@ -22,29 +22,29 @@
 
 using namespace HgmGUI;
 
-static HgmFramework* instance = NULL;
+static HgmFramework* instance = nullptr;
 
-HgmTwView* hgmTwView = NULL;
+HgmTw* hgmTw = nullptr;
 
 HgmFramework::HgmFramework()
 {
     instance = this;
 
-    viewsGroup = (HgmViews**)malloc(sizeof(HgmViews*) * MAX_VIEWS);
-    memset(viewsGroup, NULL, sizeof(HgmViews*) * MAX_VIEWS);
+    hgmFwCenter.begin();
+    guiChain.begin();
 
     /* Create All UI */
-    hgmTwView = new HgmTwView();
+    hgmTw = new HgmTw();
 }
 
 HgmFramework::~HgmFramework()
 {
     /* Remove All UI */
-    delete hgmTwView;
+    delete hgmTw;
 
-    for (uint8_t i = 0; i < MAX_VIEWS; i++)
-        if (!viewsGroup[i])
-            hotakusFree(viewsGroup);
+    guiChain.end();
+    hgmFwCenter.end();
+    
     instance = NULL;
 }
 
@@ -53,69 +53,52 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    this->RegisterNewView("MiscView", (vcb_t)HgmTwView::begin, (vdb_t)HgmTwView::stop);
-    this->ChangeView("MiscView");
+    changeGUI(hgmTw->name());
 }
 
-bool HgmGUI::HgmFramework::RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb)
+/**
+ * @brief Change GUI by name.
+ * @param name : Name of GUI
+ * @return Boolean
+ */
+bool HgmGUI::HgmFramework::changeGUI(String name)
 {
-    if (!vcb || !vdb) {
-        hgm_log_e(TAG, "vcb and vdb must be assign.");
-        return false;
+    msg_t* msg = nullptr;
+    bool ret = false;
+
+	/* Kill the previous GUI  */
+    if (!curr.isEmpty()) {
+        msg = hgmFwCenter.findMsg(curr);
+        if (!msg) return false;
+
+        ((gui_data_t*)msg->pData)->ctl = END;
+        ret = hgmFwCenter.notify(curr, curr);
+        if (ret) return false;
     }
 
-    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
-        if (viewsGroup[i] == NULL)
-            continue;
-        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
-            hgm_log_e(TAG, "The same view had been registered."); 
-            return true;
-        }
+	/* Born the designated GUI  */
+    msg = hgmFwCenter.findMsg(name);
+    if (!msg) return false;
+    ((gui_data_t*)msg->pData)->ctl = BEGIN;
+    ret = hgmFwCenter.notify(name, name);
+    if (ret) {
+        prev = curr;
+        curr = name;
     }
-    
-    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
-        if (viewsGroup[i] == NULL) {
-            viewsGroup[i] = (HgmViews*)hotakusAlloc(sizeof(HgmViews));
-            viewsGroup[i]->SetName(viewName);
-            viewsGroup[i]->BindCreateBehavior(vcb);
-            viewsGroup[i]->BindDestroyBehavior(vdb);
-            return true;
-        }
-    }
+    return ret;
+}
 
+bool HgmGUI::HgmFramework::changePrev()
+{
     return false;
 }
 
-bool HgmGUI::HgmFramework::UnRegisterView(String viewName)
+bool HgmGUI::HgmFramework::changeNext()
 {
-    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
-        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
-            hotakusFree(viewsGroup[i]);
-            viewsGroup[i] = NULL;
-            return true;
-        }
-    }
-
     return false;
 }
 
-bool HgmFramework::ChangeView(String viewName)
+HgmFramework* HgmGUI::HgmFramework::getInstance()
 {
-    for (uint8_t i = 0; i < MAX_VIEWS; i++) {
-        if (viewsGroup[i]->GetName().compareTo(viewName) == 0) {
-            if (currView) {
-                currView->end();
-                prevView = currView;
-                currView = viewsGroup[i];
-                currView->begin();
-            } else {
-                prevView = NULL;
-                currView = viewsGroup[i];
-                currView->begin();
-            }
-            return true;
-        }
-    }
-
-    return false;
+    return instance;
 }

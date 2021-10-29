@@ -11,6 +11,7 @@
 #include "HgmGUI/HgmFramework.h"
 #include "LvglPort/lv_port_disp.h"
 #include "LvglPort/lv_port_indev.h"
+#include "../LvglSrc/libs/lv_lib_png/lv_png.h"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -73,7 +74,6 @@ void HGM::HgmLvgl::begin()
     // this->HgmLvglIndevInit();
     // this->HgmLvglFsInit();
 
-    extern void lv_png_init(void);
     lv_png_init();
     
     /* Create All basic UI */

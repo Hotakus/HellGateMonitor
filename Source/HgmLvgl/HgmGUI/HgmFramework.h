@@ -12,18 +12,33 @@
 
 #include "../../LvglSrc/lvgl/lvgl.h"
 
+#include "../../Utils/MsgCenter/MsgCenter.h"
 #include "HgmSetupView.h"
 #include "HgmViews.h"
+
+using namespace msgmanager;
 
 namespace HgmGUI {
 #define MAX_VIEWS 32
     class HgmFramework
     {
     private:
-        HgmViews* prevView = NULL;
-        HgmViews* currView = NULL;
+        String prev = "";
+        String curr = "";
     public:
-        HgmViews** viewsGroup;
+        typedef enum _CTL_t {
+            SET_DATA,
+            BEGIN,
+            END
+        } CTL_t;
+
+        typedef struct _gui_data_t{
+            void* pData;
+            CTL_t ctl;
+        } gui_data_t;
+
+        MsgCenter hgmFwCenter;
+        Chain guiChain;
 
         HgmFramework();
         ~HgmFramework();
@@ -31,10 +46,12 @@ namespace HgmGUI {
         void begin();
         void stop();
 
-        bool RegisterNewView(String viewName, vcb_t vcb, vdb_t vdb);
-        bool UnRegisterView(String viewName);
+        bool changeGUI(String name);
+        bool changePrev();
+        bool changeNext();
 
-        bool ChangeView(String viewName);
+        static HgmFramework* getInstance();
+
     };
 
 };

@@ -21,6 +21,7 @@ namespace HgmGUI {
         void frameCreate();
         void widgetCreate();
         void animRun();
+
     public:
         struct _widget {
             struct _biliWidget {
@@ -61,8 +62,8 @@ namespace HgmGUI {
         HgmTwView();
         ~HgmTwView();
 
-        static void begin();
-        static void stop();
+        void begin();
+        void stop();
 
     };
 
