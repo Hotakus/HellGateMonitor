@@ -10,7 +10,6 @@
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include "../../HgmApp/HotakusMemUtil.h"
 
-#include "HgmViews.h"
 #include "HgmFramework.h"
 #include "HgmTwView/HgmTw.h"
 
@@ -71,7 +70,7 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
         msg = hgmFwCenter.findMsg(curr);
         if (!msg) return false;
 
-        ((gui_data_t*)msg->pData)->ctl = END;
+        ((gui_data_t*)msg->pData())->ctl = END;
         ret = hgmFwCenter.notify(curr, curr);
         if (ret) return false;
     }
@@ -79,7 +78,7 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
 	/* Born the designated GUI  */
     msg = hgmFwCenter.findMsg(name);
     if (!msg) return false;
-    ((gui_data_t*)msg->pData)->ctl = BEGIN;
+    ((gui_data_t*)msg->pData())->ctl = BEGIN;
     ret = hgmFwCenter.notify(name, name);
     if (ret) {
         prev = curr;

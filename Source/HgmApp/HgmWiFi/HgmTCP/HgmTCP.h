@@ -52,6 +52,15 @@ namespace HgmApplication {
     public:
         TcpControlMethod tcm = TCP_NULL;
 
+        WiFiClient accept;
+
+        struct _frtos {
+            TaskHandle_t tcpControlTaskHandle = NULL;
+            QueueHandle_t beginMsgbox = NULL;
+            TaskHandle_t tcpServerTaskHandle = NULL;
+            TaskHandle_t tcpClientTaskHandle = NULL;
+        } frtos;
+
         HgmTCP();
         ~HgmTCP();
 

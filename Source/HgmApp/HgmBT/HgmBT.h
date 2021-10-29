@@ -46,6 +46,13 @@ namespace HgmApplication {
 
     public:
         BluetoothSerial* bs = nullptr;
+        String name;
+
+        struct _frtos {
+            QueueHandle_t btCtlMsgbox = NULL;
+            TaskHandle_t bluetoothCheckTaskHandle = NULL;
+            TaskHandle_t btListeningTaskHandle = NULL;
+        } frtos;
 
         HgmBT();
         ~HgmBT();
@@ -59,7 +66,7 @@ namespace HgmApplication {
         static String packRawData(String& dataToPack, HgmBTPackMethod method);
         /* To send data pack, used by another Hgm App */
         static void sendDatePack(String& rawData, HgmBTPackMethod method);
-        static HgmBTPackMethod receiveDataPack(String& dataToSave, HgmBTPackMethod* method);
+        static HgmBTPackMethod receiveDataPack();
     };
 };
 

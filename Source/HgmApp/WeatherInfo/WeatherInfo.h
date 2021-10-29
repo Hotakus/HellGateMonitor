@@ -42,6 +42,22 @@ namespace HgmApplication {
 
 	public:
 
+        String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now?";
+        String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d?";
+        String airAPI = "https://devapi.qweather.com/v7/air/now?";
+
+        String _id = "";
+        String _key = "";
+        String _adm = "";
+        String _adm2 = "";
+        String _location = "";
+        String _lat = "";
+        String _lon = "";
+
+        QueueHandle_t WeatherCheckMsgBox;
+        TaskHandle_t WeatherCheckTaskHandle;
+        bool configFlag = false;
+
 		WeatherInfo();
 		~WeatherInfo();
 

@@ -90,52 +90,6 @@ void HgmApplication::HgmWiFi::OpenWiFi(bool sw)
     } else {
         Serial.println("Switch the _wifi on/off failed.");
     }
-
-    // if (sw) {
-    //     if (wifiCheckTaskHandle == NULL) {
-    //         uint16_t timeout = 10 * 1000;
-    // 
-    //         _wifi.setHostname(WIFI_DEFAULT_NAME);
-    //         _wifi.mode(WIFI_USE_MODE);
-    //         _wifi.setSleep(true);
-    //         _wifi.setAutoReconnect(true);
-    //         _wifi.setTxPower(WIFI_POWER_15dBm);
-    //         _wifi.begin(_ssid.c_str(), _password.c_str());
-    //         while (_wifi.status() != WL_CONNECTED && timeout > 0) {
-    //             vTaskDelay(500);
-    //             Serial.print(".#");
-    //             Serial.print(_wifi.status());
-    //             timeout -= 500;
-    //         }
-    //         if (timeout <= 0) {
-    //             Serial.println("WiFi open failed.");
-    // 
-    //             hgmWiFi.OpenTCP(false, false);
-    //             hgmWiFi.OpenTCP(false, true);
-    // 
-    //             _wifi.disconnect();
-    //             _wifi.mode(WIFI_OFF);
-    //             return;
-    //         }
-    // 
-    //         Serial.println("\nWiFi Connected successfully.");
-    //         Serial.printf("Local IP Address: %s\n", WiFi.localIP().toString().c_str());
-    //         Serial.printf("RSSI : %d\n", WiFi.RSSI());
-    //     } else {
-    //         Serial.println("WiFi open already.");
-    //     }
-    // } else {
-    //     if (wifiCheckTaskHandle) {
-    //         vTaskDelete(wifiCheckTaskHandle);
-    //         wifiCheckTaskHandle = NULL;
-    //         Serial.println("WiFi close.");
-    //     } else {
-    //         Serial.println("WiFi close already.");
-    //     }
-    // 
-    //     _wifi.disconnect();
-    //     _wifi.mode(WIFI_OFF);
-    // }
 }
 
 /**
@@ -164,11 +118,6 @@ void HgmApplication::HgmWiFi::OpenTCP(bool sw, bool asServer)
 void HgmApplication::HgmWiFi::begin()
 {
     this->OpenWiFi();
-
-    // this->OpenTCP(true, true);          // Open TCP Server
-    // this->OpenTCP(true, false);         // Open TCP client
-
-    uint16_t timeout = 10 * 1000;
 }
 
 /**
@@ -176,9 +125,6 @@ void HgmApplication::HgmWiFi::begin()
  */
 void HgmApplication::HgmWiFi::stop()
 {
-    // this->OpenTCP(false, true);     // Close server
-    // this->OpenTCP(false, false);    // Close client
-
     this->OpenWiFi(false);
 }
 

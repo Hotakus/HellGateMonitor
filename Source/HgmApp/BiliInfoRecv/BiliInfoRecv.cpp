@@ -44,7 +44,6 @@ extern HTTPClient* https;
 
 static SemaphoreHandle_t biliSemaphore;
 
-
 extern HgmComponent component;
 
 static bool configFlag = false;

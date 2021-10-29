@@ -26,17 +26,6 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 extern SemaphoreHandle_t wbs;
 
-static QueueHandle_t btCtlMsgbox = NULL;
-static TaskHandle_t bluetoothCheckTaskHandle = NULL;
-static BluetoothSerial _bs;
-
-static String name;
-
-static String _dataToSave = "";
-static HgmBTPackMethod _method = HGM_BT_PACK_METHOD_NULL;
-
-static TaskHandle_t bluetoothListeningTaskHandle = NULL;
-
 static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
@@ -49,15 +38,15 @@ HgmBT hgmBT;
  */
 HgmBT::HgmBT()
 {
-    this->bs = &_bs;
-    btCtlMsgbox = xQueueCreate(1, sizeof(bool));
+    this->bs = new BluetoothSerial();
+    frtos.btCtlMsgbox = xQueueCreate(1, sizeof(bool));
     //this->BluetoothTaskInit();
 }
 
 HgmBT::~HgmBT()
 {
     this->BluetoothTaskDelete();
-    vQueueDelete(btCtlMsgbox);
+    vQueueDelete(frtos.btCtlMsgbox);
 }
 
 void HgmApplication::HgmBT::BluetoothTaskInit()
@@ -83,12 +72,12 @@ void HgmApplication::HgmBT::begin()
 {
     //sw = true;
     //Serial.println("HgmBT::begin() 0");
-    //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+    //xQueueSend(frtos.btCtlMsgbox, &sw, portMAX_DELAY);
     //Serial.println("HgmBT::begin() 1");
 
-    if (!bluetoothListeningTaskHandle) {
+    if (!frtos.btListeningTaskHandle) {
         Serial.println("BT Start to listening...");
-        _bs.begin(name);
+        hgmBT.bs->begin(name);
         Serial.println("BT Start to listening...2");
         xTaskCreatePinnedToCore(
             BluetoothListeningTask,
@@ -96,7 +85,7 @@ void HgmApplication::HgmBT::begin()
             3072,
             NULL,
             9,
-            &bluetoothListeningTaskHandle,
+            &frtos.btListeningTaskHandle,
             1
         );
         Serial.println("BT Start to listening...3");
@@ -106,13 +95,13 @@ void HgmApplication::HgmBT::begin()
 void HgmApplication::HgmBT::stop()
 {
     //sw = false;
-    //xQueueSend(btCtlMsgbox, &sw, portMAX_DELAY);
+    //xQueueSend(frtos.btCtlMsgbox, &sw, portMAX_DELAY);
 
-    _bs.disconnect();
-    _bs.end();
-    if (bluetoothListeningTaskHandle) {
-        vTaskDelete(bluetoothListeningTaskHandle);
-        bluetoothListeningTaskHandle = NULL;
+    hgmBT.bs->disconnect();
+    hgmBT.bs->end();
+    if (frtos.btListeningTaskHandle) {
+        vTaskDelete(frtos.btListeningTaskHandle);
+        frtos.btListeningTaskHandle = NULL;
         Serial.println("BT stop ...");
     } else {
         Serial.println("BT stop already");
@@ -121,10 +110,8 @@ void HgmApplication::HgmBT::stop()
 
 void HgmApplication::HgmBT::setName(String _name)
 {
-    name = _name;
+    hgmBT.name = _name;
 }
-
-
 
 static void BeginWiFiWithConfig(String ssid, String password)
 {
@@ -179,7 +166,7 @@ String HgmApplication::HgmBT::packRawData(String& dataToPack, HgmBTPackMethod me
 void HgmApplication::HgmBT::sendDatePack(String& rawData, HgmBTPackMethod method)
 {
     String pack = HgmBT::packRawData(rawData, method);
-    _bs.write((uint8_t*)pack.c_str(), pack.length());
+    hgmBT.bs->write((uint8_t*)pack.c_str(), pack.length());
 }
 
 /**
@@ -189,29 +176,28 @@ void HgmApplication::HgmBT::sendDatePack(String& rawData, HgmBTPackMethod method
  *
  * @return if OK return HGM_BT_PACK_METHOD_OK else HGM_BT_PACK_METHOD_ERROR
  */
-HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBTPackMethod* method)
+HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
 {
-    if (!_bs.available())
+    if (!hgmBT.bs->available())
         return HGM_BT_PACK_METHOD_ERROR;
 
-    HotakusDynamicJsonDocument rawPack(_bs.available() + 1024);
+    String str = "";
+    HotakusDynamicJsonDocument rawPack(hgmBT.bs->available() + 1024);
 
-    dataToSave = "";
-
-    // Receive raw pack
-    while (_bs.available())
-        dataToSave.concat((char)_bs.read());
-    deserializeJson(rawPack, dataToSave.c_str());
-    Serial.println(dataToSave);
+    size_t packSize = hgmBT.bs->available();
+    uint8_t* buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * (packSize + 32));
+    hgmBT.bs->readBytes(buf, packSize);
+    buf[packSize] = '\0';
+    deserializeJson(rawPack, buf);
+    Serial.printf("%s\n", buf);
 
     // Match Header
     String Header = rawPack["Header"];
     if (Header.compareTo(BT_PACK_HEADER)) {
-        dataToSave = "Header error. it's not a valid HGM bluetooth pack";
-        Serial.println(dataToSave);
+        str = "Header error. it's not a valid HGM bluetooth pack";
+        Serial.println(str);
         Serial.println(Header);
-        *method = HGM_BT_PACK_METHOD_ERROR;
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_ERROR);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_ERROR);
         return HGM_BT_PACK_METHOD_ERROR;
     }
 
@@ -219,8 +205,7 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBT
     HgmBTPackMethod DataType = rawPack["DataType"];
     switch (DataType) {
     case HGM_BT_PACK_METHOD_WIFI_CONF: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_WIFI_CONF;
+        str = "";
 
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
@@ -244,22 +229,18 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBT
 
         Serial.println("WiFi had been config via bluetooth.");
 
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
 
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_WIFI_CLOSE: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_WIFI_CLOSE;
-
+        str = "";
         hgmWiFi.stop();
-
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_WEATHER_CONF: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_WEATHER_CONF;
+        str = "";
 
         String id = rawPack["Data"]["id"];
         String adm = rawPack["Data"]["adm"];
@@ -276,17 +257,14 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBT
 
         WeatherInfo::setWeatherConfig();
 
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_BILIBILI_CONF: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_BILIBILI_CONF;
+        str = "";
 
         String _uid = rawPack["Data"]["uid"];
-
         BiliInfoRecv::SetUID(_uid);
-
         HotakusDynamicJsonDocument doc(256);
         String tmp;
         doc["Header"] = "bilibili";
@@ -299,45 +277,38 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack(String& dataToSave, HgmBT
         file.write((const uint8_t*)tmp.c_str(), tmp.length());
         file.close();
 
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_NORMAL: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_NORMAL;
+        str = "";
 
         Serial.printf("(BT %d): %s\n",
             rawPack["Data"].as<String>().length(),
             rawPack["Data"].as<String>().c_str());
 
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
     }
     case HGM_BT_PACK_METHOD_OK: {
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_OK;
+        str = "";
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_GET_M: {
-        dataToSave = String(HGM_BT_PACK_METHOD_NULL);
-        *method = HGM_BT_PACK_METHOD_GET_M;
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_NORMAL);
+        str = String(HGM_BT_PACK_METHOD_NULL);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_NORMAL);
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_HWM_CONF: {
         // TODO: 
-        dataToSave = "null";
-        *method = HGM_BT_PACK_METHOD_HWM_CONF;
+        str = "";
 
-
-
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_OK);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
         return HGM_BT_PACK_METHOD_OK;
     }
     default:
-        dataToSave = "DataType error. it's not a valid HGM TCP pack";
-        Serial.println(dataToSave);
-        *method = HGM_BT_PACK_METHOD_ERROR;
-        HgmBT::sendDatePack(dataToSave, HGM_BT_PACK_METHOD_ERROR);
+        str = "DataType error. it's not a valid HGM TCP pack";
+        Serial.println(str);
+        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_ERROR);
         return HGM_BT_PACK_METHOD_ERROR;
     }
 
@@ -354,7 +325,7 @@ static void BluetoothControlTask(void* params)
     static bool sw = false;
 
     while (true) {
-        if (xQueueReceive(btCtlMsgbox, &sw, portMAX_DELAY) != pdPASS)
+        if (xQueueReceive(hgmBT.frtos.btCtlMsgbox, &sw, portMAX_DELAY) != pdPASS)
             continue;
 
         if (sw) {
@@ -378,7 +349,7 @@ static void BluetoothListeningTask(void* params)
     Serial.println("BT Start to listening...4");
 
     while (true) {
-        if (!_bs.connected()) {
+        if (!hgmBT.bs->connected()) {
             flag = false;
             vTaskDelay(1000);
             continue;
@@ -387,13 +358,13 @@ static void BluetoothListeningTask(void* params)
         if (!flag) {
             flag = true;
             xSemaphoreTake(wbs, portMAX_DELAY);
-            _bs.write((const uint8_t*)greet.c_str(), greet.length());
+            hgmBT.bs->write((const uint8_t*)greet.c_str(), greet.length());
             xSemaphoreGive(wbs);
         }
 
-        if (_bs.available()) {
+        if (hgmBT.bs->available()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
-            HgmBT::receiveDataPack(_dataToSave, &_method);
+            HgmBT::receiveDataPack();
             xSemaphoreGive(wbs);
         }
 

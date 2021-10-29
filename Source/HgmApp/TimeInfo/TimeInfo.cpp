@@ -7,15 +7,16 @@
  * @date 2021/8/20 10:27
  * @copyright Copyright (c) 2021/8/20
 *******************************************************************/
+#include "TimeInfo.h"
+#include "../HgmWiFi/HgmTCP/HgmTCP.h"
+#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
+#include "../HgmJsonUtil.h"
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <ESP32Time.h>
-#include "TimeInfo.h"
-#include "../HgmWiFi/HgmTCP/HgmTCP.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
-#include "../HgmJsonUtil.h"
 
 #define HGM_DEBUG 0
 
@@ -26,16 +27,14 @@ using namespace HgmGUI;
 static String timeAPI = "http://quan.suning.com/getSysTime.do";
 
 static ESP32Time* _rtc;
-static struct tm _timeStruct;
 
-// extern HTTPClient hgmHttpClient;
 extern HTTPClient* https;
 
 static TaskHandle_t netTimeTaskHandle;
 static QueueHandle_t netTimeMsgBox;
 static void netTimeTask(void* params);
 
-extern HgmComponent component;
+static HgmComponent component;
 
 extern HgmSetupView* hgmSetupUI;
 
@@ -133,8 +132,6 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
     uint8_t sec = sysTime1.substring(12).toInt();
 
     _rtc->setTime(sec, min, hour, day, mon, year);
-    _timeStruct = _rtc->getTimeStruct();
-    timeStruct = &_timeStruct;
 
     https->end();
     return 0;

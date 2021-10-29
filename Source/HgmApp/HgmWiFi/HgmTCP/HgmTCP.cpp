@@ -28,41 +28,31 @@ using namespace HgmApplication::HgmJsonParseUtil;
 
 #define SERVER_DEFAULT_PORT 20
 
-extern HardwareRequest* hrr;
 extern SemaphoreHandle_t wbs;
 
-static WiFiClass wifi = WiFi;
-static WiFiServer _wifiServer;
-static WiFiClient wc = NULL;        // To store the object of the client that want to connect to server.
-
-static bool tcpOk = false;
-static TcpControlMethod tcm;
-
-static String _dataToSave;
-static HgmTcpPackMethod _recvMethod;
-
-static TaskHandle_t tcpControlTaskHandle = NULL;
-static QueueHandle_t beginMsgbox = NULL;
 static void TcpControlTask(void* params);
 static void TcpServerListeningTask(void* params);
 
-static TaskHandle_t tcpServerTaskHandle = NULL;
-static TaskHandle_t tcpClientTaskHandle = NULL;
+static HgmTCP* instance = nullptr;
 
 HgmTCP::HgmTCP()
 {
-    this->wifiServer = &_wifiServer;
-    //this->wifiClient = &wifiClient;
+    instance = this;
+    this->wifiServer = new WiFiServer();
+    //this->wifiClient = new WiFiClient();
 }
 
 HgmTCP::~HgmTCP()
 {
     this->stop();
+    instance = nullptr;
+    delete this->wifiServer;
+    //delete this->wifiClient;
 }
 
 void HgmApplication::HgmTCP::begin()
 {
-    beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
+    frtos.beginMsgbox = xQueueCreate(10, sizeof(TcpControlMethod));
     this->initTask();
 }
 
@@ -71,13 +61,13 @@ void HgmApplication::HgmTCP::stop()
     this->StopServer();
     this->StopClient();
 
-    while (tcpServerTaskHandle || tcpClientTaskHandle)
+    while (frtos.tcpServerTaskHandle || frtos.tcpClientTaskHandle)
         vTaskDelay(100);
 
     this->deInitTask();
-    if (beginMsgbox) {
-        vQueueDelete(beginMsgbox);
-        beginMsgbox = NULL;
+    if (frtos.beginMsgbox) {
+        vQueueDelete(frtos.beginMsgbox);
+        frtos.beginMsgbox = NULL;
     }
 }
 
@@ -92,16 +82,16 @@ void HgmApplication::HgmTCP::initTask()
         2048,
         NULL,
         10,
-        &tcpControlTaskHandle,
+        &frtos.tcpControlTaskHandle,
         1
     );
 }
 
 void HgmApplication::HgmTCP::deInitTask()
 {
-    if (tcpControlTaskHandle) {
-        vTaskDelete(tcpControlTaskHandle);
-        tcpControlTaskHandle = NULL;
+    if (frtos.tcpControlTaskHandle) {
+        vTaskDelete(frtos.tcpControlTaskHandle);
+        frtos.tcpControlTaskHandle = NULL;
     }
 }
 
@@ -109,17 +99,15 @@ void HgmApplication::HgmTCP::deInitTask()
 void HgmApplication::HgmTCP::BeginServer()
 {
     Serial.println(__func__);
-    tcm = TCP_BEGIN_SERVER;
-    this->tcm = tcm;
-    xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
+    this->tcm = TCP_BEGIN_SERVER;
+    xQueueSend(frtos.beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 void HgmApplication::HgmTCP::StopServer()
 {
     Serial.println(__func__);
-    tcm = TCP_STOP_SERVER;
-    this->tcm = tcm;
-    xQueueSend(beginMsgbox, &tcm, portMAX_DELAY);
+    this->tcm = TCP_STOP_SERVER;
+    xQueueSend(frtos.beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 void HgmApplication::HgmTCP::BeginClient()
@@ -140,13 +128,13 @@ void HgmApplication::HgmTCP::StopClient()
 
 WiFiServer* HgmApplication::HgmTCP::GetWiFiServer()
 {
-    return &_wifiServer;
+    return instance->wifiServer;
 }
 
-// WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
-// {
-//     return &_wifiClient;
-// }
+WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
+{
+    return instance->wifiClient;
+}
 
 
 /**
@@ -179,11 +167,12 @@ String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod 
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
-        hgmPack["Data"]["CPU"] = String(hrr->isRequest(HGM_CPU));
-        hgmPack["Data"]["GPU"] = String(hrr->isRequest(HGM_GPU));
-        hgmPack["Data"]["Memory"] = String(hrr->isRequest(HGM_MEMORY));
-        hgmPack["Data"]["HardDisk"] = String(hrr->isRequest(HGM_HARD_DISK));
-        hgmPack["Data"]["Network"] = String(hrr->isRequest(HGM_NETWORK));
+        // TODO:
+        // hgmPack["Data"]["CPU"] = String(hrr->isRequest(HGM_CPU));
+        // hgmPack["Data"]["GPU"] = String(hrr->isRequest(HGM_GPU));
+        // hgmPack["Data"]["Memory"] = String(hrr->isRequest(HGM_MEMORY));
+        // hgmPack["Data"]["HardDisk"] = String(hrr->isRequest(HGM_HARD_DISK));
+        // hgmPack["Data"]["Network"] = String(hrr->isRequest(HGM_NETWORK));
         break;
     }
     default:
@@ -205,7 +194,7 @@ String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod 
 void HgmApplication::HgmTCP::sendDatePack(String& rawData, HgmTcpPackMethod method)
 {
     String s = HgmTCP::packRawData(rawData, method);
-    wc.write((uint8_t*)s.c_str(), s.length());
+    instance->accept.write((uint8_t*)s.c_str(), s.length());
 }
 
 /**
@@ -217,13 +206,13 @@ void HgmApplication::HgmTCP::sendDatePack(String& rawData, HgmTcpPackMethod meth
  */
 HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 {
-    if (!wc.available())
+    if (!instance->accept.available())
         return HGM_TCP_PACK_METHOD_ERROR;
 
     String str = "";
 
     // Receive raw pack
-    size_t packSize = (wc.available() + 1);
+    size_t packSize = (instance->accept.available() + 1);
     HotakusDynamicJsonDocument rawPack(packSize + 1024);
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
     if (!buf) {
@@ -233,7 +222,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
     }
     buf[packSize - 1] = '\0';
     for (size_t i = 0; i < packSize - 1; i++)
-        buf[i] = (char)wc.read();
+        buf[i] = (char)instance->accept.read();
     Serial.printf("%s\n", buf);
     deserializeJson(rawPack, buf);
     heap_caps_free(buf);
@@ -255,7 +244,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 
         Serial.printf("(TCP %d)%s: %s\n",
             rawPack["Data"].as<String>().length(),
-            wc.remoteIP().toString().c_str(),
+            instance->accept.remoteIP().toString().c_str(),
             rawPack["Data"].as<String>().c_str());
 
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
@@ -263,16 +252,17 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-        if (hrr->isRequest(HGM_CPU))
-            hrr->hd->cpuData->Set(rawPack);
-        if (hrr->isRequest(HGM_GPU))
-            hrr->hd->gpuData->Set(rawPack);
-        if (hrr->isRequest(HGM_MEMORY))
-            hrr->hd->memData->Set(rawPack);
-        if (hrr->isRequest(HGM_HARD_DISK))
-            hrr->hd->diskData->Set(rawPack);
-        if (hrr->isRequest(HGM_NETWORK))
-            hrr->hd->netData->Set(rawPack);
+        // TODO:
+        // if (hrr->isRequest(HGM_CPU))
+        //     hrr->hd->cpuData->Set(rawPack);
+        // if (hrr->isRequest(HGM_GPU))
+        //     hrr->hd->gpuData->Set(rawPack);
+        // if (hrr->isRequest(HGM_MEMORY))
+        //     hrr->hd->memData->Set(rawPack);
+        // if (hrr->isRequest(HGM_HARD_DISK))
+        //     hrr->hd->diskData->Set(rawPack);
+        // if (hrr->isRequest(HGM_NETWORK))
+        //     hrr->hd->netData->Set(rawPack);
 
         // Serial.println(((CpuData*)hgmHardObj[HGM_CPU]->params)->name);
         // Serial.println(((GpuData*)hgmHardObj[HGM_GPU]->params)->name);
@@ -310,29 +300,24 @@ static void TcpControlTask(void* params)
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
 
-    Serial.printf("-----------------TCP_BEGIN_SERVER 1\n");
-
     while (true) {
-        if (xQueueReceive(beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
+        if (xQueueReceive(instance->frtos.beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {
             continue;
         }
 
-        Serial.printf("-----------------TCP_BEGIN_SERVER 0\n");
-
         switch (methodRecv) {
         case TCP_BEGIN_SERVER:         // server begin
-            Serial.printf("-----------------TCP_BEGIN_SERVER 1\n");
-            if (tcpServerTaskHandle == NULL) {
-                while (!wifi.isConnected())
+            if (instance->frtos.tcpServerTaskHandle == NULL) {
+                while (!WiFi.isConnected())
                     vTaskDelay(100);
-                _wifiServer.begin(SERVER_DEFAULT_PORT);
+                instance->GetWiFiServer()->begin(SERVER_DEFAULT_PORT);
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
                     3072,
                     NULL,
                     9,
-                    &tcpServerTaskHandle,
+                    &instance->frtos.tcpServerTaskHandle,
                     1
                 );
                 Serial.printf("TCP Server begin to listen in port %d.\n", SERVER_DEFAULT_PORT);
@@ -343,33 +328,22 @@ static void TcpControlTask(void* params)
             break;
         case TCP_BEGIN_CLIENT:         // client begin
             // TODO: If there is not any other app that use client handle
-            //while (!wifi.isConnected())
-                //vTaskDelay(100);
-
             Serial.printf("TCP Client begin\n");
             break;
         case TCP_STOP_SERVER:         // server stop
-            if (tcpServerTaskHandle) {
-                _wifiServer.stop();
-                vTaskDelete(tcpServerTaskHandle);
-                tcpServerTaskHandle = NULL;
+            if (instance->frtos.tcpServerTaskHandle) {
+                instance->GetWiFiServer()->stop();
+                vTaskDelete(instance->frtos.tcpServerTaskHandle);
+                instance->frtos.tcpServerTaskHandle = NULL;
                 Serial.printf("TCP server stop\n");
             }
             break;
         case TCP_STOP_CLIENT:         // client stop
-            // if (tcpClientTaskHandle) {
-            //     _wifiClient.stop();
-            //     vTaskDelete(tcpClientTaskHandle);
-            //     tcpClientTaskHandle = NULL;
-            //     Serial.printf("TCP client stop\n");
-            // }
             break;
         default:
             Serial.printf("Error in %s %s %s\n", __FILE__, __func__, __LINE__);
             break;
         }
-
-        tcpOk = true;
     }
 }
 
@@ -379,29 +353,25 @@ static void TcpControlTask(void* params)
  */
 static void TcpServerListeningTask(void* params)
 {
-    static bool hasClient = false;
-
     while (true) {
-        hasClient = _wifiServer.hasClient();
-        if (!hasClient)
-            goto _delay;
+        if (!instance->GetWiFiServer()->hasClient()) {
+            vTaskDelay(1000);
+            continue;
+        }
 
-        /*To accept the client that want to connect server */
-        wc = _wifiServer.accept();
-        if (!wc)
-            goto _delay;
+        instance->accept = instance->GetWiFiServer()->accept();
+        if (!instance->accept) {
+            vTaskDelay(1000);
+            continue;
+        }
         Serial.printf("A client has connected into server.\n");
 
-        while (wc.connected()) {
+        while (instance->accept.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
             HgmTCP::receiveDataPack();
             xSemaphoreGive(wbs);
             vTaskDelay(10);
         }
-
-
-    _delay:
-        vTaskDelay(1000);
     }
 
 

@@ -58,6 +58,7 @@ extern HgmLvgl hgmLvgl;
 static QueueHandle_t bkMsgBox;
 static TaskHandle_t bkHandle;
 
+HgmComponent component;
 SemaphoreHandle_t wbs;
 
 float firmwareSize = 0;
@@ -135,7 +136,6 @@ void setup()
     hgmSetupUI->begin();
 
     // Open bluetooth
-    HgmComponent component;
     component.type = HGM_COMPONENT_BT;
     component.curStatus = true;
     component.waitStatus = false;
@@ -148,7 +148,6 @@ void setup()
     vTaskDelay(200);
 
     // Check config file
-    // TODO: move to HgmWiFi
     HgmSC hgmSC;
     hgmSC.begin();
     vTaskDelay(200);

@@ -33,7 +33,7 @@ HgmGUI::HgmTw::~HgmTw()
     instance = nullptr;
 
     HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&subscriber);
-    HgmFramework::getInstance()->hgmFwCenter.removeMsg(msg.id);
+    HgmFramework::getInstance()->hgmFwCenter.removeMsg(msg.id());
 }
 
 void HgmGUI::HgmTw::begin()
@@ -60,7 +60,7 @@ HgmTwModel::tw_data_t* HgmGUI::HgmTw::getData()
 
 void HgmTw::hgm_ui_cb(msg_t* msg)
 {
-    HgmFramework::gui_data_t* gd = ((HgmFramework::gui_data_t*)msg->pData);
+    HgmFramework::gui_data_t* gd = ((HgmFramework::gui_data_t*)msg->pData());
     HgmFramework::CTL_t ctl = gd->ctl;
 
     switch (ctl)

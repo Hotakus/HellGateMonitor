@@ -14,7 +14,6 @@
 
 #include "../../Utils/MsgCenter/MsgCenter.h"
 #include "HgmSetupView.h"
-#include "HgmViews.h"
 
 using namespace msgmanager;
 

@@ -15,6 +15,7 @@
 #include "../TimeInfo/TimeInfo.h"
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 #include "../HotakusHttpUtil.h"
+#include "../../HgmLvgl/HgmGUI/HgmFramework.h"
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -36,38 +37,18 @@ extern HgmBT hgmBT;
 extern HgmSetupView* hgmSetupUI;
 static HgmComponent component;
 
+WeatherData weatherDataToday;
+static HTTPClient hc;
+static File _file;
+static StaticJsonDocument<2048> doc;
 extern SemaphoreHandle_t wbs;
 
-static String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now?";
-static String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d?";
-static String airAPI = "https://devapi.qweather.com/v7/air/now?";
-
-static String _id = "";
-static String _key = "";
-static String _adm = "";
-static String _adm2 = "";
-static String _location = "";
-static String _lat = "";
-static String _lon = "";
-
-static StaticJsonDocument<2048> doc;
-
-static File _file;
-
-static QueueHandle_t WeatherCheckMsgBox;
-static TaskHandle_t WeatherCheckTaskHandle;
 static void WeatherCheckTask(void* params);
 
-static bool configFlag = false;
-
 WeatherInfo weatherInfo;
-WeatherData weatherDataToday;
-
-extern HTTPClient* https;
 
 WeatherInfo::WeatherInfo()
 {
-    // TODO: Create a task to loop to get the weather
     WeatherCheckMsgBox = xQueueCreate(1, sizeof(int));
 }
 
@@ -76,14 +57,8 @@ WeatherInfo::~WeatherInfo()
     vQueueDelete(WeatherCheckMsgBox);
 }
 
-
-WeatherData::WeatherData()
-{
-}
-
-WeatherData::~WeatherData()
-{
-}
+WeatherData::WeatherData() = default;
+WeatherData::~WeatherData() = default;
 
 void HgmApplication::WeatherInfo::begin()
 {
@@ -116,13 +91,13 @@ void HgmApplication::WeatherInfo::deInitTask()
 
 static void _get()
 {
-    _id = doc["data"]["id"].as<String>();
-    _key = doc["data"]["key"].as<String>();
-    _adm = doc["data"]["adm"].as<String>();
-    _adm2 = doc["data"]["adm2"].as<String>();
-    _location = doc["data"]["location"].as<String>();
-    _lat = doc["data"]["lat"].as<String>();
-    _lon = doc["data"]["lon"].as<String>();
+    weatherInfo._id = doc["data"]["id"].as<String>();
+    weatherInfo._key = doc["data"]["key"].as<String>();
+    weatherInfo._adm = doc["data"]["adm"].as<String>();
+    weatherInfo._adm2 = doc["data"]["adm2"].as<String>();
+    weatherInfo._location = doc["data"]["location"].as<String>();
+    weatherInfo._lat = doc["data"]["lat"].as<String>();
+    weatherInfo._lon = doc["data"]["lon"].as<String>();
 
     component.curStatus = true;
     component.waitStatus = true;
@@ -136,7 +111,7 @@ static void WeatherConfig()
     hgmSetupUI->componentControl(&component);
 
     Serial.println("Waiting the Weather config...");
-    while (configFlag != true)
+    while (weatherInfo.configFlag != true)
         vTaskDelay(5);
 
     _get();
@@ -178,7 +153,7 @@ bool HgmApplication::WeatherInfo::checkWeatherconfig()
             _lon = doc["Data"]["lon"].as<String>();
             _key = doc["Data"]["key"].as<String>();
 
-            configFlag = true;
+            weatherInfo.configFlag = true;
             vTaskDelay(200);
         }
     }
@@ -195,36 +170,36 @@ void HgmApplication::WeatherInfo::setWeatherConfig()
 
     String wi;
     doc["Header"] = "Weather";
-    doc["Data"]["id"] = _id;
-    doc["Data"]["key"] = _key;
-    doc["Data"]["adm"] = _adm;
-    doc["Data"]["adm2"] = _adm2;
-    doc["Data"]["location"] = _location;
-    doc["Data"]["lat"] = _lat;
-    doc["Data"]["lon"] = _lon;
+    doc["Data"]["id"] = weatherInfo._id;
+    doc["Data"]["key"] = weatherInfo._key;
+    doc["Data"]["adm"] = weatherInfo._adm;
+    doc["Data"]["adm2"] = weatherInfo._adm2;
+    doc["Data"]["location"] = weatherInfo._location;
+    doc["Data"]["lat"] = weatherInfo._lat;
+    doc["Data"]["lon"] = weatherInfo._lon;
     serializeJson(doc, wi);
 
     _file.write((const uint8_t*)wi.c_str(), wi.length());
 
     _file.close();
-    configFlag = true;
+    weatherInfo.configFlag = true;
 }
 
 void HgmApplication::WeatherInfo::setAppKey(String key)
 {
-    _key = key;
+    weatherInfo._key = key;
 }
 
 void HgmApplication::WeatherInfo::setWeatherConfig(String id)
 {
-    _id = id;
+    weatherInfo._id = id;
 }
 
 void HgmApplication::WeatherInfo::setWeatherConfig(String adm, String adm2, String location)
 {
-    _adm = adm;
-    _adm2 = adm2;
-    _location = location;
+    weatherInfo._adm = adm;
+    weatherInfo._adm2 = adm2;
+    weatherInfo._location = location;
 }
 
 void HgmApplication::WeatherInfo::setWeatherConfig(String latitude, String longitude)
@@ -232,34 +207,27 @@ void HgmApplication::WeatherInfo::setWeatherConfig(String latitude, String longi
     Serial.println(latitude);
     Serial.println(longitude);
 
-    _lat = latitude;
-    _lon = longitude;
+    weatherInfo._lat = latitude;
+    weatherInfo._lon = longitude;
 }
 
 void HgmApplication::WeatherInfo::getWeatherConfig(String& id)
 {
-    id = _id;
+    id = weatherInfo._id;
 }
 
 void HgmApplication::WeatherInfo::getWeatherConfig(String& adm, String& adm2, String& location)
 {
-    adm = _adm;
-    adm2 = _adm2;
-    location = _location;
+    adm = weatherInfo._adm;
+    adm2 = weatherInfo._adm2;
+    location = weatherInfo._location;
 }
 
 void HgmApplication::WeatherInfo::getWeatherConfig(String& latitude, String& longitude)
 {
-    latitude = _lat;
-    longitude = _lon;
+    latitude = weatherInfo._lat;
+    longitude = weatherInfo._lon;
 }
-
-static bool httpGetUtil(String& url, uint8_t* rBuf)
-{
-
-}
-
-static HTTPClient hc;
 
 void HgmApplication::WeatherInfo::getWeather()
 {
@@ -276,9 +244,9 @@ void HgmApplication::WeatherInfo::getWeather()
     String lonLat = "&location=" + __lon + ',' + __lat;
     String key = "&key=" + __key;
     String gzip = "&gzip=n";
-    String nowApi = nowWeatherAPI + lonLat + key + gzip;
-    String threeApi = threeWeatherAPI + lonLat + key + gzip;
-    String airApi = airAPI + lonLat + key + gzip;
+    String nowApi = weatherInfo.nowWeatherAPI + lonLat + key + gzip;
+    String threeApi = weatherInfo.threeWeatherAPI + lonLat + key + gzip;
+    String airApi = weatherInfo.airAPI + lonLat + key + gzip;
 
 #if HGM_DEBUG == 1
     Serial.println(nowApi);
