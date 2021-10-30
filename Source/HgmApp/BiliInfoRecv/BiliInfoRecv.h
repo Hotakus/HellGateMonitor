@@ -46,8 +46,8 @@ namespace HgmApplication {
 
         void begin();
 
-        void uid(String __uid);
-        String uid();
+        static void SetUID(String uid);
+        static String GetUID();
         static bool Done();
 
         static uint8_t getLevel();
