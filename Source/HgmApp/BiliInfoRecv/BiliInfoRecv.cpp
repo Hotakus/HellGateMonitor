@@ -36,7 +36,6 @@ using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HGM;
 
 extern HgmLvgl* hgmLvgl;
-extern HgmSetupView* hgmSetupUI;
 
 BiliInfoRecv bili;
 
@@ -92,64 +91,8 @@ void HgmApplication::BiliInfoRecv::deInitTask()
     vSemaphoreDelete(biliSemaphore);
 }
 
-static void BiliConfig()
-{
-    component.type = HGM_COMPONENT_BILIBILI;
-    component.curStatus = false;
-    component.waitStatus = false;
-    hgmSetupUI->componentControl(&component);
-
-    Serial.println("Waiting the BiliBili config...");
-    while (configFlag != true)
-        vTaskDelay(5);
-
-    component.waitStatus = true;
-}
-
 void HgmApplication::BiliInfoRecv::begin()
 {
-    File file;
-
-    if (!SPIFFS.exists(BILI_CONFIG_FILE_PATH)) {
-        Serial.printf("Can't find the bilibili.conf file, need to config by BT.\n");
-        BiliConfig();
-    } else {
-        file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
-        if (!file.size()) {
-            file.close();
-            Serial.printf("The bilibili.conf file is null, need to config by BT.\n");
-            BiliConfig();
-        } else {
-            Serial.printf("Found the bilibili.conf file.\n");
-            String tmp;
-            HDJsonDoc doc(256);
-            file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
-            tmp = file.readString();
-            deserializeJson(doc, tmp);
-
-            Serial.println(tmp);
-
-            String str = "bilibili";
-            String header = doc["Header"];
-            if (header.compareTo(str) != 0) {
-                Serial.printf("BiliBili config file header error, need to config by BT.\n");
-                file.close();
-                BiliConfig();
-                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-            }
-
-            component.type = HGM_COMPONENT_BILIBILI;
-            component.curStatus = true;
-            component.waitStatus = true;
-            hgmSetupUI->componentControl(&component);
-
-            this->SetUID(doc["Data"]["uid"].as<String>());
-
-            file.close();
-        }
-    }
-
-    // this->initTask();
 
 }
 
@@ -157,9 +100,9 @@ void HgmApplication::BiliInfoRecv::begin()
  * @brief Set UID.
  * @param uid
  */
-void HgmApplication::BiliInfoRecv::SetUID(String uid)
+void HgmApplication::BiliInfoRecv::uid(String __uid)
 {
-    instance->info._uid = uid;
+    instance->info._uid = __uid;
     configFlag = true;
 }
 
@@ -167,7 +110,7 @@ void HgmApplication::BiliInfoRecv::SetUID(String uid)
  * @brief Get UID.
  * @param uid
  */
-String HgmApplication::BiliInfoRecv::GetUID()
+String HgmApplication::BiliInfoRecv::uid()
 {
     return instance->info._uid;
 }
@@ -366,14 +309,6 @@ static void biliTask(void* params)
 
         xSemaphoreTake(wbs, portMAX_DELAY);
         bili.getBasicInfo();
-
-        // String statAPI2 = "http://api.bilibili.com/x/relation/stat?vmid=2";
-        // String url = statAPI2;
-        // uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
-        // https->end();
-        // HotakusHttpUtil::GET(*https, url, buf, 1024);
-        // hotakusFree(buf);
-
         bili.getUserFaceImg();
         xSemaphoreGive(wbs);
 
