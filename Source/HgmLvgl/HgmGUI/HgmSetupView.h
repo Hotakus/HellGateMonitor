@@ -10,6 +10,7 @@
 #ifndef HELLGATEMONITOR_HGMSETUPUI_H
 #define HELLGATEMONITOR_HGMSETUPUI_H
 
+#include "../../Utils/MsgCenter/MsgCenter.h"
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include <TJpg_Decoder.h>
 
@@ -19,7 +20,7 @@ namespace HgmGUI {
     typedef enum _HgmComponentType
     {
         HGM_COMPONENT_BT,
-        HGM_COMPONENT_CONFIG_FILE,
+        HGM_COMPONENT_SPIFFS,
         HGM_COMPONENT_WIFI,
         HGM_COMPONENT_NET_TIME,
         HGM_COMPONENT_WEATHER,
@@ -41,7 +42,7 @@ namespace HgmGUI {
     class HgmSetupView
     {
     private:
-
+        
     public:
 
         struct _frtos {
@@ -64,6 +65,7 @@ namespace HgmGUI {
         ~HgmSetupView();
 
         void begin();
+        void end();
 
         // Be call for other class
         static void componentControl(HgmComponent* component);

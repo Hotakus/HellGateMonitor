@@ -44,7 +44,7 @@ namespace HgmApplication {
 		HardwareNetData();
 		~HardwareNetData();
 
-		void Set(HotakusDynamicJsonDocument& hdjd);
+		void Set(HDJsonDoc& hdjd);
 	};
 }
 

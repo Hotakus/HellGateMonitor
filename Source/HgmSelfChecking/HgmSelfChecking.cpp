@@ -13,135 +13,130 @@
 #include "../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmApp/WeatherInfo/WeatherInfo.h"
 
+#include "../HgmApp/HgmWiFi/HgmWiFi.h"
+#include "../HgmApp/HgmBT/HgmBT.h"
+#include "../HgmLvgl/HgmLvgl.h"
+#include "../HgmSelfChecking/HgmSelfChecking.h"
+#include "../HgmApp/TimeInfo/TimeInfo.h"
+#include "../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
+#include "../HgmLvgl/HgmGUI/HgmSetupView.h"
+#include "../HgmApp/WeatherInfo/WeatherInfo.h"
+#include "../HgmApp/HotakusMemUtil.h"
+#include "../HgmApp/HotakusHttpUtil.h"
+#include "../HgmApp/HardwareInfoRecv/HardwareRequest.h"
+#include "../Utils/MsgCenter/MsgCenter.h"
+#include "../Utils/SPIFFSUtil/SPIFFSUtil.h"
+
 #include <Arduino.h>
 #include <FS.h>
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
+#define TAG "HgmSC"
+#define HGM_DEBUG 1
+#include "../HgmLogUtil.h"
 
-using namespace HgmApplication;
-using namespace HgmGUI;
 using namespace HGM;
+using namespace HgmGUI;
+using namespace HgmApplication;
 using namespace fs;
+using namespace msgmanager;
+using namespace spiffsutil;
+
+extern HgmSetupView* hgmSetupUI;
 
 extern HgmWiFi hgmWiFi;
-extern HgmSetupView* hgmSetupUI;
-static HgmComponent component;
+extern HgmBT hgmBT;
+extern TimeInfo ti;
+extern BiliInfoRecv bili;
+extern WeatherInfo weatherInfo;
 
-String ssid;
-String password;
-
-
-static void WiFiBTConfig();
-
-HgmSC::HgmSC()
+static void err_cb(const String& err)
 {
-    // TODO:
-}
-
-HgmSC::~HgmSC()
-{
-    // TODO:
+    hgm_log_e(TAG, "%s", err.c_str());
+    while (true) {
+        vTaskDelay(1);
+    };
 }
 
 void HGM::HgmSC::begin()
 {
-    uint8_t i = 0;
-    uint8_t timeout = 10;
-    File file;
-
-    component.type = HGM_COMPONENT_CONFIG_FILE;
-
-    /* Delay 500ms for PSRAM */
-    delay(500);
-
-    Serial.println("SPIFFS beginning...");
-    for (i = 0; i < timeout; i++) {
-        if (SPIFFS.begin())
-            break;
-        Serial.print(".");
-        vTaskDelay(100);
-    }
-    if (i >= timeout) {
-        Serial.println("SPIFFS begin failed.");
-        this->CheckFlag = false;
-        component.curStatus = false;
-        component.waitStatus = false;
-        hgmSetupUI->componentControl(&component);
-        vTaskDelay(2000);
-        ESP.restart();
-    }
-    Serial.println("SPIFFS is OK.");
-    Serial.printf("SPIFFS total : %d Bytes\n", SPIFFS.totalBytes());
-    Serial.printf("SPIFFS used  : %d Bytes\n", SPIFFS.usedBytes());
-
-
-    Serial.printf("Try to read \"%s\"\n", WIFI_CONFIG_FILE_PATH);
-    if (!SPIFFS.exists(WIFI_CONFIG_FILE_PATH)) {
-        // If there isn't config file, show the info to screen and serial. Then use BT to config wifi.
-        Serial.println("No WiFi config file be found in spiffs.");
-        Serial.println("Open bluetooth to config wifi file and open wifi.");
-        WiFiBTConfig();
-        Serial.printf("WiFi config file size : %d\n", file.size());
-    } else {
-        // If there is the config file, read and analyze the json content then store to HgmWiFi object.
-        // Create mailbox in HgmWiFi, then this function send a mail to trigger wifi config function.
-        // If read content from wifi config file is null, then show log and begin BT config
-        Serial.println("Found the WiFi config file.");
-        file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-        if (!file.size()) {
-            Serial.println("WiFi config file is null, start to WiFi config via BT.");
-            file.close();
-            WiFiBTConfig();
-        } else {
-            // To open wifi with content that from wifi config file.
-            String tmp;
-            DynamicJsonDocument doc(256);
-            file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-            tmp = file.readString();
-            deserializeJson(doc, tmp);
-
-            // TODO: Debug
-            Serial.println(tmp);
-
-            String str = "WiFi";
-            String header = doc["Header"];
-            if (header.compareTo("WiFi") != 0) {
-                file.close();
-                WiFiBTConfig();
-                file = SPIFFS.open(WIFI_CONFIG_FILE_PATH, FILE_READ);
-            }
-            file.close();
-
-            ssid = doc["ssid"].as<String>();
-            password = doc["password"].as<String>();
-            if ((!ssid.compareTo("null") || !password.compareTo("null")) || (!ssid || !password))
-                WiFiBTConfig();
-            hgmWiFi.ConfigWiFi(ssid, password);
-
-            component.type = HGM_COMPONENT_CONFIG_FILE;
-            component.curStatus = true;
-            component.waitStatus = true;
-            hgmSetupUI->componentControl(&component);
-
-            vTaskDelay(200);
-        }
-    }
-
-    this->CheckFlag = true;
+    hgmSetup = new HgmSetupView;
+    hgmSetup->begin();
+    
+    checkBT();
+    checkSpiffs();
+    checkWiFi();
+    checkTime();
+    checkBili();
+    checkWeather();
+    
+    hgmSetup->end();
+    delete hgmSetup;
 }
 
-static void WiFiBTConfig()
+void HGM::HgmSC::setState(HgmComponentType ct, bool cur, bool wait)
 {
-    component.type = HGM_COMPONENT_CONFIG_FILE;
-    component.curStatus = false;
-    component.waitStatus = false;
+    component.type = ct;
+    component.curStatus = cur;
+    component.waitStatus = wait;
     hgmSetupUI->componentControl(&component);
+}
 
-    Serial.println("Waiting the BT config WiFi...");
+void HGM::HgmSC::checkBT()
+{
+    setState(HGM_COMPONENT_BT, true, false);
+    hgmBT.setName();
+    hgmBT.begin();
+    while (!hgmBT.bs->isReady())
+        vTaskDelay(100);
+    component.waitStatus = true;
+    vTaskDelay(300);
+}
+
+void HGM::HgmSC::checkSpiffs()
+{
+    if (!Sfu::begin()) {
+        setState(HGM_COMPONENT_SPIFFS, false, false);
+        err_cb(String("SPIFFS check failed."));
+    }
+    setState(HGM_COMPONENT_SPIFFS, true, true);
+}
+
+void HGM::HgmSC::checkWiFi()
+{
+    bool ret = Sfu::existsNoZero(WIFI_CONFIG_FILE_PATH);
+    if (!ret) {
+        setState(HGM_COMPONENT_WIFI, false, false);
+        err_cb(String("WiFi check failed. (No existing)"));
+    }
+
+    HDJsonDoc doc(512);
+    ret = Sfu::readJson(String(WIFI_CONFIG_FILE_PATH), doc);
+    if (!ret) {
+        setState(HGM_COMPONENT_WIFI, false, false);
+        err_cb(String("WiFi check failed. (json parse error)"));
+    }
+
+    String ssid = doc["ssid"];
+    String passwd = doc["password"];
+    hgmWiFi.ConfigWiFi(ssid, passwd);
+    hgmWiFi.begin();
+
+    setState(HGM_COMPONENT_WIFI, true, false);
     while (!WiFi.isConnected())
-        vTaskDelay(50);
+        vTaskDelay(100);
     component.waitStatus = true;
 }
 
+void HGM::HgmSC::checkTime()
+{
+}
 
+void HGM::HgmSC::checkBili()
+{
+}
+
+void HGM::HgmSC::checkWeather()
+{
+}

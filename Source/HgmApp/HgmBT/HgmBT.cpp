@@ -127,7 +127,7 @@ static void BeginWiFiWithConfig(String ssid, String password)
  */
 String HgmApplication::HgmBT::packRawData(String& dataToPack, HgmBTPackMethod method)
 {
-    HotakusDynamicJsonDocument hgmPack(8192);
+    HDJsonDoc hgmPack(8192);
     String tmp;
     JsonObject Data;
 
@@ -182,7 +182,7 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         return HGM_BT_PACK_METHOD_ERROR;
 
     String str = "";
-    HotakusDynamicJsonDocument rawPack(hgmBT.bs->available() + 1024);
+    HDJsonDoc rawPack(hgmBT.bs->available() + 1024);
 
     size_t packSize = hgmBT.bs->available();
     uint8_t* buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * (packSize + 32));
@@ -214,7 +214,7 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
 
-        HotakusDynamicJsonDocument doc(256);
+        HDJsonDoc doc(256);
         String tmp;
         doc["Header"] = "WiFi";
         doc["ssid"] = HgmWiFi::GetSSID();
@@ -265,7 +265,7 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
 
         String _uid = rawPack["Data"]["uid"];
         BiliInfoRecv::SetUID(_uid);
-        HotakusDynamicJsonDocument doc(256);
+        HDJsonDoc doc(256);
         String tmp;
         doc["Header"] = "bilibili";
         doc["Data"]["uid"] = _uid;

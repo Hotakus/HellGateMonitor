@@ -9,15 +9,16 @@
 *******************************************************************/
 #include "HgmSetupView.h"
 #include "../../LvglSrc/lvgl/lvgl.h"
+#include "../../Utils/MsgCenter/MsgCenter.h"
+#include "HgmFramework.h"
 
 #include <TJpg_Decoder.h>
 
 using namespace HgmGUI;
+using namespace msgmanager;
 
 LV_IMG_DECLARE(HGM_LOGO);
-
 static void SetupCheckTask(void* params);
-
 static HgmSetupView* instance = NULL;
 
 HgmSetupView::HgmSetupView()
@@ -128,6 +129,13 @@ void HgmGUI::HgmSetupView::begin()
 
 }
 
+void HgmGUI::HgmSetupView::end()
+{
+    vTaskDelay(500);
+    this->componentInitDone();
+    vTaskDelay(500);
+}
+
 /**
  * @brief Use it to control SetupCheckTask().
  * @param component
@@ -196,8 +204,8 @@ static void SetupCheckTask(void* params)
     uint16_t progress = 0;
     HgmComponent* component;
 
-    static String ok = "#486817 ok#";
-    static String failed = "#ce0b0b failed#";
+    String ok = "#486817 ok#";
+    String failed = "#ce0b0b failed#";
 
     while (true) {
         // Wait components begin
@@ -210,9 +218,9 @@ static void SetupCheckTask(void* params)
             instance->curText = "Check BT...";
             break;
         }
-        case HGM_COMPONENT_CONFIG_FILE: {
+        case HGM_COMPONENT_SPIFFS: {
             instance->prevText = instance->curText;
-            instance->curText = "Check config...";
+            instance->curText = "Check spiffs...";
             break;
         }
         case HGM_COMPONENT_WIFI: {

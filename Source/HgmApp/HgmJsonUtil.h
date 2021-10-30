@@ -34,6 +34,7 @@ namespace HgmApplication {
 			}
 		};
 		typedef BasicJsonDocument <HotakusDefaultAllocator> HotakusDynamicJsonDocument;
+        typedef HotakusDynamicJsonDocument HDJsonDoc;
 	}
 
 	class HgmJsonUtil {

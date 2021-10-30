@@ -30,7 +30,7 @@ HardwareCpuData::~HardwareCpuData()
 }
 
 
-void HgmApplication::HardwareCpuData::Set(HotakusDynamicJsonDocument& hdjd)
+void HgmApplication::HardwareCpuData::Set(HDJsonDoc& hdjd)
 {
     this->coreCount = hdjd["Data"]["CPU"]["coreCount"].as<int8_t>();
 

@@ -110,7 +110,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
         return -1;
     }
     String recv = https->getString();
-    HotakusDynamicJsonDocument doc(recv.length() + 512);
+    HDJsonDoc doc(recv.length() + 512);
     deserializeJson(doc, recv);
 
 #if HGM_DEBUG == 1

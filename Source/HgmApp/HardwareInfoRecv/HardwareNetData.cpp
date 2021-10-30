@@ -31,7 +31,7 @@ HgmApplication::HardwareNetData::~HardwareNetData()
 {
 }
 
-void HgmApplication::HardwareNetData::Set(HotakusDynamicJsonDocument& hdjd)
+void HgmApplication::HardwareNetData::Set(HDJsonDoc& hdjd)
 {
     this->ethernet.nd.downloaded = hdjd["Data"]["Network"]["ethernet"]["data"]["downloaded"].as<float>();
     this->ethernet.nd.uploaded = hdjd["Data"]["Network"]["ethernet"]["data"]["uploaded"].as<float>();

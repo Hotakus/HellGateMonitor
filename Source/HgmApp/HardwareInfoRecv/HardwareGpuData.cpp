@@ -25,7 +25,7 @@ HgmApplication::HardwareGpuData::~HardwareGpuData()
 {
 }
 
-void HgmApplication::HardwareGpuData::Set(HotakusDynamicJsonDocument& hdjd)
+void HgmApplication::HardwareGpuData::Set(HDJsonDoc& hdjd)
 {
     this->name = hdjd["Data"]["GPU"]["name"].as<String>();
 

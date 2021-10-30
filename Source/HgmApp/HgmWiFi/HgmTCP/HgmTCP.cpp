@@ -145,7 +145,7 @@ WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
  */
 String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod method)
 {
-    HotakusDynamicJsonDocument hgmPack(dataToPack.length() + 1024);
+    HDJsonDoc hgmPack(dataToPack.length() + 1024);
 
     hgmPack["Header"] = TCP_PACK_HEADER;
 
@@ -213,7 +213,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 
     // Receive raw pack
     size_t packSize = (instance->accept.available() + 1);
-    HotakusDynamicJsonDocument rawPack(packSize + 1024);
+    HDJsonDoc rawPack(packSize + 1024);
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
     if (!buf) {
         Serial.println("TCP allocated error");

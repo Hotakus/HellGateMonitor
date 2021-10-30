@@ -122,7 +122,7 @@ void HgmApplication::BiliInfoRecv::begin()
         } else {
             Serial.printf("Found the bilibili.conf file.\n");
             String tmp;
-            HotakusDynamicJsonDocument doc(256);
+            HDJsonDoc doc(256);
             file = SPIFFS.open(BILI_CONFIG_FILE_PATH, FILE_READ);
             tmp = file.readString();
             deserializeJson(doc, tmp);
@@ -310,7 +310,7 @@ void* HgmApplication::BiliInfoRecv::getUserFaceBitmap()
 static int _GetFollower()
 {
     String url = instance->info.statAPI + instance->info._uid;
-    HotakusDynamicJsonDocument userInfo(1024);
+    HDJsonDoc userInfo(1024);
 
     uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
     HotakusHttpUtil::GET(*https, url, buf, 1024);
@@ -338,7 +338,7 @@ void HgmApplication::BiliInfoRecv::getBasicInfo()
     while (*pRecvBuf != '{' && (*pRecvBuf != recvBuf[ret - 1]))
         pRecvBuf++;
 
-    HotakusDynamicJsonDocument userInfo(ret + 1024);
+    HDJsonDoc userInfo(ret + 1024);
     deserializeJson(userInfo, pRecvBuf);
     hotakusFree(recvBuf);
 

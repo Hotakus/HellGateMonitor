@@ -35,7 +35,7 @@ namespace HgmApplication {
 		HardwareMemData();
 		~HardwareMemData();
 
-		void Set(HotakusDynamicJsonDocument& hdjd);
+		void Set(HDJsonDoc& hdjd);
 	};
 }
 

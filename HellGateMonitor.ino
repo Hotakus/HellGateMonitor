@@ -21,6 +21,7 @@
 #include "Source/HgmApp/HotakusHttpUtil.h"
 #include "Source/HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "Source/Utils/MsgCenter/MsgCenter.h"
+#include "Source/Utils/SPIFFSUtil/SPIFFSUtil.h"
 
 #include <TFT_eSPI.h>
 #include <User_Setup.h>
@@ -47,6 +48,7 @@ using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace fs;
 using namespace msgmanager;
+using namespace spiffsutil;
 
 extern HgmWiFi hgmWiFi;
 extern HgmBT hgmBT;
@@ -117,8 +119,6 @@ void setup()
     Serial.printf("Github   : https://github.com/Hotakus/HellGateMonitor \n");
     Serial.printf("********************************************************\n");
 
-    // MsgCenter::msg_center_test();
-
     bkMsgBox = xQueueCreate(1, sizeof(bool));
     xTaskCreatePinnedToCore(backlightControl, "backlightControl", 1024 + 128, NULL, 5, &bkHandle, 1);
 
@@ -132,59 +132,59 @@ void setup()
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    HgmSetupView* hgmSetupUI = new HgmSetupView();
-    hgmSetupUI->begin();
-
-    // Open bluetooth
-    component.type = HGM_COMPONENT_BT;
-    component.curStatus = true;
-    component.waitStatus = false;
-    hgmSetupUI->componentControl(&component);
-    hgmBT.setName();
-    hgmBT.begin();
-    while (!hgmBT.bs->isReady())
-        vTaskDelay(200);
-    component.waitStatus = true;
-    vTaskDelay(200);
-
-    // Check config file
     HgmSC hgmSC;
     hgmSC.begin();
-    vTaskDelay(200);
 
-    // Check WiFi
-    component.type = HGM_COMPONENT_WIFI;
-    component.curStatus = true;
-    component.waitStatus = false;
-    hgmSetupUI->componentControl(&component);
-    hgmWiFi.begin();
-    while (!hgmWiFi.wifi->isConnected())
-        vTaskDelay(100);
-    component.waitStatus = true;
-    vTaskDelay(300);
-
-    // Check time
-    ti.begin();
-    vTaskDelay(300);
-
-    // Check bilibili component
-    bili.begin();
-    vTaskDelay(300);
-
-    // Check weather
-    weatherInfo.begin();
-    vTaskDelay(300);
-    
-    // All done
-    component.type = HGM_COMPONENT_DONE;
-    component.curStatus = true;
-    component.waitStatus = true;
-    hgmSetupUI->componentControl(&component);
-    vTaskDelay(500);
-    hgmSetupUI->componentInitDone();
-    delete hgmSetupUI;
-    
-    hgmLvgl.HgmLvglUIbegin();
+    // // Open bluetooth
+    // component.type = HGM_COMPONENT_BT;
+    // component.curStatus = true;
+    // component.waitStatus = false;
+    // hgmSetupUI->componentControl(&component);
+    // hgmBT.setName();
+    // hgmBT.begin();
+    // while (!hgmBT.bs->isReady())
+    //     vTaskDelay(200);
+    // component.waitStatus = true;
+    // vTaskDelay(200);
+    // 
+    // // Check config file
+    // HgmSC hgmSC;
+    // hgmSC.begin();
+    // vTaskDelay(200);
+    // 
+    // // Check WiFi
+    // component.type = HGM_COMPONENT_WIFI;
+    // component.curStatus = true;
+    // component.waitStatus = false;
+    // hgmSetupUI->componentControl(&component);
+    // hgmWiFi.begin();
+    // while (!hgmWiFi.wifi->isConnected())
+    //     vTaskDelay(100);
+    // component.waitStatus = true;
+    // vTaskDelay(300);
+    // 
+    // // Check time
+    // ti.begin();
+    // vTaskDelay(300);
+    // 
+    // // Check bilibili component
+    // bili.begin();
+    // vTaskDelay(300);
+    // 
+    // // Check weather
+    // weatherInfo.begin();
+    // vTaskDelay(300);
+    // 
+    // // All done
+    // component.type = HGM_COMPONENT_DONE;
+    // component.curStatus = true;
+    // component.waitStatus = true;
+    // hgmSetupUI->componentControl(&component);
+    // vTaskDelay(500);
+    // hgmSetupUI->componentInitDone();
+    // delete hgmSetupUI;
+    // 
+    // hgmLvgl.HgmLvglUIbegin();
 
     char* task_buf = (char*)hotakusAlloc(8192); 
     vTaskList(task_buf);

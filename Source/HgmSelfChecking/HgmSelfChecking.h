@@ -11,7 +11,10 @@
 #ifndef HELLGATEMONITOR_HGMSELFCHECKING_H
 #define HELLGATEMONITOR_HGMSELFCHECKING_H
 
+#include "../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include <Arduino.h>
+
+using namespace HgmGUI;
 
 namespace HGM {
 
@@ -20,13 +23,20 @@ namespace HGM {
 	private:
 
 	public:
+        HgmComponent component;
+        HgmSetupView* hgmSetup;
 
-		bool CheckFlag = false;
+        HgmSC() = default;
+        ~HgmSC() = default;
+        void begin();
 
-		HgmSC();
-		~HgmSC();
-
-		void begin();
+        void setState(HgmComponentType ct, bool cur, bool wait);
+        void checkBT();
+        void checkSpiffs();
+        void checkWiFi();
+        void checkTime();
+        void checkBili();
+        void checkWeather();
 
 	};
 };

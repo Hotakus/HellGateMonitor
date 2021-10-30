@@ -254,7 +254,7 @@ void HgmApplication::WeatherInfo::getWeather()
     Serial.println(airApi);
 #endif
 
-    HotakusDynamicJsonDocument doc(8192);
+    HDJsonDoc doc(8192);
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
 
     /* Air */

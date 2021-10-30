@@ -25,7 +25,7 @@ HardwareDiskData::~HardwareDiskData()
 {
 }
 
-void HgmApplication::HardwareDiskData::Set(HotakusDynamicJsonDocument& hdjd)
+void HgmApplication::HardwareDiskData::Set(HDJsonDoc& hdjd)
 {
     this->diskCount = hdjd["Data"]["HardDisk"]["count"].as<uint8_t>();
 

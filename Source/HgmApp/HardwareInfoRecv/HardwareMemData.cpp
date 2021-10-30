@@ -25,7 +25,7 @@ HgmApplication::HardwareMemData::~HardwareMemData()
 {
 }
 
-void HgmApplication::HardwareMemData::Set(HotakusDynamicJsonDocument& hdjd)
+void HgmApplication::HardwareMemData::Set(HDJsonDoc& hdjd)
 {
     this->load = hdjd["Data"]["Memory"]["load"]["current"].as<float>();
     this->loadMax = hdjd["Data"]["Memory"]["load"]["max"].as<float>();

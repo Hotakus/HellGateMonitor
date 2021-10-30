@@ -43,7 +43,7 @@ namespace HgmApplication{
 		HardwareGpuData();
 		~HardwareGpuData();
 
-		void Set(HotakusDynamicJsonDocument& hdjd);
+		void Set(HDJsonDoc& hdjd);
 	};
 }
 
