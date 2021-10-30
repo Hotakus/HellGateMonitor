@@ -126,7 +126,7 @@ void HGM::HgmLvgl::begin()
 /**
  * @brief Initialize basic UI.
  */
-void HGM::HgmLvgl::HgmLvglUIbegin()
+void HGM::HgmLvgl::guiBegin()
 {
     this->hgmFw->begin();
 }

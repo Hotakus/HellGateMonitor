@@ -48,7 +48,7 @@ namespace HGM {
 		~HgmLvgl();
 
 		void begin();
-		void HgmLvglUIbegin();
+		void guiBegin();
 
 		static void HgmLvglDispFlush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p);
 
