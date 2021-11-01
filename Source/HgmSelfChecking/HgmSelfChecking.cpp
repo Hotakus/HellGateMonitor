@@ -43,8 +43,6 @@ using namespace fs;
 using namespace msgmanager;
 using namespace spiffsutil;
 
-extern HgmSetupView* hgmSetupUI;
-
 extern HgmWiFi hgmWiFi;
 extern HgmBT hgmBT;
 extern TimeInfo ti;
@@ -61,30 +59,34 @@ static void err_cb(const String& err)
 
 void HGM::HgmSC::begin()
 {
-    hgmSetup = new HgmSetupView;
-    hgmSetup->begin();
-    
+    //hgmSetup = new HgmSetupView();
+    //hgmSetup->begin();
+
     checkBT();
     checkSpiffs();
     checkWiFi();
     checkTime();
     checkBili();
     checkWeather();
-    
-    hgmSetup->end();
-    delete hgmSetup;
+
+    //hgmSetup->componentInitDone();
+    //delete hgmSetup;
 }
 
 void HGM::HgmSC::setState(HgmComponentType ct, bool cur, bool wait)
 {
-    component.type = ct;
-    component.curStatus = cur;
-    component.waitStatus = wait;
-    hgmSetupUI->componentControl(&component);
+    // _cur = cur;
+    // _wait = wait;
+    // 
+    // component.type = ct;
+    // component.curStatus = _cur;
+    // component.waitStatus = _wait;
+    //hgmSetup->componentControl(&component);
 }
 
 void HGM::HgmSC::checkBT()
 {
+
     setState(HGM_COMPONENT_BT, true, false);
     hgmBT.setName();
     hgmBT.begin();
@@ -101,6 +103,7 @@ void HGM::HgmSC::checkSpiffs()
         err_cb(String("SPIFFS check failed."));
     }
     setState(HGM_COMPONENT_SPIFFS, true, true);
+    vTaskDelay(300);
 }
 
 void HGM::HgmSC::checkWiFi()
@@ -127,16 +130,67 @@ void HGM::HgmSC::checkWiFi()
     while (!WiFi.isConnected())
         vTaskDelay(100);
     component.waitStatus = true;
+    vTaskDelay(300);
 }
 
 void HGM::HgmSC::checkTime()
 {
+    while (!WiFi.isConnected())
+        vTaskDelay(100);
+    if (!ti.getNetTime()) {
+        setState(HGM_COMPONENT_NET_TIME, false, false);
+        err_cb("Net time check failed.");
+    }
+    setState(HGM_COMPONENT_NET_TIME, true, true);
+    ti.initTask();
+    vTaskDelay(300);
 }
 
 void HGM::HgmSC::checkBili()
 {
+    bool ret = Sfu::existsNoZero(BILI_CONFIG_FILE_PATH);
+    if (!ret) {
+        setState(HGM_COMPONENT_BILIBILI, false, false);
+        err_cb(String("Bili check failed. (No existing)"));
+    }
+
+    HDJsonDoc doc(512);
+    ret = Sfu::readJson(String(BILI_CONFIG_FILE_PATH), doc);
+    if (!ret) {
+        setState(HGM_COMPONENT_BILIBILI, false, false);
+        err_cb(String("Bili check failed. (json parse error)"));
+    }
+
+    String uid = doc["Data"]["uid"];
+    bili.SetUID(uid);
+
+    setState(HGM_COMPONENT_BILIBILI, true, true);
+    vTaskDelay(300);
 }
 
 void HGM::HgmSC::checkWeather()
 {
+    bool ret = Sfu::existsNoZero(WEATHER_CONFIG_FILE_PATH);
+    if (!ret) {
+        setState(HGM_COMPONENT_WEATHER, false, false);
+        err_cb(String("Weather check failed. (No existing)"));
+    }
+
+    HDJsonDoc doc(512);
+    ret = Sfu::readJson(String(WEATHER_CONFIG_FILE_PATH), doc);
+    if (!ret) {
+        setState(HGM_COMPONENT_WEATHER, false, false);
+        err_cb(String("Weather check failed. (json parse error)"));
+    }
+
+    weatherInfo._id = doc["data"]["id"].as<String>();
+    weatherInfo._key = doc["data"]["key"].as<String>();
+    weatherInfo._adm = doc["data"]["adm"].as<String>();
+    weatherInfo._adm2 = doc["data"]["adm2"].as<String>();
+    weatherInfo._location = doc["data"]["location"].as<String>();
+    weatherInfo._lat = doc["data"]["lat"].as<String>();
+    weatherInfo._lon = doc["data"]["lon"].as<String>();
+
+    setState(HGM_COMPONENT_WEATHER, true, true);
+    vTaskDelay(300);
 }

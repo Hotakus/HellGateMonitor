@@ -1,4 +1,5 @@
 #include "HgmTwModel.h"
+#include "HgmTwView.h"
 
 using namespace HgmGUI;
 
@@ -18,9 +19,10 @@ void HgmGUI::HgmTwModel::end()
 {
 }
 
-void HgmGUI::HgmTwModel::setData(tw_data_t* _dat)
+void setData(HgmTwModel::tw_data_t* _dat)
 {
-    memcpy(&dat, _dat, sizeof(tw_data_t));
+    
+
 }
 
 HgmTwModel::tw_data_t* HgmGUI::HgmTwModel::getData()

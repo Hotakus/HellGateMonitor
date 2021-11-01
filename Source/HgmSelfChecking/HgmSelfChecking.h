@@ -21,10 +21,11 @@ namespace HGM {
 	class HgmSC
 	{
 	private:
-
-	public:
         HgmComponent component;
         HgmSetupView* hgmSetup;
+        bool _cur;
+        bool _wait;
+	public:
 
         HgmSC() = default;
         ~HgmSC() = default;

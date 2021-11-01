@@ -18,9 +18,36 @@ namespace HgmGUI {
 	private:
         
 	public:
+
+        typedef enum _tw_data_type_t{
+            TIME,
+            BILI,
+            WEATHER
+        } tw_data_type_t;
+
+        typedef struct _bili_dat_t {
+            size_t fans;        // bili 粉丝数
+            uint8_t* ufb;       // bili 用户头像解码buffer地址
+            String bn;          // bili 用户名
+            String uid;         // bili UID
+        } bili_dat_t;
+
+        typedef struct _weather_dat_t {
+            uint8_t temp;       // Unit: Celsius
+            uint8_t rh;         // Unit: %
+            uint16_t aqi;
+            uint16_t icon;
+        } weather_dat_t;
+
+        typedef struct _time_dat_t {
+
+        } time_dat_t;
+
         typedef struct _tw_data_t {
-            // TODO:
-            HgmFramework::CTL_t ctl;
+            tw_data_type_t tdt;
+            bili_dat_t bd;
+            weather_dat_t wd;
+            time_dat_t td;
         } tw_data_t;
 
         tw_data_t dat;
@@ -30,7 +57,6 @@ namespace HgmGUI {
 
 		void begin();
 		void end();
-        void setData(tw_data_t* _dat);
         tw_data_t* getData();
 	};
 };

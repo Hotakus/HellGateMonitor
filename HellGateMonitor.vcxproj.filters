@@ -482,6 +482,12 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hgm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -1244,6 +1250,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

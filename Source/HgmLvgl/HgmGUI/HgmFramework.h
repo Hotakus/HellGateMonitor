@@ -21,9 +21,6 @@ namespace HgmGUI {
 #define MAX_VIEWS 32
     class HgmFramework
     {
-    private:
-        String prev = "";
-        String curr = "";
     public:
         typedef enum _CTL_t {
             SET_DATA,
@@ -31,10 +28,19 @@ namespace HgmGUI {
             END
         } CTL_t;
 
-        typedef struct _gui_data_t{
+        typedef struct _gui_data_t {
             void* pData;
             CTL_t ctl;
         } gui_data_t;
+
+    private:
+        String prev = "";
+        String curr = "";
+
+        HgmFramework::gui_data_t _gd;
+
+    public:
+
 
         MsgCenter hgmFwCenter;
         Chain guiChain;

@@ -8,13 +8,13 @@
  * @copyright Copyright (c) 2021/8/15
 *******************************************************************/
 #include "../../HgmLvgl/HgmLvgl.h"
-#include "../../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include "../HgmWiFi/HgmTCP/HgmTCP.h"
 #include "../HgmWiFi/HgmWiFi.h"
 #include "../HgmJsonUtil.h"
 #include "BiliInfoRecv.h"
 #include "../HotakusHttpUtil.h"
 #include "../HotakusMemUtil.h"
+#include "../../HgmLvgl/HgmGUI/HgmTwView/HgmTwModel.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -52,7 +52,6 @@ static bool configFlag = false;
 TaskHandle_t biliTaskHandle;
 static void biliTask(void* params);
 
-
 static BiliInfoRecv* instance = NULL;
 
 BiliInfoRecv::BiliInfoRecv()
@@ -75,7 +74,7 @@ void HgmApplication::BiliInfoRecv::initTask()
     xTaskCreatePinnedToCore(
         biliTask,
         "biliTask",
-        2048 + 512,
+        2048 + 1024,
         NULL,
         8,
         &biliTaskHandle,
@@ -366,16 +365,21 @@ static void biliTask(void* params)
 
         xSemaphoreTake(wbs, portMAX_DELAY);
         bili.getBasicInfo();
-
-        // String statAPI2 = "http://api.bilibili.com/x/relation/stat?vmid=2";
-        // String url = statAPI2;
-        // uint8_t* buf = (uint8_t*)hotakusAlloc(1024);
-        // https->end();
-        // HotakusHttpUtil::GET(*https, url, buf, 1024);
-        // hotakusFree(buf);
-
         bili.getUserFaceImg();
         xSemaphoreGive(wbs);
+
+        String str = String("HgmTwUpdate");
+        MsgCenter* mc = &HgmFramework::getInstance()->hgmFwCenter;
+        msg_t* msg = mc->findMsg(str);
+        HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
+        
+        tw_data->tdt = HgmTwModel::BILI;
+        tw_data->bd.bn = bili.getUserName();
+        tw_data->bd.fans = bili.getFollower();
+        tw_data->bd.ufb = (uint8_t*)bili.getUserFaceBitmap();
+        tw_data->bd.uid = bili.GetUID();
+        
+        mc->notify(str, str);
 
         vTaskDelay(BILI_GET_GAP);
     }

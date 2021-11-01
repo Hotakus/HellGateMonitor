@@ -181,6 +181,7 @@
     <None Include="Source\LvglSrc\lvgl\docs\_templates\page.html" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hgm.h" />
     <ClInclude Include="resource.h">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -336,6 +337,7 @@
     <ClInclude Include="Source\Utils\MsgCenter\chain\chain_node_t.h" />
     <ClInclude Include="Source\Utils\MsgCenter\conf.h" />
     <ClInclude Include="Source\Utils\MsgCenter\MsgCenter.h" />
+    <ClInclude Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.h" />
     <ClInclude Include="__vm\.HellGateMonitor.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -593,6 +595,7 @@
     <ClCompile Include="Source\Utils\MsgCenter\chain\Chain.cpp" />
     <ClCompile Include="Source\Utils\MsgCenter\chain\chain_node_t.cpp" />
     <ClCompile Include="Source\Utils\MsgCenter\MsgCenter.cpp" />
+    <ClCompile Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.cpp" />
   </ItemGroup>
   <PropertyGroup>
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>

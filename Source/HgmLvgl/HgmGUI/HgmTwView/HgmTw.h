@@ -23,10 +23,9 @@ namespace HgmGUI {
     private:
         String _name = "HgmTw";
 
-        static void hgm_ui_cb(msg_t* msg);
+        static void tw_ui_cb(msg_t* msg);
+        static void tw_update_cb(msg_t* msg);
     public:
-        
-        HgmFramework::gui_data_t _gd;
 
 		/**
 		 * @brief View and model
@@ -36,15 +35,16 @@ namespace HgmGUI {
             HgmTwModel model;
         } def_vm;
 
-        subscriber_t subscriber;
-        msg_t msg;
+        subscriber_t gui_subs;
+        subscriber_t update_subs;
+        msg_t gui_msg;
+        msg_t update_msg;
 
         HgmTw();
         ~HgmTw();
 
         void begin();
         void end();
-        void setData(HgmTwModel::tw_data_t* _dat);
         HgmTwModel::tw_data_t* getData();
         String& name() {
             return this->_name;

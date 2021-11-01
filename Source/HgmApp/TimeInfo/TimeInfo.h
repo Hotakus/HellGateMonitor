@@ -33,7 +33,7 @@ namespace HgmApplication {
 
 		void begin();
 
-		static int GetNetTime(struct tm* timeStruct);
+		bool getNetTime();
 	};
 
 };

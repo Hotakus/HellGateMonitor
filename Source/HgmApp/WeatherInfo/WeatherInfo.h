@@ -10,6 +10,7 @@
 #ifndef HELLGATEMONITOR_WEATHERINFO_H
 #define HELLGATEMONITOR_WEATHERINFO_H
 
+#include "../../HgmLvgl/HgmGUI/HgmFramework.h"
 
 #include <Arduino.h>
 #include <SPIFFS.h>
@@ -32,15 +33,17 @@ namespace HgmApplication {
 		// Unit: %
         uint8_t humidity = 0;
 
-		WeatherData();
-		~WeatherData();
-	};
+        WeatherData() = default;
+        ~WeatherData() = default;
+    };  
 
 	class WeatherInfo
 	{
 	private:
 
 	public:
+
+        WeatherData wdt;
 
         String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now?";
         String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d?";
@@ -65,8 +68,6 @@ namespace HgmApplication {
 
 		void initTask();
 		void deInitTask();
-
-		bool checkWeatherconfig();
 
 		static void setAppKey(String key);
 		// two method to set the location info

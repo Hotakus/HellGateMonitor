@@ -22,12 +22,16 @@
 using namespace HgmGUI;
 
 static HgmFramework* instance = nullptr;
+static SemaphoreHandle_t fwMutex;
 
 HgmTw* hgmTw = nullptr;
 
 HgmFramework::HgmFramework()
 {
     instance = this;
+
+    fwMutex = xSemaphoreCreateBinary();
+    xSemaphoreGive(fwMutex);
 
     hgmFwCenter.begin();
     guiChain.begin();
@@ -43,6 +47,8 @@ HgmFramework::~HgmFramework()
 
     guiChain.end();
     hgmFwCenter.end();
+
+    vSemaphoreDelete(fwMutex);
     
     instance = NULL;
 }
@@ -70,15 +76,17 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
         msg = hgmFwCenter.findMsg(curr);
         if (!msg) return false;
 
-        ((gui_data_t*)msg->pData())->ctl = END;
+        _gd.ctl = END;
+        msg->pData(&_gd);
         ret = hgmFwCenter.notify(curr, curr);
         if (ret) return false;
     }
 
-	/* Born the designated GUI  */
+	/* Create the designated GUI  */
     msg = hgmFwCenter.findMsg(name);
     if (!msg) return false;
-    ((gui_data_t*)msg->pData())->ctl = BEGIN;
+    _gd.ctl = BEGIN;
+    msg->pData(&_gd);
     ret = hgmFwCenter.notify(name, name);
     if (ret) {
         prev = curr;
@@ -99,5 +107,7 @@ bool HgmGUI::HgmFramework::changeNext()
 
 HgmFramework* HgmGUI::HgmFramework::getInstance()
 {
+    xSemaphoreTake(fwMutex, portMAX_DELAY);
+    xSemaphoreGive(fwMutex);
     return instance;
 }

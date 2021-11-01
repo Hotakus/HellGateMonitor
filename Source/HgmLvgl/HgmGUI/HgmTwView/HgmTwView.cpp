@@ -70,15 +70,12 @@ static const lv_img_dsc_t* clock_imgs_array[] = {
 
 
 static lv_timer_t* showTimeTimer = NULL;
-static lv_timer_t* showBiliTimer = NULL;
-static lv_timer_t* showWeatherTimer = NULL;
 
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
 extern WeatherData weatherDataToday;
 
 static void ShowTime(lv_timer_t* timer);
-static void ShowWeather(lv_timer_t* timer);
 
 static void weatherWidgetsCreate();
 static void biliWidgetsCreate();
@@ -110,15 +107,15 @@ static void _deInitTask()
 
 void HgmGUI::HgmTwView::begin()
 {
-    _initTask();
-    vTaskDelay(500);
-
     instance->frameCreate();
     instance->widgetCreate();
     instance->animRun();
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-    showWeatherTimer = lv_timer_create(ShowWeather, 10000, NULL);
+
+    _initTask();
+
+    vTaskDelay(500);
 }
 
 
@@ -239,28 +236,16 @@ static void biliWidgetsCreate()
     lv_label_set_recolor(instance->widget.bili.biliName, true);
     lv_label_set_long_mode(instance->widget.bili.biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
     // TODO: Check chinese
-    lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
+    lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", "------");
     lv_obj_set_style_text_align(instance->widget.bili.biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(instance->widget.bili.biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
     instance->widget.bili.biliFans = lv_label_create(instance->widget.bili.book);
     lv_label_set_recolor(instance->widget.bili.biliFans, true);
-    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %d#", BiliInfoRecv::getFollower());
+    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %s#", "------");
     lv_obj_set_style_text_align(instance->widget.bili.biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(instance->widget.bili.biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(instance->widget.bili.biliFans, &k12x8_6px, 0);
-}
-
-
-static void weatherUpdate()
-{
-    if (weatherDataToday.temp >= 0)
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", weatherDataToday.temp);
-    else
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", weatherDataToday.temp);
-
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", weatherDataToday.aqi);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", weatherDataToday.humidity);
 }
 
 static void weatherWidgetsCreate()
@@ -286,18 +271,12 @@ static void weatherWidgetsCreate()
     lv_obj_set_style_text_align(instance->widget.weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align_to(instance->widget.weather.humidityLabel.label, instance->widget.weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
+    // TODO:
     instance->widget.weather.batLabel = lv_label_create(instance->widget.weather.tw_weather);
     lv_obj_set_style_text_align(instance->widget.weather.batLabel, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_text_fmt(instance->widget.weather.batLabel, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
     lv_obj_align_to(instance->widget.weather.batLabel, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
 }
-
-
-static void ShowWeather(lv_timer_t* timer)
-{
-    weatherUpdate();
-}
-
 
 static uint8_t _digitOfNumber(int num)
 {
@@ -352,21 +331,6 @@ static bool CheckNoEn(String& str)
     return false;
 }
 
-
-static void ShowBili()
-{
-    instance->widget.bili.face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
-    lv_img_set_src(instance->widget.bili.faceImg, &instance->widget.bili.face_dsc);
-
-    if (CheckNoEn(BiliInfoRecv::getUserName())) {
-        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", BiliInfoRecv::GetUID().c_str());
-    } else {
-        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", BiliInfoRecv::getUserName().c_str());
-    }
-
-    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %s#", _numWithUnit(BiliInfoRecv::getFollower()).c_str());
-}
-
 static void ShowTime(lv_timer_t* timer)
 {
     extern TimeInfo ti;
@@ -392,9 +356,37 @@ static void ShowTime(lv_timer_t* timer)
     );
 
     lv_img_set_src(instance->widget.time.clock_img, clock_imgs_array[_tm.tm_hour / 2]);
-
-    ShowBili();
 }
 
 
+void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
+{
+    if (dat->bd.ufb) {
+        instance->widget.bili.face_dsc.data = dat->bd.ufb;
+        lv_img_set_src(instance->widget.bili.faceImg, &instance->widget.bili.face_dsc);
+    }
+
+    if (CheckNoEn(dat->bd.bn)) {
+        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", dat->bd.uid.c_str());
+    } else {
+        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", dat->bd.bn.c_str());
+    }
+    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %s#", _numWithUnit(dat->bd.fans).c_str());
+}
+
+void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
+{
+    if (dat->wd.temp >= 0)
+        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", dat->wd.temp);
+    else
+        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", dat->wd.temp);
+
+    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
+    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
+}
+
+void HgmGUI::HgmTwView::update_time(HgmTwModel::tw_data_t* dat)
+{
+
+}
 

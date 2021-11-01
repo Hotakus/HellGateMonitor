@@ -34,10 +34,8 @@ using namespace HgmGUI;
 using namespace fs;
 
 extern HgmBT hgmBT;
-extern HgmSetupView* hgmSetupUI;
 static HgmComponent component;
 
-WeatherData weatherDataToday;
 static HTTPClient hc;
 static File _file;
 static StaticJsonDocument<2048> doc;
@@ -57,12 +55,8 @@ WeatherInfo::~WeatherInfo()
     vQueueDelete(WeatherCheckMsgBox);
 }
 
-WeatherData::WeatherData() = default;
-WeatherData::~WeatherData() = default;
-
 void HgmApplication::WeatherInfo::begin()
 {
-    this->checkWeatherconfig();
 }
 
 void HgmApplication::WeatherInfo::initTask()
@@ -86,81 +80,6 @@ void HgmApplication::WeatherInfo::deInitTask()
         vTaskDelete(WeatherCheckTaskHandle);
         WeatherCheckTaskHandle = NULL;
     }
-}
-
-
-static void _get()
-{
-    weatherInfo._id = doc["data"]["id"].as<String>();
-    weatherInfo._key = doc["data"]["key"].as<String>();
-    weatherInfo._adm = doc["data"]["adm"].as<String>();
-    weatherInfo._adm2 = doc["data"]["adm2"].as<String>();
-    weatherInfo._location = doc["data"]["location"].as<String>();
-    weatherInfo._lat = doc["data"]["lat"].as<String>();
-    weatherInfo._lon = doc["data"]["lon"].as<String>();
-
-    component.curStatus = true;
-    component.waitStatus = true;
-}
-
-static void WeatherConfig()
-{
-    component.type = HGM_COMPONENT_WEATHER;
-    component.curStatus = false;
-    component.waitStatus = false;
-    hgmSetupUI->componentControl(&component);
-
-    Serial.println("Waiting the Weather config...");
-    while (weatherInfo.configFlag != true)
-        vTaskDelay(5);
-
-    _get();
-}
-
-
-bool HgmApplication::WeatherInfo::checkWeatherconfig()
-{
-    if (!SPIFFS.exists(WEATHER_CONFIG_FILE_PATH)) {
-        Serial.printf("Can't find the config file for the weather component.\n");
-        WeatherConfig();
-    } else {
-        _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_READ);
-        if (!_file.size()) {
-            _file.close();
-            Serial.printf("Weather config file is null.\n");
-            WeatherConfig();
-        } else {
-            _file.close();
-
-            Serial.printf("Found the weather config file.\n");
-            String tmp;
-            _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_READ);
-            tmp = _file.readString();
-            _file.close();
-
-            deserializeJson(doc, tmp);
-            Serial.println(tmp);
-
-            String str = "Weather";
-            String header = doc["Header"];
-            if (header.compareTo(str) != 0) {
-                WeatherConfig();
-            } else {
-                _get();
-            }
-
-            _lat = doc["Data"]["lat"].as<String>();
-            _lon = doc["Data"]["lon"].as<String>();
-            _key = doc["Data"]["key"].as<String>();
-
-            weatherInfo.configFlag = true;
-            vTaskDelay(200);
-        }
-    }
-
-    // this->initTask();
-
-    return true;
 }
 
 void HgmApplication::WeatherInfo::setWeatherConfig()
@@ -262,7 +181,7 @@ void HgmApplication::WeatherInfo::getWeather()
     size_t ret = HotakusHttpUtil::GET(hc, airApi, buf, 8192);
     if (ret) {
         deserializeJson(doc, buf);
-        weatherDataToday.aqi = doc["now"]["aqi"].as<uint16_t>();
+        weatherInfo.wdt.aqi = doc["now"]["aqi"].as<uint16_t>();
     }
 
     /* Now */
@@ -270,9 +189,9 @@ void HgmApplication::WeatherInfo::getWeather()
     ret = HotakusHttpUtil::GET(hc, nowApi, buf, 8192);
     if (ret) {
         deserializeJson(doc, buf);
-        weatherDataToday.temp = doc["now"]["temp"].as<uint16_t>();
-        weatherDataToday.humidity = doc["now"]["humidity"].as<uint16_t>();
-        weatherDataToday.icon = doc["now"]["icon"].as<uint16_t>();
+        weatherInfo.wdt.temp = doc["now"]["temp"].as<uint16_t>();
+        weatherInfo.wdt.humidity = doc["now"]["humidity"].as<uint16_t>();
+        weatherInfo.wdt.icon = doc["now"]["icon"].as<uint16_t>();
     }
     /* Three days */
 
@@ -290,6 +209,20 @@ static void WeatherCheckTask(void* params)
         xSemaphoreTake(wbs, portMAX_DELAY);
         WeatherInfo::getWeather();
         xSemaphoreGive(wbs);
+
+        String str = String("HgmTwUpdate");
+        MsgCenter* mc = &HgmFramework::getInstance()->hgmFwCenter;
+        msg_t* msg = mc->findMsg(str);
+        HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
+
+        tw_data->tdt = HgmTwModel::WEATHER;
+        tw_data->wd.aqi = weatherInfo.wdt.aqi;
+        tw_data->wd.temp = weatherInfo.wdt.temp;
+        tw_data->wd.rh = weatherInfo.wdt.humidity;
+        tw_data->wd.icon = weatherInfo.wdt.icon;
+
+        mc->notify(str, str);
+
         vTaskDelay(WEATHER_GET_GAP);
     }
 }

@@ -10,8 +10,13 @@
 #ifndef HELLGATEMONITOR_BILIINFORECV_H
 #define HELLGATEMONITOR_BILIINFORECV_H
 
+#include "../../HgmLvgl/HgmGUI/HgmFramework.h"
+#include "../../HgmLvgl/HgmGUI/HgmTwView/HgmTwModel.h"
+
 #include <Arduino.h>
 #include <HTTPClient.h>
+
+using namespace HgmGUI;
 
 namespace HgmApplication {
 #define BILI_CONFIG_FILE_PATH "/bilibili.json"
@@ -37,6 +42,8 @@ namespace HgmApplication {
             uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
             uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
         } info;
+
+        HgmTwModel::bili_dat_t bd;
 
         BiliInfoRecv();
         ~BiliInfoRecv();

@@ -11,7 +11,7 @@
 #define HELLGATEMONITOR_HGMTWUI_H
 
 #include "../../../LvglSrc/lvgl/lvgl.h"
-
+#include "HgmTwModel.h"
 #include <Arduino.h>
 
 namespace HgmGUI {
@@ -64,6 +64,10 @@ namespace HgmGUI {
 
         void begin();
         void stop();
+
+        static void update_bili(HgmTwModel::tw_data_t* dat);
+        static void update_weather(HgmTwModel::tw_data_t* dat);
+        static void update_time(HgmTwModel::tw_data_t* dat);
 
     };
 

@@ -29,7 +29,7 @@ HgmSetupView::HgmSetupView()
     xTaskCreatePinnedToCore(
         SetupCheckTask,
         "SetupCheckTask",
-        1024 + 512,
+        3072,
         NULL,
         15,
         &instance->frtos.taskHandle,
@@ -131,9 +131,7 @@ void HgmGUI::HgmSetupView::begin()
 
 void HgmGUI::HgmSetupView::end()
 {
-    vTaskDelay(500);
     this->componentInitDone();
-    vTaskDelay(500);
 }
 
 /**
@@ -186,7 +184,7 @@ void HgmGUI::HgmSetupView::componentInitDone()
     lv_anim_timeline_add(at, 200, &checkLabelAnim2);
     lv_anim_timeline_add(at, 300, &logoAnim);
 
-    vTaskDelay(lv_anim_timeline_start(at));
+    vTaskDelay(lv_anim_timeline_start(at) + 500);
 
     lv_obj_del(instance->widget.logo);
     lv_obj_del(instance->widget.prevCheckLabel);

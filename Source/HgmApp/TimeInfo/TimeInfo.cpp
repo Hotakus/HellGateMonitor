@@ -36,8 +36,6 @@ static void netTimeTask(void* params);
 
 static HgmComponent component;
 
-extern HgmSetupView* hgmSetupUI;
-
 TimeInfo ti;
 
 TimeInfo::TimeInfo()
@@ -76,23 +74,10 @@ void HgmApplication::TimeInfo::deInitTask()
 
 void HgmApplication::TimeInfo::begin()
 {
-    uint8_t timeout = 50;
-
-    component.type = HGM_COMPONENT_NET_TIME;
-    component.curStatus = true;
-    component.waitStatus = false;
-    hgmSetupUI->componentControl(&component);
-    while (GetNetTime(0) != 0) {
-        if (!(--timeout))
-            return;
-        vTaskDelay(100);
-    }
-    component.waitStatus = true;
-
-    this->initTask();
+   
 }
 
-int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
+bool HgmApplication::TimeInfo::getNetTime()
 {
     if (https->connected()) {
         Serial.print("[HTTPS] time https->connected()...\n");
@@ -107,7 +92,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
     if (code != HTTP_CODE_OK) {
         Serial.printf("Net time HTTP code : %d\n", code);
         https->end();
-        return -1;
+        return false;
     }
     String recv = https->getString();
     HDJsonDoc doc(recv.length() + 512);
@@ -121,7 +106,7 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
     String sysTime1 = doc["sysTime1"];
     if (!sysTime1) {
         Serial.printf("Get time error.\n", code);
-        return -1;
+        return false;
     }
 
     uint16_t year = sysTime1.substring(0, 4).toInt();
@@ -134,14 +119,12 @@ int HgmApplication::TimeInfo::GetNetTime(struct tm* timeStruct)
     _rtc->setTime(sec, min, hour, day, mon, year);
 
     https->end();
-    return 0;
+    return true;
 }
 
 static void netTimeTask(void* params)
 {
-    static struct tm ts;
     extern SemaphoreHandle_t wbs;
-
     Serial.println("netTimeTask");
 
     while (true) {
@@ -152,7 +135,7 @@ static void netTimeTask(void* params)
         }
 
         xSemaphoreTake(wbs, portMAX_DELAY);
-        TimeInfo::GetNetTime(&ts);
+        ti.getNetTime();
         xSemaphoreGive(wbs);
 
         vTaskDelay(NET_TIME_GAP);
