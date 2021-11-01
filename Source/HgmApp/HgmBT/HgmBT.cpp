@@ -76,9 +76,7 @@ void HgmApplication::HgmBT::begin()
     //Serial.println("HgmBT::begin() 1");
 
     if (!frtos.btListeningTaskHandle) {
-        Serial.println("BT Start to listening...");
         hgmBT.bs->begin(name);
-        Serial.println("BT Start to listening...2");
         xTaskCreatePinnedToCore(
             BluetoothListeningTask,
             "bluetoothListeningTask",
@@ -88,7 +86,6 @@ void HgmApplication::HgmBT::begin()
             &frtos.btListeningTaskHandle,
             1
         );
-        Serial.println("BT Start to listening...3");
     }
 }
 
@@ -264,7 +261,7 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         str = "";
 
         String _uid = rawPack["Data"]["uid"];
-        BiliInfoRecv::SetUID(_uid);
+        BiliInfoRecv::uid(_uid);
         HDJsonDoc doc(256);
         String tmp;
         doc["Header"] = "bilibili";
@@ -345,8 +342,6 @@ static void BluetoothListeningTask(void* params)
 {
     bool flag = false;
     String greet = "Hello, I am HellGateMonitorBT!!";
-
-    Serial.println("BT Start to listening...4");
 
     while (true) {
         if (!hgmBT.bs->connected()) {

@@ -162,7 +162,7 @@ void HGM::HgmSC::checkBili()
     }
 
     String uid = doc["Data"]["uid"];
-    bili.SetUID(uid);
+    bili.uid(uid);
 
     setState(HGM_COMPONENT_BILIBILI, true, true);
     vTaskDelay(300);
