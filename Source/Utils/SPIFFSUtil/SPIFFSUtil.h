@@ -90,6 +90,18 @@ namespace spiffsutil {
             return _write(path, wBuf, size);
         }
 
+        static size_t read(const String& path, uint8_t* rBuf, size_t size) {
+            if (!exists(path)) return false;
+            File file = SPIFFS.open(path);
+            if (size < file.size()) {
+                file.close();
+                return false;
+            }
+            size_t s = file.readBytes((char*)rBuf, size);
+            file.close();
+            return s;
+        }
+
 #if ARDUINOJSON_VERSION_MAJOR != 0
         template <class T>
         static bool readJson(const String& path, T& doc) {

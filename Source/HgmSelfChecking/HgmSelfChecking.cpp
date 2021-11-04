@@ -148,6 +148,7 @@ void HGM::HgmSC::checkTime()
 
 void HGM::HgmSC::checkBili()
 {
+    bili.begin();
     bool ret = Sfu::existsNoZero(BILI_CONFIG_FILE_PATH);
     if (!ret) {
         setState(HGM_COMPONENT_BILIBILI, false, false);

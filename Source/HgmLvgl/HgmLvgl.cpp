@@ -10,6 +10,7 @@
 #include "HgmLvgl.h"
 #include "HgmGUI/HgmFramework.h"
 #include "LvglPort/lv_port_disp.h"
+#include "LvglPort/lv_port_fs.h"
 #include "LvglPort/lv_port_indev.h"
 #include "../LvglSrc/libs/lv_lib_png/lv_png.h"
 
@@ -72,7 +73,7 @@ void HGM::HgmLvgl::begin()
     lv_init();
     this->HgmLvglDispInit();
     // this->HgmLvglIndevInit();
-    // this->HgmLvglFsInit();
+    this->HgmLvglFsInit();
 
     lv_png_init();
     
@@ -196,7 +197,7 @@ void HGM::HgmLvgl::HgmLvglIndevInit()
 
 void HGM::HgmLvgl::HgmLvglFsInit()
 {
-    // lv_port_fs_init();
+    lv_port_fs_init();
 }
 
 

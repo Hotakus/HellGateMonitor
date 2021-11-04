@@ -65,7 +65,7 @@ void HgmApplication::WeatherInfo::initTask()
         xTaskCreatePinnedToCore(
             WeatherCheckTask,
             "WeatherCheckTask",
-            8192,
+            4096 + 1024,
             NULL,
             4,
             &WeatherCheckTaskHandle,
@@ -150,15 +150,9 @@ void HgmApplication::WeatherInfo::getWeatherConfig(String& latitude, String& lon
 
 void HgmApplication::WeatherInfo::getWeather()
 {
-#if HGM_DEBUG == 1
-    String __lat = "23.172";
-    String __lon = "108.241";
-    String __key = "bc1f1bdefb944930bef0208ecd03f66a";
-#else
-    String& __lat = _lat;
-    String& __lon = _lon;
-    String& __key = _key;
-#endif
+    String& __lat = weatherInfo._lat;
+    String& __lon = weatherInfo._lon;
+    String& __key = weatherInfo._key;
 
     String lonLat = "&location=" + __lon + ',' + __lat;
     String key = "&key=" + __key;
@@ -166,12 +160,6 @@ void HgmApplication::WeatherInfo::getWeather()
     String nowApi = weatherInfo.nowWeatherAPI + lonLat + key + gzip;
     String threeApi = weatherInfo.threeWeatherAPI + lonLat + key + gzip;
     String airApi = weatherInfo.airAPI + lonLat + key + gzip;
-
-#if HGM_DEBUG == 1
-    Serial.println(nowApi);
-    Serial.println(threeApi);
-    Serial.println(airApi);
-#endif
 
     HDJsonDoc doc(8192);
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);

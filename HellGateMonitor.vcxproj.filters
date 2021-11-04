@@ -488,6 +488,9 @@
     <ClInclude Include="hgm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_fs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -1253,6 +1256,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_fs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -208,6 +208,7 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmLvgl.h" />
     <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_disp.h" />
+    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_fs.h" />
     <ClInclude Include="Source\HgmSelfChecking\HgmSelfChecking.h" />
     <ClInclude Include="Source\HgmApp\HotakusMemUtil.h" />
     <ClInclude Include="Source\LvglSrc\Assets\clock_img\clock_declare.h" />
@@ -363,6 +364,7 @@
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmLvgl.cpp" />
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_disp.cpp" />
+    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_fs.cpp" />
     <ClCompile Include="Source\HgmSelfChecking\HgmSelfChecking.cpp" />
     <ClCompile Include="Source\HgmApp\HotakusMemUtil.cpp" />
     <ClCompile Include="Source\LvglSrc\Assets\clock_img\clock_00.c" />

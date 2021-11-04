@@ -276,6 +276,10 @@ static void weatherWidgetsCreate()
     lv_obj_set_style_text_align(instance->widget.weather.batLabel, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_text_fmt(instance->widget.weather.batLabel, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
     lv_obj_align_to(instance->widget.weather.batLabel, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
+
+    instance->widget.weather.icon = lv_img_create(instance->widget.weather.tw_weather);
+    String path = String("\"S:\"") + String("w_100") + String(".png");
+    lv_img_set_src(instance->widget.weather.icon, path.c_str());
 }
 
 static uint8_t _digitOfNumber(int num)
@@ -383,6 +387,7 @@ void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
 
     lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
     lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
+
 }
 
 void HgmGUI::HgmTwView::update_time(HgmTwModel::tw_data_t* dat)

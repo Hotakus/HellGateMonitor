@@ -131,9 +131,10 @@ void setup()
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
-    HgmSC hgmSC;
-    hgmSC.begin();
-    vTaskDelay(500);
+    HgmSC* hgmSC = new HgmSC;
+    hgmSC->begin();
+    delete hgmSC;
+
     hgmLvgl.guiBegin();
     
     char* task_buf = (char*)hotakusAlloc(8192); 

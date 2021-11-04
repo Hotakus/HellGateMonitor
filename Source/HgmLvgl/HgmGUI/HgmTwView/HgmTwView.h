@@ -41,8 +41,9 @@ namespace HgmGUI {
 
             struct _weatherWidget {
                 lv_obj_t* tw_weather = NULL;
+                lv_obj_t* icon = NULL;
                 lv_obj_t* wifiLabel = NULL;
-                lv_obj_t* batLabel = NULL;;
+                lv_obj_t* batLabel = NULL;
 
                 // 复合控件
                 struct _weatherInfoLabel {

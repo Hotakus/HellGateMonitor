@@ -27,12 +27,12 @@ namespace HgmApplication {
     private:
 
     public:
+        String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
+        String statAPI = "http://api.bilibili.com/x/relation/stat?vmid=";
 
         struct _info {
             String _uid = "";
-            String basicInfoAPI = "http://api.bilibili.com/x/space/acc/info?mid=";
-            String statAPI = "http://api.bilibili.com/x/relation/stat?vmid=";
-
+            
             String userName = "";
             String userFaceImgUrl = "";
             uint8_t userLevel = 0;
@@ -41,7 +41,7 @@ namespace HgmApplication {
             size_t userFaceImgBufSize = 0;
             uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
             uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
-        } info;
+        } *info;
 
         HgmTwModel::bili_dat_t bd;
 
