@@ -90,14 +90,10 @@ namespace spiffsutil {
             return _write(path, wBuf, size);
         }
 
-        static size_t read(const String& path, uint8_t* rBuf, size_t size) {
+        static size_t read(const String& path, uint8_t* rBuf, size_t size = 0) {
             if (!exists(path)) return false;
             File file = SPIFFS.open(path);
-            if (size < file.size()) {
-                file.close();
-                return false;
-            }
-            size_t s = file.readBytes((char*)rBuf, size);
+            size_t s = file.readBytes((char*)rBuf, size ? size : file.size());
             file.close();
             return s;
         }

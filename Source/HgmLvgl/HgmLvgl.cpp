@@ -29,7 +29,7 @@ xTaskHandle hgmControlHandle;
 xTaskHandle hgmLvglTaskHandle;
 xTaskHandle hgmLvglTickHandle;
 
-HgmLvgl hgmLvgl(HGM_MONITOR_HEIGHT, HGM_MONITOR_WIDTH);
+HgmLvgl hgmLvgl;
 
 static HgmLvgl* instance = NULL;
 

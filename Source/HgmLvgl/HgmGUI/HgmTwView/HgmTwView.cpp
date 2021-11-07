@@ -111,7 +111,7 @@ void HgmGUI::HgmTwView::begin()
 {
     instance->frameCreate();
     instance->widgetCreate();
-    instance->animRun();
+    instance->animCreate();
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
 
@@ -123,8 +123,14 @@ void HgmGUI::HgmTwView::begin()
 
 void HgmGUI::HgmTwView::stop()
 {
-    // TODO: delete
     _deInitTask();
+
+    lv_timer_del(showTimeTimer);
+
+    instance->animDestroy();
+    instance->widgetDestroy();
+    instance->frameDestroy();
+
 }
 
 void HgmGUI::HgmTwView::widgetCreate()
@@ -134,9 +140,6 @@ void HgmGUI::HgmTwView::widgetCreate()
     weatherWidgetsCreate();
 }
 
-void HgmGUI::HgmTwView::animRun()
-{
-}
 
 void HgmGUI::HgmTwView::frameCreate()
 {
@@ -152,7 +155,11 @@ void HgmGUI::HgmTwView::frameCreate()
     lv_obj_align(instance->widget.bili.book, LV_ALIGN_LEFT_MID, -97, 0);
     lv_imgbtn_set_src(instance->widget.bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
     lv_obj_set_width(instance->widget.bili.book, 97);
+}
 
+
+void HgmGUI::HgmTwView::animCreate()
+{
     /* Animations */
     instance->widget.anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     instance->widget.anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
@@ -190,12 +197,40 @@ void HgmGUI::HgmTwView::frameCreate()
     lv_anim_set_time(instance->widget.anim.anim_tw_expand, 500);
 
     // anim time line
-    lv_anim_timeline_t* at = lv_anim_timeline_create();
-    lv_anim_timeline_add(at, 0, instance->widget.anim.anim_book);
-    lv_anim_timeline_add(at, 800, instance->widget.anim.anim_t);
-    lv_anim_timeline_add(at, 800, instance->widget.anim.anim_w);
-    lv_anim_timeline_add(at, 1800, instance->widget.anim.anim_tw_expand);
-    vTaskDelay(lv_anim_timeline_start(at));
+    instance->widget.anim.at = lv_anim_timeline_create();
+    lv_anim_timeline_add(instance->widget.anim.at, 0, instance->widget.anim.anim_book);
+    lv_anim_timeline_add(instance->widget.anim.at, 800, instance->widget.anim.anim_t);
+    lv_anim_timeline_add(instance->widget.anim.at, 800, instance->widget.anim.anim_w);
+    lv_anim_timeline_add(instance->widget.anim.at, 1800, instance->widget.anim.anim_tw_expand);
+    vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
+}
+
+void HgmTwView::animDestroy()
+{
+    lv_anim_timeline_set_reverse(instance->widget.anim.at, true);
+    vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
+
+    lv_anim_timeline_del(instance->widget.anim.at);
+    lv_anim_del(instance->widget.anim.anim_book     , NULL);
+    lv_anim_del(instance->widget.anim.anim_t        , NULL);
+    lv_anim_del(instance->widget.anim.anim_w        , NULL);
+    lv_anim_del(instance->widget.anim.anim_tw_expand, NULL);
+
+    lv_mem_free(instance->widget.anim.anim_book);
+    lv_mem_free(instance->widget.anim.anim_t);
+    lv_mem_free(instance->widget.anim.anim_w);
+    lv_mem_free(instance->widget.anim.anim_tw_expand);
+}
+
+void HgmTwView::widgetDestroy()
+{
+}
+
+void HgmTwView::frameDestroy()
+{
+    lv_obj_del(instance->widget.time.tw_time);
+    lv_obj_del(instance->widget.weather.tw_weather);
+    lv_obj_del(instance->widget.bili.book);
 }
 
 static void timeWidgetsCreate()
@@ -249,8 +284,6 @@ static void biliWidgetsCreate()
     lv_obj_align(instance->widget.bili.biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(instance->widget.bili.biliFans, &k12x8_6px, 0);
 }
-
-static lv_img_dsc_t w_100;
 
 static void weatherWidgetsCreate()
 {
@@ -394,7 +427,7 @@ void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
     lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
 
     String path = String("/") + String("w_") + String(dat->wd.icon) + String(".png");
-    size_t icon_size = Sfu::read(path, instance->widget.weather.icon_buf, 8192);
+    size_t icon_size = Sfu::read(path, instance->widget.weather.icon_buf);
 
     instance->widget.weather.icon_dsc.data_size = icon_size;
     instance->widget.weather.icon_dsc.header.always_zero = 0;

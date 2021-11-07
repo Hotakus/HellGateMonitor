@@ -124,7 +124,7 @@ void setup()
     // Semaphore for BT and WiFi. Don't remove it
     wbs = xSemaphoreCreateBinary();
     xSemaphoreGive(wbs);
-
+    
     /* HGM LVGL initialize */
     hgmLvgl.begin();
 
@@ -141,6 +141,10 @@ void setup()
     vTaskList(task_buf);
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
+
+    vTaskDelay(10000);
+
+    //hgmLvgl.hgmFw->changeGUI("");
 }
 
 void loop()

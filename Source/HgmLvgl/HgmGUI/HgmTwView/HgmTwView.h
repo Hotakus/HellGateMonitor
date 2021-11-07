@@ -20,8 +20,13 @@ namespace HgmGUI {
     private:
         void frameCreate();
         void widgetCreate();
-        void animRun();
+        void animCreate();
+        
+        void animDestroy();
+        void widgetDestroy();
+        void frameDestroy();
 
+        
     public:
         struct _widget {
             struct _biliWidget {
@@ -55,6 +60,7 @@ namespace HgmGUI {
             } weather;
 
             struct _animation {
+                lv_anim_timeline_t* at;
                 lv_anim_t* anim_book = NULL;
                 lv_anim_t* anim_t = NULL;
                 lv_anim_t* anim_w = NULL;

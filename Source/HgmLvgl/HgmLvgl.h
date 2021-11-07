@@ -44,7 +44,7 @@ namespace HGM {
 		HgmControlLogic *hcl = nullptr;
 		HgmGUI::HgmFramework *hgmFw = nullptr;
 
-		HgmLvgl(int16_t width = HGM_MONITOR_WIDTH, int16_t height = HGM_MONITOR_HEIGHT);
+		HgmLvgl(int16_t width = HGM_MONITOR_HEIGHT , int16_t height = HGM_MONITOR_WIDTH);
 		~HgmLvgl();
 
 		void begin();

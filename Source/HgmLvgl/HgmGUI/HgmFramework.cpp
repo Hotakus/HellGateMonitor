@@ -22,16 +22,12 @@
 using namespace HgmGUI;
 
 static HgmFramework* instance = nullptr;
-static SemaphoreHandle_t fwMutex;
 
 HgmTw* hgmTw = nullptr;
 
 HgmFramework::HgmFramework()
 {
     instance = this;
-
-    fwMutex = xSemaphoreCreateBinary();
-    xSemaphoreGive(fwMutex);
 
     hgmFwCenter.begin();
     guiChain.begin();
@@ -47,8 +43,6 @@ HgmFramework::~HgmFramework()
 
     guiChain.end();
     hgmFwCenter.end();
-
-    vSemaphoreDelete(fwMutex);
     
     instance = NULL;
 }
@@ -58,7 +52,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    changeGUI(hgmTw->name());
+    // changeGUI(hgmTw->name());
 }
 
 /**
@@ -107,7 +101,5 @@ bool HgmGUI::HgmFramework::changeNext()
 
 HgmFramework* HgmGUI::HgmFramework::getInstance()
 {
-    xSemaphoreTake(fwMutex, portMAX_DELAY);
-    xSemaphoreGive(fwMutex);
     return instance;
 }
