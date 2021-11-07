@@ -40,6 +40,8 @@ namespace HgmGUI {
             } time;
 
             struct _weatherWidget {
+                lv_img_dsc_t icon_dsc;
+                uint8_t* icon_buf;
                 lv_obj_t* tw_weather = NULL;
                 lv_obj_t* icon = NULL;
                 lv_obj_t* wifiLabel = NULL;

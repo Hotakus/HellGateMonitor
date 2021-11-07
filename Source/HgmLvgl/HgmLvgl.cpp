@@ -73,7 +73,7 @@ void HGM::HgmLvgl::begin()
     lv_init();
     this->HgmLvglDispInit();
     // this->HgmLvglIndevInit();
-    this->HgmLvglFsInit();
+    // this->HgmLvglFsInit();
 
     lv_png_init();
     

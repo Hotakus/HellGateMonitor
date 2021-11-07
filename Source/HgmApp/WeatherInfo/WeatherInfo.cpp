@@ -183,9 +183,7 @@ void HgmApplication::WeatherInfo::getWeather()
     }
     /* Three days */
 
-
     hotakusFree(buf);
-
 }
 
 static void WeatherCheckTask(void* params)

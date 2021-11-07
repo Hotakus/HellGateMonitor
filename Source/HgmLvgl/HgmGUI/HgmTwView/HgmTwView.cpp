@@ -12,6 +12,7 @@
 #include "../../../HgmApp/TimeInfo/TimeInfo.h"
 #include "../../../HgmApp/BiliInfoRecv/BiliInfoRecv.h"
 #include "../../../HgmApp/WeatherInfo/WeatherInfo.h"
+#include "../../../Utils/SPIFFSUtil/SPIFFSUtil.h"
 
 #include <Arduino.h>
 #include <ESP32Time.h>
@@ -21,6 +22,7 @@
 using namespace HgmApplication;
 using namespace HgmGUI;
 using namespace HGM;
+using namespace spiffsutil;
 
 /* Assets */
 // TODO: Add btn
@@ -248,6 +250,8 @@ static void biliWidgetsCreate()
     lv_obj_set_style_text_font(instance->widget.bili.biliFans, &k12x8_6px, 0);
 }
 
+static lv_img_dsc_t w_100;
+
 static void weatherWidgetsCreate()
 {
     instance->widget.weather.tempLabel.label = lv_label_create(instance->widget.weather.tw_weather);
@@ -278,8 +282,8 @@ static void weatherWidgetsCreate()
     lv_obj_align_to(instance->widget.weather.batLabel, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
 
     instance->widget.weather.icon = lv_img_create(instance->widget.weather.tw_weather);
-    String path = String("\"S:\"") + String("w_100") + String(".png");
-    lv_img_set_src(instance->widget.weather.icon, path.c_str());
+    instance->widget.weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
+    lv_obj_align(instance->widget.weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
 }
 
 static uint8_t _digitOfNumber(int num)
@@ -380,6 +384,7 @@ void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
 
 void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
 {
+    Serial.println(dat->wd.temp);
     if (dat->wd.temp >= 0)
         lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", dat->wd.temp);
     else
@@ -388,6 +393,16 @@ void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
     lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
     lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
 
+    String path = String("/") + String("w_") + String(dat->wd.icon) + String(".png");
+    size_t icon_size = Sfu::read(path, instance->widget.weather.icon_buf, 8192);
+
+    instance->widget.weather.icon_dsc.data_size = icon_size;
+    instance->widget.weather.icon_dsc.header.always_zero = 0;
+    instance->widget.weather.icon_dsc.header.w = 40;
+    instance->widget.weather.icon_dsc.header.h = 40;
+    instance->widget.weather.icon_dsc.header.cf = LV_IMG_CF_RAW_ALPHA;
+    instance->widget.weather.icon_dsc.data = instance->widget.weather.icon_buf;
+    lv_img_set_src(instance->widget.weather.icon, &instance->widget.weather.icon_dsc);
 }
 
 void HgmGUI::HgmTwView::update_time(HgmTwModel::tw_data_t* dat)

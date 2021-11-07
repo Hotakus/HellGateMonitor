@@ -44,7 +44,7 @@ static lv_fs_res_t fs_dir_close (lv_fs_drv_t * drv, void * rddir_p);
 /**********************
  *  STATIC VARIABLES
  **********************/
-
+static File file;
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
@@ -111,25 +111,23 @@ static void * fs_open (lv_fs_drv_t * drv, const char * path, lv_fs_mode_t mode)
 {
     lv_fs_res_t res = LV_FS_RES_NOT_IMP;
 
-    File* f = new File();
-
     if(mode == LV_FS_MODE_WR)
     {
         /*Open a file for write*/
-        f = SPIFFS.open(path, FILE_WRITE);
+        file = SPIFFS.open(path, FILE_WRITE);
     }
     else if(mode == LV_FS_MODE_RD)
     {
         /*Open a file for read*/
-        f = SPIFFS.open(path);
+        file = SPIFFS.open(path);
     }
     else if(mode == (LV_FS_MODE_WR | LV_FS_MODE_RD))
     {
         /*Open a file for read and write*/
-        f = SPIFFS.open(path, FILE_WRITE);
+        file = SPIFFS.open(path, FILE_WRITE);
     }
 
-    return &f;
+    return &file;
 }
 
 /**

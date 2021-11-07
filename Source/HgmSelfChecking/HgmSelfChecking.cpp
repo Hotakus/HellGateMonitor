@@ -184,13 +184,15 @@ void HGM::HgmSC::checkWeather()
         err_cb(String("Weather check failed. (json parse error)"));
     }
 
-    weatherInfo._id = doc["data"]["id"].as<String>();
-    weatherInfo._key = doc["data"]["key"].as<String>();
-    weatherInfo._adm = doc["data"]["adm"].as<String>();
-    weatherInfo._adm2 = doc["data"]["adm2"].as<String>();
-    weatherInfo._location = doc["data"]["location"].as<String>();
-    weatherInfo._lat = doc["data"]["lat"].as<String>();
-    weatherInfo._lon = doc["data"]["lon"].as<String>();
+    weatherInfo._id = doc["Data"]["id"].as<String>();
+    weatherInfo._key = doc["Data"]["key"].as<String>();
+    weatherInfo._adm = doc["Data"]["adm"].as<String>();
+    weatherInfo._adm2 = doc["Data"]["adm2"].as<String>();
+    weatherInfo._location = doc["Data"]["location"].as<String>();
+    weatherInfo._lat = doc["Data"]["lat"].as<String>();
+    weatherInfo._lon = doc["Data"]["lon"].as<String>();
+
+    Serial.println(weatherInfo._key);
 
     setState(HGM_COMPONENT_WEATHER, true, true);
     vTaskDelay(300);
