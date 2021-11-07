@@ -30,7 +30,7 @@ HgmFramework::HgmFramework()
     instance = this;
 
     hgmFwCenter.begin();
-    guiChain.begin();
+    guiChain = hgmFwCenter.msgChain();
 
     /* Create All UI */
     hgmTw = new HgmTw();
@@ -41,7 +41,6 @@ HgmFramework::~HgmFramework()
     /* Remove All UI */
     delete hgmTw;
 
-    guiChain.end();
     hgmFwCenter.end();
     
     instance = NULL;
@@ -52,7 +51,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    // changeGUI(hgmTw->name());
+    changeGUI(guiChain.head()->name());
 }
 
 /**
