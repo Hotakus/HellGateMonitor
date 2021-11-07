@@ -110,8 +110,8 @@ static void _deInitTask()
 void HgmGUI::HgmTwView::begin()
 {
     instance->frameCreate();
-    instance->widgetCreate();
     instance->animCreate();
+    instance->widgetCreate();
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
 
@@ -127,8 +127,8 @@ void HgmGUI::HgmTwView::stop()
 
     lv_timer_del(showTimeTimer);
 
-    instance->animDestroy();
     instance->widgetDestroy();
+    instance->animDestroy();
     instance->frameDestroy();
 
 }
@@ -288,35 +288,36 @@ static void biliWidgetsCreate()
 static void weatherWidgetsCreate()
 {
     instance->widget.weather.tempLabel.label = lv_label_create(instance->widget.weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget.weather.tempLabel.label, LV_OPA_0, 0);
+    lv_obj_align(instance->widget.weather.tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
     lv_obj_set_style_text_font(instance->widget.weather.tempLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget.weather.tempLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%c%02d℃#", ' ', 0);
+    lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:---℃#");
     lv_obj_set_style_text_align(instance->widget.weather.tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(instance->widget.weather.tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
 
     instance->widget.weather.aqiLabel.label = lv_label_create(instance->widget.weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget.weather.aqiLabel.label, LV_OPA_0, 0);
+    lv_obj_align_to(instance->widget.weather.aqiLabel.label, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
     lv_obj_set_style_text_font(instance->widget.weather.aqiLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget.weather.aqiLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", 0);
+    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI:---#");
     lv_obj_set_style_text_align(instance->widget.weather.aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align_to(instance->widget.weather.aqiLabel.label, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
     instance->widget.weather.humidityLabel.label = lv_label_create(instance->widget.weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget.weather.humidityLabel.label, LV_OPA_0, 0);
+    lv_obj_align_to(instance->widget.weather.humidityLabel.label, instance->widget.weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
     lv_obj_set_style_text_font(instance->widget.weather.humidityLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget.weather.humidityLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", 0);
+    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH :---%%#");
     lv_obj_set_style_text_align(instance->widget.weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align_to(instance->widget.weather.humidityLabel.label, instance->widget.weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
-    // TODO:
-    instance->widget.weather.batLabel = lv_label_create(instance->widget.weather.tw_weather);
-    lv_obj_set_style_text_align(instance->widget.weather.batLabel, LV_TEXT_ALIGN_RIGHT, 0);
-    lv_label_set_text_fmt(instance->widget.weather.batLabel, "%d%%%s", 100, LV_SYMBOL_BATTERY_2);
-    lv_obj_align_to(instance->widget.weather.batLabel, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_TOP_RIGHT, 0, -2);
+    lv_obj_set_style_opa(instance->widget.weather.tempLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget.weather.aqiLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget.weather.humidityLabel.label, LV_OPA_100, 0);
 
     instance->widget.weather.icon = lv_img_create(instance->widget.weather.tw_weather);
-    instance->widget.weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
     lv_obj_align(instance->widget.weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
+    instance->widget.weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
 }
 
 static uint8_t _digitOfNumber(int num)
