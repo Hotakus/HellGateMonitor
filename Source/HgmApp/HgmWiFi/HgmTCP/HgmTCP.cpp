@@ -364,7 +364,10 @@ static void TcpServerListeningTask(void* params)
             vTaskDelay(1000);
             continue;
         }
+
         Serial.printf("A client has connected into server.\n");
+
+        // TODO: HGM match
 
         while (instance->accept.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);

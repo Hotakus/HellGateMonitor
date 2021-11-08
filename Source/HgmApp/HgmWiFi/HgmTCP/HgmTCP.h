@@ -50,6 +50,9 @@ namespace HgmApplication {
         void deInitTask();
 
     public:
+
+        bool isHGM = false;
+
         TcpControlMethod tcm = TCP_NULL;
 
         WiFiClient accept;
