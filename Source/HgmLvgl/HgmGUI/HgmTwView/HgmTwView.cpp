@@ -224,6 +224,7 @@ void HgmTwView::animDestroy()
 
 void HgmTwView::widgetDestroy()
 {
+    hotakusFree(instance->widget.weather.icon_buf);
 }
 
 void HgmTwView::frameDestroy()
