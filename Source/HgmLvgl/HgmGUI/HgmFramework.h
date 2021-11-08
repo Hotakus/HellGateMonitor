@@ -41,7 +41,6 @@ namespace HgmGUI {
 
     public:
 
-
         MsgCenter hgmFwCenter;
         Chain guiChain;
 

@@ -12,6 +12,7 @@
 
 #include "HgmFramework.h"
 #include "HgmTwView/HgmTw.h"
+#include "HgmMonitorView/HgmMonitor.h"
 
 #define TAG "HgmFramework"
 #define HGM_DEBUG 1
@@ -21,9 +22,10 @@
 
 using namespace HgmGUI;
 
-static HgmFramework* instance = nullptr;
+static HgmTw* hgmTw = nullptr;
+static HgmMonitor* hgmMonitor = nullptr;
 
-HgmTw* hgmTw = nullptr;
+static HgmFramework* instance = nullptr;
 
 HgmFramework::HgmFramework()
 {
@@ -33,12 +35,14 @@ HgmFramework::HgmFramework()
 
     /* Create All UI */
     hgmTw = new HgmTw();
+    hgmMonitor = new HgmMonitor();
 }
 
 HgmFramework::~HgmFramework()
 {
     /* Remove All UI */
     delete hgmTw;
+    delete hgmMonitor;
 
     hgmFwCenter.end();
     
@@ -50,7 +54,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    changeGUI(hgmFwCenter.msgChain().head()->next()->name());
+    changeGUI(hgmFwCenter.msgChain().head()->next()->next()->name());
 }
 
 /**
@@ -60,6 +64,9 @@ void HgmGUI::HgmFramework::begin()
  */
 bool HgmGUI::HgmFramework::changeGUI(String name)
 {
+
+    hgm_log_d(TAG, "Change to %s", name.c_str());
+
     msg_t* msg = nullptr;
     bool ret = false;
 
