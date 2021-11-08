@@ -202,6 +202,9 @@
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
     <ClInclude Include="Source\HgmLogUtil.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmFramework.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitor.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.h" />
@@ -358,6 +361,9 @@
     <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp" />
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmFramework.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitor.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.cpp" />
