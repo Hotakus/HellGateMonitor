@@ -15,6 +15,7 @@
 
 #include "HardwareRequest.h"
 #include "../HgmJsonUtil.h"
+#include "../HgmWiFi/HgmWiFi.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -23,13 +24,54 @@
 #define HGM_DEBUG 1
 #include "../../HgmLogUtil.h"
 
-
-using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmApplication;
+using namespace HgmApplication::HgmJsonParseUtil;
+
+extern HgmWiFi hgmWiFi;
+
+static HardwareRequest* instance = nullptr;
+
+static void task(void* params)
+{
+    String str = "";
+    while (true) {
+        if (!hgmWiFi.hgmTcp->accept) {
+            vTaskDelay(1000);
+            continue;
+        }
+
+        if (!hgmWiFi.hgmTcp->accept.connected()) {
+            vTaskDelay(1000);
+            continue;
+        }
+
+        if (!hgmWiFi.hgmTcp->isHGM) {
+            vTaskDelay(1000);
+            continue;
+        }
+
+        hgmWiFi.hgmTcp->sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        vTaskDelay(2000);
+    }
+}
+
+void HgmApplication::HardwareRequest::initTask()
+{
+    if (!frtos.hardwareReqTaskHandle)
+        xTaskCreatePinnedToCore(task, "hardwareReqTask", 3072, NULL, 7, &frtos.hardwareReqTaskHandle, 1);
+}
+
+void HgmApplication::HardwareRequest::deInitTask()
+{
+    if (frtos.hardwareReqTaskHandle) {
+        vTaskDelete(frtos.hardwareReqTaskHandle);
+        frtos.hardwareReqTaskHandle = NULL;
+    }
+}
 
 HgmApplication::HardwareRequest::HardwareRequest()
 {
-
+    instance = this;
     hgmHardObj = (HgmHardwareObject**)hotakusAlloc(sizeof(HgmHardwareObject*) * supportHardwareCnt);
     for (uint8_t i = 0; i < supportHardwareCnt; i++) {
         hgmHardObj[i] = (HgmHardwareObject*)hotakusAlloc(sizeof(HgmHardwareObject));
@@ -45,6 +87,7 @@ HgmApplication::HardwareRequest::~HardwareRequest()
     for (uint8_t i = 0; i < supportHardwareCnt; i++)
         hotakusFree(hgmHardObj[i]);
     hotakusFree(hgmHardObj);
+    instance = nullptr;
 }
 
 void HardwareRequest::begin()
@@ -57,15 +100,15 @@ void HardwareRequest::begin()
     hd->netData = new HardwareNetData();
 
     RegisterNewHardware(hd->cpuData, HGM_CPU, HGM_LEFT_TOP);
-    RegisterNewHardware(hd->gpuData, HGM_GPU, HGM_RIGHT_TOP);
-    RegisterNewHardware(hd->memData, HGM_MEMORY, HGM_LEFT_BOTTOM);
-    RegisterNewHardware(hd->diskData, HGM_HARD_DISK, HGM_RIGHT_BOTTOM);
-    RegisterNewHardware(hd->netData, HGM_NETWORK, HGM_POS_NULL);
+    RegisterNewHardware(hd->gpuData, HGM_GPU, HGM_LEFT_BOTTOM);
+    RegisterNewHardware(hd->memData, HGM_MEMORY, HGM_RIGHT_TOP );
+    RegisterNewHardware(hd->diskData, HGM_HARD_DISK, HGM_POS_NULL);
+    RegisterNewHardware(hd->netData, HGM_NETWORK, HGM_RIGHT_BOTTOM );
 
     SetHardwareRequest(HGM_CPU, true);
     SetHardwareRequest(HGM_GPU, true);
     SetHardwareRequest(HGM_MEMORY, true);
-    SetHardwareRequest(HGM_HARD_DISK, true);
+    SetHardwareRequest(HGM_HARD_DISK, false);
     SetHardwareRequest(HGM_NETWORK, true);
 
     hgm_log_e(TAG, "begin...");

@@ -66,11 +66,18 @@ namespace HgmApplication {
         HgmHardwareObject** hgmHardObj;
         const uint8_t supportHardwareCnt = HGM_HARD_NULL;
 
+        struct _frtos {
+            TaskHandle_t hardwareReqTaskHandle;
+        } frtos;
+
         HardwareRequest();
         ~HardwareRequest();
 
         void begin();
         void stop();
+
+        void initTask();
+        void deInitTask();
 
         void UseDefault();
 
