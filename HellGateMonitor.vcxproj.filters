@@ -1279,5 +1279,53 @@
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_10.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_25.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_50.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_75.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_100.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\frame_left.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\frame_mid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\frame_right.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\mem_icon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\bat_null.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_0.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\signal_5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

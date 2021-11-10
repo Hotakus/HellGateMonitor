@@ -132,7 +132,7 @@ void setup()
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
     HgmSC* hgmSC = new HgmSC;
-    hgmSC->begin();
+    //hgmSC->begin();
     delete hgmSC;
 
     hgmLvgl.guiBegin();

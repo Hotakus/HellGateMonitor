@@ -273,7 +273,6 @@ static void biliWidgetsCreate()
     lv_obj_set_width(instance->widget.bili.biliName, 85);
     lv_label_set_recolor(instance->widget.bili.biliName, true);
     lv_label_set_long_mode(instance->widget.bili.biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    // TODO: Check chinese
     lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", "------");
     lv_obj_set_style_text_align(instance->widget.bili.biliName, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(instance->widget.bili.biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
