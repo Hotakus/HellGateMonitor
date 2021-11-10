@@ -79,6 +79,7 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
         msg->pData(&_gd);
         ret = hgmFwCenter.notify(curr, curr);
         if (ret) return false;
+        prev = curr;
     }
 
 	/* Create the designated GUI  */
@@ -87,10 +88,8 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
     _gd.ctl = BEGIN;
     msg->pData(&_gd);
     ret = hgmFwCenter.notify(name, name);
-    if (ret) {
-        prev = curr;
+    if (ret)
         curr = name;
-    }
     return ret;
 }
 
