@@ -93,6 +93,7 @@ namespace HgmGUI {
                 lv_obj_t* icon;
                 struct {
                     lv_obj_t* name;
+                    lv_obj_t* percent;
                     lv_obj_t* used;
                     lv_obj_t* free;
                 } label;

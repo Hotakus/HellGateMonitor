@@ -34,6 +34,9 @@ static HardwareRequest* instance = nullptr;
 static void task(void* params)
 {
     String str = "";
+
+    hgm_log_e(TAG, "--------------------------------");
+
     while (true) {
         if (!hgmWiFi.hgmTcp->accept) {
             vTaskDelay(1000);

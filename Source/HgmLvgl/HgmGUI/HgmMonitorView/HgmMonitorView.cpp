@@ -81,7 +81,7 @@ void HgmMonitorView::cpu_widget_create(HgmHardwarePosition pos)
     lv_label_set_recolor(widget.cpu.label.name, true);
     lv_label_set_long_mode(widget.cpu.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text_fmt(widget.cpu.label.name, "Intel Core i7-8700");
-    lv_obj_set_style_anim_speed(widget.cpu.label.name, 20, 0);
+    lv_obj_set_style_anim_speed(widget.cpu.label.name, 5, 0);
 
     widget.cpu.label.power = lv_label_create(f);
     lv_obj_set_style_text_font(widget.cpu.label.power, &k12x8_7px, 0);
@@ -133,7 +133,7 @@ void HgmMonitorView::gpu_widget_create(HgmHardwarePosition pos)
     lv_label_set_recolor(widget.gpu.label.name, true);
     lv_label_set_long_mode(widget.gpu.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text_fmt(widget.gpu.label.name, "Inti7-8700");
-    lv_obj_set_style_anim_speed(widget.gpu.label.name, 20, 0);
+    lv_obj_set_style_anim_speed(widget.gpu.label.name, 5, 0);
 
     widget.gpu.label.power = lv_label_create(f);
     lv_obj_set_style_text_font(widget.gpu.label.power, &k12x8_7px, 0);
@@ -174,7 +174,49 @@ void HgmMonitorView::gpu_widget_create(HgmHardwarePosition pos)
 
 void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
 {
+    lv_obj_t* f = frame(pos);
 
+    widget.mem.label.name = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.mem.label.name, &k12x8_7px, 0);
+    lv_obj_set_width(widget.mem.label.name, 90);
+    lv_obj_align(widget.mem.label.name, LV_ALIGN_TOP_MID, 0, 3);
+    lv_label_set_recolor(widget.mem.label.name, true);
+    lv_label_set_long_mode(widget.mem.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text_fmt(widget.mem.label.name, "Memory");
+    lv_obj_set_style_anim_speed(widget.mem.label.name, 20, 0);
+
+    widget.mem.label.percent = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.mem.label.percent, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.mem.label.percent, true);
+    lv_label_set_text_fmt(widget.mem.label.percent, "#59493f 78%%#", 0);
+    lv_obj_align_to(widget.mem.label.percent, widget.mem.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 1);
+    //lv_obj_align_to(widget.mem.label.percent, widget.mem.bar.usage, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
+
+    widget.mem.bar.usage = lv_bar_create(f);
+    lv_obj_set_size(widget.mem.bar.usage, 25, 8);
+    lv_bar_set_value(widget.mem.bar.usage, 70, LV_ANIM_ON);
+    lv_obj_set_style_radius(widget.mem.bar.usage, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(widget.mem.bar.usage, 2, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(widget.mem.bar.usage, lv_color_make(0, 0, 0), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(widget.mem.bar.usage, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
+    //lv_obj_align_to(widget.mem.bar.usage, widget.mem.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+    lv_obj_align_to(widget.mem.bar.usage, widget.mem.label.percent, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
+
+    widget.mem.label.free = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.mem.label.free, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.mem.label.free, true);
+    lv_label_set_text_fmt(widget.mem.label.free, "#59493f Free:9GB#", 0);
+    lv_obj_align_to(widget.mem.label.free, widget.mem.label.percent, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 1);
+
+    widget.mem.label.used = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.mem.label.used, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.mem.label.used, true);
+    lv_label_set_text_fmt(widget.mem.label.used, "#59493f Used:7GB#", 0);
+    lv_obj_align_to(widget.mem.label.used, widget.mem.label.free, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    widget.mem.icon = lv_img_create(f);
+    lv_obj_align(widget.mem.icon, LV_ALIGN_TOP_RIGHT, -6, 5);
+    lv_img_set_src(widget.mem.icon, &mem_icon);
 }
 
 void HgmMonitorView::network_widget_create(HgmHardwarePosition pos)
@@ -280,6 +322,8 @@ void HgmGUI::HgmMonitorView::begin()
 
     cpu_widget_create(HGM_LEFT_TOP);
     gpu_widget_create(HGM_LEFT_BOTTOM);
+    mem_widget_create(HGM_RIGHT_TOP);
+
 }
 
 void HgmGUI::HgmMonitorView::end()
