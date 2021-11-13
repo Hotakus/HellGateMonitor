@@ -22,7 +22,7 @@
 using namespace HgmApplication::HgmJsonParseUtil;
 
 namespace HgmApplication {
-
+#define HARDWARE_REQUEST_GAP (2 * 1000)
     /* HGM 所支持监控的硬件对象 */
     typedef enum _HgmHardware {
         HGM_CPU,
@@ -54,7 +54,7 @@ namespace HgmApplication {
 
     class HardwareRequest {
     private:
-    public: 
+    public:
 
         struct _hardData {
             HardwareCpuData* cpuData;

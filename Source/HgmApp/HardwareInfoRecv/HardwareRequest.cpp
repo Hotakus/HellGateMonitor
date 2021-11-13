@@ -35,11 +35,9 @@ static void task(void* params)
 {
     String str = "";
 
-    hgm_log_e(TAG, "--------------------------------");
-
     while (true) {
         if (!hgmWiFi.hgmTcp->accept) {
-            vTaskDelay(1000);
+            vTaskDelay(3000);
             continue;
         }
 
@@ -53,15 +51,15 @@ static void task(void* params)
             continue;
         }
 
-        hgmWiFi.hgmTcp->sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
-        vTaskDelay(2000);
+        HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        vTaskDelay(HARDWARE_REQUEST_GAP);
     }
 }
 
 void HgmApplication::HardwareRequest::initTask()
 {
     if (!frtos.hardwareReqTaskHandle)
-        xTaskCreatePinnedToCore(task, "hardwareReqTask", 3072, NULL, 7, &frtos.hardwareReqTaskHandle, 1);
+        xTaskCreatePinnedToCore(task, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
 }
 
 void HgmApplication::HardwareRequest::deInitTask()
