@@ -22,10 +22,12 @@ HgmGUI::HgmMonitorModel::~HgmMonitorModel()
 void HgmGUI::HgmMonitorModel::begin()
 {
     hrr = new HardwareRequest;
+    hrr->begin();
 }
 
 void HgmGUI::HgmMonitorModel::end()
 {
+    hrr->end();
     delete hrr;
 }
 

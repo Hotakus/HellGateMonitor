@@ -31,6 +31,7 @@ namespace HgmGUI {
         void gpu_widget_create(HgmHardwarePosition pos);
         void mem_widget_create(HgmHardwarePosition pos);
         void network_widget_create(HgmHardwarePosition pos);
+        void status_bar_create();
 
 	public:
         struct _widget
@@ -47,6 +48,7 @@ namespace HgmGUI {
                     uint8_t value;
                 } signal;
 
+                lv_obj_t* time_label;
                 lv_obj_t* more_btn;
                 lv_obj_t* next_btn;
 
@@ -102,6 +104,19 @@ namespace HgmGUI {
                     lv_obj_t* usage;
                 } bar;
             } mem;
+
+            struct {
+                struct {
+                    lv_obj_t* name;
+                    lv_obj_t* percent;
+                    lv_obj_t* upload;
+                    lv_obj_t* download;
+                } label;
+
+                struct {
+                    lv_obj_t* usage;
+                } bar;
+            } network;
         } widget;
 
         HgmMonitorView();

@@ -74,7 +74,7 @@ namespace HgmApplication {
         ~HardwareRequest();
 
         void begin();
-        void stop();
+        void end();
 
         void initTask();
         void deInitTask();

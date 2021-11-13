@@ -114,10 +114,10 @@ void HardwareRequest::begin()
     SetHardwareRequest(HGM_HARD_DISK, false);
     SetHardwareRequest(HGM_NETWORK, true);
 
-    hgm_log_e(TAG, "begin...");
+    hgm_log_d(TAG, "begin...");
 }
 
-void HardwareRequest::stop()
+void HardwareRequest::end()
 {
     SetHardwareRequest(HGM_CPU, false);
     SetHardwareRequest(HGM_GPU, false);
@@ -138,7 +138,7 @@ void HardwareRequest::stop()
     delete hd->netData;
     hotakusFree(hd);
 
-    hgm_log_e(TAG, "stop");
+    hgm_log_d(TAG, "end");
 }
 
 void HgmApplication::HardwareRequest::UseDefault()

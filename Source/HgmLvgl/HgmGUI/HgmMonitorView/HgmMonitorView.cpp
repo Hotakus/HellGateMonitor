@@ -9,6 +9,7 @@
 *******************************************************************/
 #include "../../../HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "HgmMonitorView.h"
+#include "HgmMonitor.h"
 
 using namespace HgmGUI;
 using namespace HgmApplication;
@@ -221,7 +222,61 @@ void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
 
 void HgmMonitorView::network_widget_create(HgmHardwarePosition pos)
 {
+    lv_obj_t* f = frame(pos);
 
+    widget.network.label.name = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.network.label.name, &k12x8_7px, 0);
+    lv_obj_set_width(widget.network.label.name, 90);
+    lv_obj_align(widget.network.label.name, LV_ALIGN_TOP_MID, 0, 4);
+    lv_label_set_recolor(widget.network.label.name, true);
+    lv_label_set_long_mode(widget.network.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text_fmt(widget.network.label.name, "Network");
+    lv_obj_set_style_anim_speed(widget.network.label.name, 20, 0);
+
+    widget.network.label.percent = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.network.label.percent, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.network.label.percent, true);
+    lv_label_set_text_fmt(widget.network.label.percent, "#59493f 78%%#", 0);
+    lv_obj_align_to(widget.network.label.percent, widget.network.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    widget.network.bar.usage = lv_bar_create(f);
+    lv_obj_set_size(widget.network.bar.usage, 25, 8);
+    lv_bar_set_value(widget.network.bar.usage, 70, LV_ANIM_ON);
+    lv_obj_set_style_radius(widget.network.bar.usage, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(widget.network.bar.usage, 2, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(widget.network.bar.usage, lv_color_make(0, 0, 0), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(widget.network.bar.usage, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
+    lv_obj_align_to(widget.network.bar.usage, widget.network.label.percent, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
+
+    widget.network.label.upload = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.network.label.upload, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.network.label.upload, true);
+    lv_label_set_text_fmt(widget.network.label.upload, "#59493f ↑100KB/S#", 0);
+    lv_obj_align_to(widget.network.label.upload, widget.network.label.percent, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 1);
+
+    widget.network.label.download = lv_label_create(f);
+    lv_obj_set_style_text_font(widget.network.label.download, &k12x8_7px, 0);
+    lv_label_set_recolor(widget.network.label.download, true);
+    lv_label_set_text_fmt(widget.network.label.download, "#59493f ↓100KB/S#", 0);
+    lv_obj_align_to(widget.network.label.download, widget.network.label.upload, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+}
+
+void HgmGUI::HgmMonitorView::status_bar_create()
+{
+    // TODO: Check battery
+    widget.status_bar.battery.icon = lv_img_create(widget.status_bar.bg);
+    lv_obj_align(widget.status_bar.battery.icon, LV_ALIGN_TOP_LEFT, 1, 5);
+    lv_img_set_src(widget.status_bar.battery.icon, &bat_50);
+
+    widget.status_bar.signal.icon = lv_img_create(widget.status_bar.bg);
+    lv_obj_align(widget.status_bar.signal.icon, LV_ALIGN_TOP_MID, 0, 25);
+    lv_img_set_src(widget.status_bar.signal.icon, &signal_2);
+
+    widget.status_bar.time_label = lv_label_create(widget.status_bar.bg);
+    lv_obj_set_style_text_font(widget.status_bar.time_label, &k12x8_7px, 0);
+    lv_obj_align_to(widget.status_bar.time_label, widget.status_bar.signal.icon, LV_ALIGN_OUT_BOTTOM_LEFT, 1, 4);
+    lv_label_set_recolor(widget.status_bar.time_label, true);
+    lv_label_set_text_fmt(widget.status_bar.time_label, "#c5b8b0 --#\n#c5b8b0 --#", 0);
 }
 
 void HgmGUI::HgmMonitorView::begin()
@@ -253,14 +308,7 @@ void HgmGUI::HgmMonitorView::begin()
     lv_obj_set_style_bg_color(widget.status_bar.bg, lv_color_make(0, 0, 0), 0);
     lv_obj_set_style_bg_opa(widget.status_bar.bg, LV_OPA_40, 0);
 
-    // TODO: Check battery
-    widget.status_bar.battery.icon = lv_img_create(widget.status_bar.bg);
-    lv_obj_align(widget.status_bar.battery.icon, LV_ALIGN_TOP_LEFT, 1, 5);
-    lv_img_set_src(widget.status_bar.battery.icon, &bat_null);
-
-    widget.status_bar.signal.icon = lv_img_create(widget.status_bar.bg);
-    lv_obj_align(widget.status_bar.signal.icon, LV_ALIGN_TOP_MID, 0, 25);
-    lv_img_set_src(widget.status_bar.signal.icon, &signal_0);
+    status_bar_create();
 
     /* Animations */
     widget.anim.flt = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
@@ -318,19 +366,23 @@ void HgmGUI::HgmMonitorView::begin()
     lv_anim_timeline_start(widget.anim.at);
 
     /* widgets */
-    // TODO: Check monitor position by configuration.
+    HgmFramework* fw = HgmFramework::getInstance();
+    String _name = String("HgmMonitorUpdate");
+    msg_t* msg = fw->hgmFwCenter.findMsg(_name);
+    HardwareRequest* hrr = (HardwareRequest*)msg->pData();
 
-    cpu_widget_create(HGM_LEFT_TOP);
-    gpu_widget_create(HGM_LEFT_BOTTOM);
-    mem_widget_create(HGM_RIGHT_TOP);
-
+    cpu_widget_create(hrr->GetHardwareObj(HGM_CPU)->pos);
+    gpu_widget_create(hrr->GetHardwareObj(HGM_GPU)->pos);
+    mem_widget_create(hrr->GetHardwareObj(HGM_MEMORY)->pos);
+    network_widget_create(hrr->GetHardwareObj(HGM_NETWORK)->pos);
 }
 
 void HgmGUI::HgmMonitorView::end()
 {
+
 }
 
 void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest::_hardData* hd)
 {
-
+    // TODO: 
 }

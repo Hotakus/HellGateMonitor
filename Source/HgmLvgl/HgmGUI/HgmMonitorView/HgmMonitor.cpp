@@ -45,10 +45,14 @@ void HgmGUI::HgmMonitor::begin()
 {
 	def_vm.model.begin();
 
-	// 消息和订阅设置
+	// 订阅数据更新消息
 	update_msg.set(_name + String("Update"), def_vm.model.hrr);
 	update_subs.set(_name + String("Update"));
 	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
+
+    // 订阅frame位置消息
+    pos_msg.set(_name + String("Pos"), def_vm.model.hrr);
+    update_subs.subscribe_msg(_name + String("Pos"), HgmMonitor::monitor_update_cb);
 
 	// 注册消息和订阅者
 	HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);
@@ -95,8 +99,11 @@ void HgmMonitor::monitor_ui_cb(msg_t* msg)
 void HgmMonitor::monitor_update_cb(msg_t *msg)
 {
     HardwareRequest* hrr = (HardwareRequest*)msg->pData();
-
     HgmMonitorView::update_monitor(hrr->hd);
+}
+
+void HgmGUI::HgmMonitor::monitor_pos_cb(msg_t* msg)
+{
 
 }
 
