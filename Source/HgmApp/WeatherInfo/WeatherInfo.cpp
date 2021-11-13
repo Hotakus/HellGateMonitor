@@ -27,7 +27,6 @@
 #define HGM_DEBUG 1
 #include "../../HgmLogUtil.h"
 
-
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
@@ -37,8 +36,6 @@ extern HgmBT hgmBT;
 static HgmComponent component;
 
 static HTTPClient hc;
-static File _file;
-static StaticJsonDocument<2048> doc;
 extern SemaphoreHandle_t wbs;
 
 static void WeatherCheckTask(void* params);
@@ -84,8 +81,9 @@ void HgmApplication::WeatherInfo::deInitTask()
 
 void HgmApplication::WeatherInfo::setWeatherConfig()
 {
-    // TODO: Send msg
+    File _file;
     _file = SPIFFS.open(WEATHER_CONFIG_FILE_PATH, FILE_WRITE);
+    HDJsonDoc doc(2048);
 
     String wi;
     doc["Header"] = "Weather";
