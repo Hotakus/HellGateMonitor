@@ -51,8 +51,6 @@ HgmGUI::HgmMonitorView::~HgmMonitorView()
 {
 }
 
-
-
 lv_obj_t* HgmMonitorView::frame(HgmHardwarePosition pos)
 {
     switch (pos)
@@ -279,7 +277,7 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     lv_label_set_text_fmt(widget.status_bar.time_label, "#c5b8b0 --#\n#c5b8b0 --#", 0);
 }
 
-void HgmGUI::HgmMonitorView::begin()
+void HgmGUI::HgmMonitorView::frameCreate()
 {
     /* frame */
     widget.frame.lt = lv_imgbtn_create(lv_scr_act());
@@ -309,7 +307,24 @@ void HgmGUI::HgmMonitorView::begin()
     lv_obj_set_style_bg_opa(widget.status_bar.bg, LV_OPA_40, 0);
 
     status_bar_create();
+}
 
+void HgmGUI::HgmMonitorView::widgetCreate()
+{
+    /* widgets */
+    HgmFramework* fw = HgmFramework::getInstance();
+    String _name = String("HgmMonitorUpdate");
+    msg_t* msg = fw->hgmFwCenter.findMsg(_name);
+    HardwareRequest* hrr = (HardwareRequest*)msg->pData();
+
+    cpu_widget_create(hrr->GetHardwareObj(HGM_CPU)->pos);
+    gpu_widget_create(hrr->GetHardwareObj(HGM_GPU)->pos);
+    mem_widget_create(hrr->GetHardwareObj(HGM_MEMORY)->pos);
+    network_widget_create(hrr->GetHardwareObj(HGM_NETWORK)->pos);
+}
+
+void HgmGUI::HgmMonitorView::animCreate()
+{
     /* Animations */
     widget.anim.flt = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     widget.anim.flb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
@@ -364,22 +379,33 @@ void HgmGUI::HgmMonitorView::begin()
     lv_anim_timeline_add(widget.anim.at, 800, widget.anim.frb);
     lv_anim_timeline_add(widget.anim.at, 2700, widget.anim.sb);
     lv_anim_timeline_start(widget.anim.at);
+}
 
-    /* widgets */
-    HgmFramework* fw = HgmFramework::getInstance();
-    String _name = String("HgmMonitorUpdate");
-    msg_t* msg = fw->hgmFwCenter.findMsg(_name);
-    HardwareRequest* hrr = (HardwareRequest*)msg->pData();
+void HgmGUI::HgmMonitorView::animDestroy()
+{
+}
 
-    cpu_widget_create(hrr->GetHardwareObj(HGM_CPU)->pos);
-    gpu_widget_create(hrr->GetHardwareObj(HGM_GPU)->pos);
-    mem_widget_create(hrr->GetHardwareObj(HGM_MEMORY)->pos);
-    network_widget_create(hrr->GetHardwareObj(HGM_NETWORK)->pos);
+void HgmGUI::HgmMonitorView::widgetDestroy()
+{
+}
+
+void HgmGUI::HgmMonitorView::frameDestroy()
+{
+}
+
+void HgmGUI::HgmMonitorView::begin()
+{
+    frameCreate();
+    animCreate();
+    widgetCreate();
 }
 
 void HgmGUI::HgmMonitorView::end()
 {
-
+    // TODO: Destroy
+    widgetDestroy();
+    animDestroy();
+    frameDestroy();
 }
 
 void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest::_hardData* hd)
