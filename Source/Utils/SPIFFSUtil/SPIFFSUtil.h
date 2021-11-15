@@ -106,12 +106,26 @@ namespace spiffsutil {
             File file = SPIFFS.open(path);
             if (file.size() > 1024) {
                 uint8_t* buf = (uint8_t*)SPIFFS_ALLOC(sizeof(uint8_t) * (file.size() + 1024));
+                uint8_t* ptr = buf;
                 file.readBytes((char*)buf, file.size());
-                err = deserializeJson(doc, buf);
+
+                while (*ptr != '{')
+                    ptr++;
+                if (!ptr)
+                    return false;
+
+                err = deserializeJson(doc, ptr);
                 SPIFFS_FREE(buf);
             } else {
                 String str = file.readString();
-                Serial.println(str);
+                for (auto& v : str)
+                    if (v != '{')
+                        str.remove(0);
+                    else
+                        break;
+                if (str.isEmpty())
+                    return false;
+
                 err = deserializeJson(doc, str);
             }
             file.close();
