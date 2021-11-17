@@ -35,11 +35,20 @@ void HgmApplication::HardwareNetData::Set(HDJsonDoc& hdjd)
 {
     this->ethernet.nd.downloaded = hdjd["Data"]["Network"]["ethernet"]["data"]["downloaded"].as<float>();
     this->ethernet.nd.uploaded = hdjd["Data"]["Network"]["ethernet"]["data"]["uploaded"].as<float>();
-    this->ethernet.nt.download = hdjd["Data"]["Network"]["ethernet"]["data"]["download"].as<float>();
-    this->ethernet.nt.upload = hdjd["Data"]["Network"]["ethernet"]["data"]["upload"].as<float>();
+    this->ethernet.nt.download = hdjd["Data"]["Network"]["ethernet"]["throughput"]["download"].as<float>();
+    this->ethernet.nt.upload = hdjd["Data"]["Network"]["ethernet"]["throughput"]["upload"].as<float>();
+    this->ethernet.utilization = hdjd["Data"]["Network"]["ethernet"]["utilization"].as<uint8_t>();
 
     this->wlan.nd.downloaded = hdjd["Data"]["Network"]["wlan"]["data"]["downloaded"].as<float>();
     this->wlan.nd.uploaded = hdjd["Data"]["Network"]["wlan"]["data"]["uploaded"].as<float>();
-    this->wlan.nt.download = hdjd["Data"]["Network"]["wlan"]["data"]["download"].as<float>();
-    this->wlan.nt.upload = hdjd["Data"]["Network"]["wlan"]["data"]["upload"].as<float>();
+    this->wlan.nt.download = hdjd["Data"]["Network"]["wlan"]["throughput"]["download"].as<float>();
+    this->wlan.nt.upload = hdjd["Data"]["Network"]["wlan"]["throughput"]["upload"].as<float>();
+    this->wlan.utilization = hdjd["Data"]["Network"]["ethernet"]["utilization"].as<uint8_t>();
+
+    if (this->ethernet.nt.download || this->ethernet.nt.upload) {
+        isWiFi = false;
+    } else {
+        isWiFi = true;
+    }
+
 }

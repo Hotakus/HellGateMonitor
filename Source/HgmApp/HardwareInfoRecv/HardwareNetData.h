@@ -38,13 +38,15 @@ namespace HgmApplication {
 		{
 			NetData nd;
 			NetThroughput nt;
+            uint8_t utilization;
 		} wlan, ethernet;
 
+        bool isWiFi = false;
 
 		HardwareNetData();
 		~HardwareNetData();
 
-		void Set(HDJsonDoc& hdjd);
+        void Set(HDJsonDoc& hdjd);
 	};
 }
 
