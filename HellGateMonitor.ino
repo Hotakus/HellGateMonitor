@@ -37,7 +37,7 @@
 
 #define HGM_VERSION_INFO  "dev"
 #define HGM_VERSION_MAJOR 0
-#define HGM_VERSION_MINOR 5
+#define HGM_VERSION_MINOR 7
 #define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
