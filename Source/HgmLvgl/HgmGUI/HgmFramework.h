@@ -55,7 +55,6 @@ namespace HgmGUI {
         bool changeNext();
 
         static HgmFramework* getInstance();
-
     };
 
 };

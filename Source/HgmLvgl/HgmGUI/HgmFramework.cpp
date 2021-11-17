@@ -34,8 +34,8 @@ HgmFramework::HgmFramework()
     hgmFwCenter.begin();
 
     /* Create All UI */
-    hgmTw = new HgmTw();
     hgmMonitor = new HgmMonitor();
+    hgmTw = new HgmTw();
 }
 
 HgmFramework::~HgmFramework()
@@ -54,7 +54,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    changeGUI(hgmFwCenter.msgChain().head()->next()->next()->name());
+    changeGUI(hgmFwCenter.msgChain().head()->next()->name());
 }
 
 /**

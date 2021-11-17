@@ -16,6 +16,7 @@
 #include "../../HardwareInfoRecv/HardwareNetData.h"
 #include "../../HardwareInfoRecv/HardwareDiskData.h"
 #include "../../HardwareInfoRecv/HardwareRequest.h"
+#include "../../../HgmLvgl/HgmGUI/HgmFramework.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -23,6 +24,11 @@
 #include <ArduinoJson.h>
 #include <BluetoothSerial.h>
 
+#define TAG "HgmTCP"
+#define HGM_DEBUG 1
+#include "../../../HgmLogUtil.h"
+
+using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
@@ -252,25 +258,34 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_HWI: {
-        // TODO:
-        // if (hrr->isRequest(HGM_CPU))
-        //     hrr->hd->cpuData->Set(rawPack);
-        // if (hrr->isRequest(HGM_GPU))
-        //     hrr->hd->gpuData->Set(rawPack);
-        // if (hrr->isRequest(HGM_MEMORY))
-        //     hrr->hd->memData->Set(rawPack);
-        // if (hrr->isRequest(HGM_HARD_DISK))
-        //     hrr->hd->diskData->Set(rawPack);
-        // if (hrr->isRequest(HGM_NETWORK))
-        //     hrr->hd->netData->Set(rawPack);
+        str = "HgmMonitorUpdate";
+        MsgCenter& mc = HgmFramework::getInstance()->hgmFwCenter;
+        msg_t* msg = mc.findMsg(str);
+        if (!msg) {
+            hgm_log_e(TAG, "Monitor msg is null.");
+            return HGM_TCP_PACK_METHOD_ERROR;
+        }
 
-        // Serial.println(((CpuData*)hgmHardObj[HGM_CPU]->params)->name);
-        // Serial.println(((GpuData*)hgmHardObj[HGM_GPU]->params)->name);
-        // Serial.println(((MemData*)hgmHardObj[HGM_MEMORY]->params)->free);
-        // Serial.println(((HardwareDiskData*)hgmHardObj[HGM_HARD_DISK]->params)->disk[1].name);
-        // Serial.println(((NetData*)hgmHardObj[HGM_NETWORK]->params)->wlan.nd.downloaded);
+        HardwareRequest* hrr = (HardwareRequest*)msg->pData();
+        if (hrr->isRequest(HGM_CPU))
+            hrr->hd->cpuData->Set(rawPack);
+        if (hrr->isRequest(HGM_GPU))
+            hrr->hd->gpuData->Set(rawPack);
+        if (hrr->isRequest(HGM_MEMORY))
+            hrr->hd->memData->Set(rawPack);
+        if (hrr->isRequest(HGM_NETWORK))
+            hrr->hd->netData->Set(rawPack);
+        if (hrr->isRequest(HGM_HARD_DISK))
+            hrr->hd->diskData->Set(rawPack);
 
-        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        bool ret = mc.notify(str, str);
+        if (ret)
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        else {
+            str = "Monitor has been not open.";
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        }
+
         return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_PROJECTION: {
@@ -316,7 +331,7 @@ static void TcpControlTask(void* params)
                     "TcpServerListeningTask",
                     3072,
                     NULL,
-                    9,
+                    4, // 9
                     &instance->frtos.tcpServerTaskHandle,
                     1
                 );

@@ -10,6 +10,7 @@
 #include "HgmMonitor.h"
 #include "HgmMonitorModel.h"
 #include "../../../HgmApp/HardwareInfoRecv/HardwareRequest.h"
+#include "../../../HgmApp/HgmWiFi/HgmWiFi.h"
 
 #define TAG "HgmMonitor"
 #define HGM_DEBUG 1
@@ -18,6 +19,8 @@
 using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
+
+extern HgmWiFi hgmWiFi;
 
 static HgmMonitor* instance = nullptr;
 
@@ -50,13 +53,11 @@ void HgmGUI::HgmMonitor::begin()
 	update_subs.set(_name + String("Update"));
 	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
 
-    // 订阅frame位置消息
-    pos_msg.set(_name + String("Pos"), def_vm.model.hrr);
-    update_subs.subscribe_msg(_name + String("Pos"), HgmMonitor::monitor_update_cb);
-
 	// 注册消息和订阅者
 	HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);
 	HgmFramework::getInstance()->hgmFwCenter.subscribe(&update_subs);
+
+    hgmWiFi.OpenTCP();
 
 	def_vm.view.begin();
     def_vm.model.hrr->initTask();
@@ -69,6 +70,8 @@ void HgmGUI::HgmMonitor::end()
 
 	def_vm.view.end();
 	def_vm.model.end();
+
+    hgmWiFi.OpenTCP(false);
 }
 
 HgmMonitorModel::monitor_data_t * HgmGUI::HgmMonitor::getData()
@@ -99,11 +102,5 @@ void HgmMonitor::monitor_ui_cb(msg_t* msg)
 void HgmMonitor::monitor_update_cb(msg_t *msg)
 {
     HardwareRequest* hrr = (HardwareRequest*)msg->pData();
-    HgmMonitorView::update_monitor(hrr->hd);
+    instance->def_vm.view.update_monitor(hrr);
 }
-
-void HgmGUI::HgmMonitor::monitor_pos_cb(msg_t* msg)
-{
-
-}
-

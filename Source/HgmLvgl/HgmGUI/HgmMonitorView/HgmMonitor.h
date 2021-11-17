@@ -42,7 +42,6 @@ namespace HgmGUI {
 		subscriber_t update_subs;
 		msg_t gui_msg;
 		msg_t update_msg;
-		msg_t pos_msg;
 
 		HgmMonitor();
 		~HgmMonitor();

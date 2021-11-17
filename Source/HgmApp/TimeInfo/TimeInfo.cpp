@@ -56,7 +56,7 @@ void HgmApplication::TimeInfo::initTask()
     xTaskCreatePinnedToCore(
         netTimeTask,
         "netTimeTask",
-        2048 + 256,
+        2048 + 512,
         NULL,
         8,
         &netTimeTaskHandle,

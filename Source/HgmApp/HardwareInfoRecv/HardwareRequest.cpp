@@ -31,7 +31,7 @@ extern HgmWiFi hgmWiFi;
 
 static HardwareRequest* instance = nullptr;
 
-static void task(void* params)
+static void hrtask(void* params)
 {
     String str = "";
 
@@ -59,7 +59,7 @@ static void task(void* params)
 void HgmApplication::HardwareRequest::initTask()
 {
     if (!frtos.hardwareReqTaskHandle)
-        xTaskCreatePinnedToCore(task, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
+        xTaskCreatePinnedToCore(hrtask, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
 }
 
 void HgmApplication::HardwareRequest::deInitTask()

@@ -33,6 +33,12 @@ namespace HgmGUI {
         void network_widget_create(HgmHardwarePosition pos);
         void status_bar_create();
 
+        void cpu_update(HardwareRequest* hrr);
+        void gpu_update(HardwareRequest* hrr);
+        void mem_update(HardwareRequest* hrr);
+        void net_update(HardwareRequest* hrr);
+        void disk_update(HardwareRequest* hrr);
+
 	public:
         struct _widget
         {
@@ -125,7 +131,8 @@ namespace HgmGUI {
 		void begin();
 		void end();
 
-		static void update_monitor(HardwareRequest::_hardData* hd);
+		void update_monitor(HardwareRequest* hrr);
+        void alter_pos(HgmHardwarePosition from, HgmHardwarePosition to);
 	};
 }
 

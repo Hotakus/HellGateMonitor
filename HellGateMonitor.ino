@@ -132,8 +132,10 @@ void setup()
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
     HgmSC* hgmSC = new HgmSC;
-    //hgmSC->begin();
+    hgmSC->begin();
     delete hgmSC;
+
+    //vTaskDelay(2000);
 
     hgmLvgl.guiBegin();
     
@@ -141,8 +143,6 @@ void setup()
     vTaskList(task_buf);
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
-
-    vTaskDelay(10000);
 
     //hgmLvgl.hgmFw->changeGUI("");
 }
