@@ -7,6 +7,7 @@
  * @date 2021/11/7 20:37
  * @copyright Copyright (c) 2021/11/7
 *******************************************************************/
+#include "../../../HgmApp/HgmWiFi/HgmWiFi.h"
 #include "../../../HgmApp/TimeInfo/TimeInfo.h"
 #include "../../../HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "HgmMonitorView.h"
@@ -492,6 +493,33 @@ static void ShowTime(lv_timer_t* timer)
     lv_label_set_text_fmt(instance->widget.status_bar.time_label, "#c5b8b0 %02d#\n#c5b8b0 %02d#", _tm.tm_hour, _tm.tm_min);
 }
 
+static lv_timer_t* stateCheckTimer = NULL;
+static void stateCheck(lv_timer_t* timer)
+{
+    //lv_img_set_src(widget.status_bar.battery.icon, &bat_50);
+    // TODO: battery
+
+    if (!WiFi.isConnected()) {
+        lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_0);
+    } else {
+        lv_img_dsc_t* dsc;
+        int8_t rssi = WiFi.RSSI();
+        uint8_t ret = (((rssi + 100) << 1) << 1) >> 1;
+
+        if (ret < 40)
+            lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_1);
+        else if (ret < 60)
+            lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_2);
+        else if (ret < 80)
+            lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_3);
+        else if (ret < 100)
+            lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_4);
+        else if (ret >= 100)
+            lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_5);
+    }
+    
+}
+
 void HgmGUI::HgmMonitorView::begin()
 {
     frameCreate();
@@ -499,7 +527,7 @@ void HgmGUI::HgmMonitorView::begin()
     widgetCreate();
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
-
+    stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
     // TODO: delete
 }
 
@@ -529,9 +557,14 @@ void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)
     // hrr->hd->netData->Set(doc);
     // hrr->hd->diskData->Set(doc);
 
-    cpu_update(hrr);
-    gpu_update(hrr);
-    mem_update(hrr);
-    net_update(hrr);
-    // disk_update(hrr);
+    if (hrr->isRequest(HGM_CPU))
+        cpu_update(hrr);
+    if (hrr->isRequest(HGM_GPU))
+        gpu_update(hrr);
+    if (hrr->isRequest(HGM_MEMORY))
+        mem_update(hrr);
+    if (hrr->isRequest(HGM_NETWORK))
+        net_update(hrr);
+    if (hrr->isRequest(HGM_HARD_DISK))
+        disk_update(hrr);
 }

@@ -90,6 +90,8 @@ static void backlightControl(void* params)
     }
 }
 
+HgmSetupView* hgmSetup;
+
 void setup()
 {
     Serial.begin(115200);
@@ -131,11 +133,15 @@ void setup()
     bool flag = true;
     xQueueSend(bkMsgBox, &flag, portMAX_DELAY); // Open backlight
 
+    hgmSetup = new HgmSetupView();
+    hgmSetup->begin();
+
     HgmSC* hgmSC = new HgmSC;
     hgmSC->begin();
     delete hgmSC;
 
-    //vTaskDelay(2000);
+    hgmSetup->end();
+    delete hgmSetup;
 
     hgmLvgl.guiBegin();
     
@@ -151,6 +157,9 @@ void loop()
 {
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+    int8_t rssi = WiFi.RSSI();
+    uint8_t ret = (((rssi + 100) << 1) << 1) >> 1;
+    Serial.println(ret);
     // vTaskDelay(10 * 60 * 1000);
     vTaskDelay(2000);
 }

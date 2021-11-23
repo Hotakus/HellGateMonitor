@@ -28,8 +28,8 @@ HgmGUI::HgmMonitor::HgmMonitor()
 {
 	instance = this;
 
-	gui_msg.set(_name, nullptr);
-	gui_subs.set(_name);
+	gui_msg.id(_name);
+	gui_subs.name(_name);
 	gui_subs.subscribe_msg(_name, HgmMonitor::monitor_ui_cb);
 
 	HgmFramework::getInstance()->hgmFwCenter.addMsg(&gui_msg);
@@ -49,8 +49,9 @@ void HgmGUI::HgmMonitor::begin()
 	def_vm.model.begin();
 
 	// 订阅数据更新消息
-	update_msg.set(_name + String("Update"), def_vm.model.hrr);
-	update_subs.set(_name + String("Update"));
+	update_msg.id(_name + String("Update"));
+	update_msg.pData(def_vm.model.hrr);
+	update_subs.name(_name + String("Update"));
 	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
 
 	// 注册消息和订阅者

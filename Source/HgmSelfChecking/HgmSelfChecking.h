@@ -11,6 +11,7 @@
 #ifndef HELLGATEMONITOR_HGMSELFCHECKING_H
 #define HELLGATEMONITOR_HGMSELFCHECKING_H
 
+#include "../HgmLvgl/HgmGUI/HgmFramework.h"
 #include "../HgmLvgl/HgmGUI/HgmSetupView.h"
 #include <Arduino.h>
 
@@ -21,8 +22,9 @@ namespace HGM {
 	class HgmSC
 	{
 	private:
+        msg_t component_msg;
         HgmComponent component;
-        HgmSetupView* hgmSetup;
+        
         bool _cur;
         bool _wait;
 	public:

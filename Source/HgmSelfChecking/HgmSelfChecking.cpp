@@ -26,6 +26,7 @@
 #include "../HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "../Utils/MsgCenter/MsgCenter.h"
 #include "../Utils/SPIFFSUtil/SPIFFSUtil.h"
+#include "../HgmLvgl/HgmGUI/HgmFramework.h"
 
 #include <Arduino.h>
 #include <FS.h>
@@ -48,6 +49,7 @@ extern HgmBT hgmBT;
 extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
+extern HgmSetupView* hgmSetup;
 
 static void err_cb(const String& err)
 {
@@ -59,8 +61,11 @@ static void err_cb(const String& err)
 
 void HGM::HgmSC::begin()
 {
-    //hgmSetup = new HgmSetupView();
-    //hgmSetup->begin();
+    
+
+    // component_msg.id("setup");
+    // component_msg.pData(&component);
+    // HgmFramework::getInstance()->hgmFwCenter.addMsg(&component_msg);
 
     checkBT();
     checkSpiffs();
@@ -69,8 +74,8 @@ void HGM::HgmSC::begin()
     checkBili();
     checkWeather();
 
-    //hgmSetup->componentInitDone();
-    //delete hgmSetup;
+    // HgmFramework::getInstance()->hgmFwCenter.removeMsg(component_msg.id());
+    
 }
 
 void HGM::HgmSC::setState(HgmComponentType ct, bool cur, bool wait)
@@ -81,7 +86,9 @@ void HGM::HgmSC::setState(HgmComponentType ct, bool cur, bool wait)
     // component.type = ct;
     // component.curStatus = _cur;
     // component.waitStatus = _wait;
-    //hgmSetup->componentControl(&component);
+    // hgmSetup->ctl(&component);
+    // component_msg.pData(&component);
+    // HgmFramework::getInstance()->hgmFwCenter.notify("setup", "setup");
 }
 
 void HGM::HgmSC::checkBT()

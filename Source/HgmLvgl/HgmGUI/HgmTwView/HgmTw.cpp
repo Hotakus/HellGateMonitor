@@ -21,8 +21,8 @@ HgmGUI::HgmTw::HgmTw()
 {
     instance = this;
 
-    gui_msg.set(_name, nullptr);
-    gui_subs.set(_name);
+    gui_msg.id(_name);
+    gui_subs.name(_name);
     gui_subs.subscribe_msg(_name, HgmTw::tw_ui_cb);
 
     HgmFramework::getInstance()->hgmFwCenter.addMsg(&gui_msg);
@@ -42,9 +42,10 @@ void HgmGUI::HgmTw::begin()
     def_vm.model.begin();
 
     // 消息和订阅设置
-    update_msg.set(_name + String("Update"), &def_vm.model.dat);
-    update_subs.set(_name + String("Update"));
-    update_subs.subscribe_msg(_name + String("Update"), HgmTw::tw_update_cb);
+    update_msg.id(_name + String("Update"));
+    update_msg.pData(&def_vm.model.dat);
+    update_subs.name(_name + String("Update"));
+    update_subs.subscribe_msg(update_subs.name(), HgmTw::tw_update_cb);
 
     // 注册消息和订阅者
     HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);

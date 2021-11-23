@@ -14,6 +14,8 @@
 #include "../../LvglSrc/lvgl/lvgl.h"
 #include <TJpg_Decoder.h>
 
+using namespace msgmanager;
+
 namespace HgmGUI {
 
     // HGM's components' type
@@ -43,12 +45,13 @@ namespace HgmGUI {
     {
     private:
         
+        subscriber_t setup_subs;
+        void componentInitDone(); 
+        
     public:
-
-        struct _frtos {
-            QueueHandle_t msgBox;
-            TaskHandle_t taskHandle;
-        } frtos;
+        bool isEnd;
+        MsgCenter mc;
+        static void ctl(HgmComponent* component);
 
         struct _widget {
             lv_obj_t* pb;
@@ -66,10 +69,6 @@ namespace HgmGUI {
 
         void begin();
         void end();
-
-        // Be call for other class
-        static void componentControl(HgmComponent* component);
-        static void componentInitDone();
     };
 
 };
