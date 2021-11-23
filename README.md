@@ -62,38 +62,12 @@ git clone --recurse-submodules git@github.com:Hotakus/HellGateMonitor.git
 
 ---
 
-## 五、项目基本结构：
-下位机所有的程序源码都放在Source文件夹下  
-![HellGateMonitor](GuideImage/SourceStruct.png)  
-LVGL源码采用子模块的方式引用到此项目中，这样可以方便的对LVGL版本进行实时同步更新。  
-另外，由于此项目使用的是Arduino平台，所以在使用此项目前，你应该先安装指定库：
-* **ArduinoJson** （解析/打包JSON数据）
-* **TFT_eSPI** （屏幕驱动库，需要手动[配置]()）
-* **TJpg_Decoder**（JPG解码库）
-* **MPU6050_light** （MPU6050 轻量库）  
-* **ESP32Time** （本地RTC库）  
+## 五、项目基本结构（TDDO）：
 
-另外，你应该在Arduino的 File-->preferences中 添加乐鑫的ESP32板包：
-```shell
-https://dl.espressif.com/dl/package_esp32_index.json
-```
-
-当然，不能直接在Arduino的官方IDE中直接编译项目，因为它的项目管理能力太差了。
-我们使用Visual Studio 2019作为开发环境，这里也不推荐vscode，理由同Arduino官方IDE。
 
 ---
 
-## 六、开始项目编译：
-如果上述工作都正确完成了，那么接下来可以编译项目了。  
-首先，你应该在 VS2019 的“扩展”--“管理扩展”中，搜索并添加Arduino的扩展，
-扩展安装方法不赘述，关于VS2019的Arduino扩展，请自行摸索一遍，再对项目使用。
-
-现在，我默认你已经搞清楚了Arduino的扩展，接下来找到vMicro按照我下图进行简单配置。
-
-![ArduinoConfig](GuideImage/ArduinoConfig.png)  
-我之所以选这个是因为这个开发板环境和此项目几乎完美契合。
-
-然后，将项目Debug改为Release，不然项目跑不起来。  
+## 六、开始项目编译（TDDO）
 __最后：__  
 ![tb](GuideImage/tb.png)
 
