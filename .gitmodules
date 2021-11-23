@@ -1,3 +1,6 @@
 [submodule "Source/Utils/MsgCenter"]
 	path = Source/Utils/MsgCenter
 	url = git@github.com:Hotakus/MsgCenter.git
+[submodule "Source/LvglSrc/lvgl"]
+	path = Source/LvglSrc/lvgl
+	url = git@github.com:lvgl/lvgl.git
