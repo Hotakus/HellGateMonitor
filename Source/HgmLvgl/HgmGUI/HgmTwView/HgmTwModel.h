@@ -48,6 +48,7 @@ namespace HgmGUI {
             bili_dat_t bd;
             weather_dat_t wd;
             time_dat_t td;
+            String name;
         } tw_data_t;
 
         tw_data_t dat;

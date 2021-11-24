@@ -30,6 +30,7 @@ static void BluetoothControlTask(void* params);
 static void BluetoothListeningTask(void* params);
 
 extern HgmWiFi hgmWiFi;
+extern BiliInfoRecv bili;
 HgmBT hgmBT;
 
 /**
@@ -275,6 +276,23 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         file.close();
 
         HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
+        
+        bili.getBasicInfo();
+        bili.getUserFaceImg();
+
+        String str = String("HgmTwUpdate");
+        MsgCenter* mc = &HgmFramework::getInstance()->hgmFwCenter;
+        msg_t* msg = mc->findMsg(str);
+        HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
+
+        tw_data->tdt = HgmTwModel::BILI;
+        tw_data->bd.bn = bili.getUserName();
+        tw_data->bd.fans = bili.getFollower();
+        tw_data->bd.ufb = (uint8_t*)bili.getUserFaceBitmap();
+        tw_data->bd.uid = bili.uid();
+
+        mc->notify(str, str);
+
         return HGM_BT_PACK_METHOD_OK;
     }
     case HGM_BT_PACK_METHOD_NORMAL: {

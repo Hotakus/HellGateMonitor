@@ -160,13 +160,10 @@ void HgmApplication::WeatherInfo::getWeather()
     String nowApi = weatherInfo.nowWeatherAPI + lonLat + key + gzip;
     String threeApi = weatherInfo.threeWeatherAPI + lonLat + key + gzip;
     String airApi = weatherInfo.airAPI + lonLat + key + gzip;
+    String locationApi = weatherInfo.locationAPI + lonLat + key + String("&number=1") + gzip;
 
     HDJsonDoc doc(8192);
-    size_t CAcertSize = Sfu::fileSize("/weather.cer");
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
-    uint8_t* CAcert = (uint8_t*)hotakusAlloc(CAcertSize);
-
-    Sfu::read("/weather.cer", CAcert, CAcertSize);
 
     /* Air */
     memset(buf, 0, 8192);
@@ -185,10 +182,16 @@ void HgmApplication::WeatherInfo::getWeather()
         weatherInfo.wdt.humidity = doc["now"]["humidity"].as<uint16_t>();
         weatherInfo.wdt.icon = doc["now"]["icon"].as<uint16_t>();
     }
-    /* Three days */
+    
+    /* Location */
+    memset(buf, 0, 8192);
+    ret = HotakusHttpUtil::GET(hc, locationApi, buf, 8192);
+    if (ret) {
+        deserializeJson(doc, buf);
+        weatherInfo.wdt.location = doc["location"][0]["name"].as<String>();
+    }
 
     hotakusFree(buf);
-    hotakusFree(CAcert);
 }
 
 static void WeatherCheckTask(void* params)
@@ -211,6 +214,7 @@ static void WeatherCheckTask(void* params)
         tw_data->wd.temp = weatherInfo.wdt.temp;
         tw_data->wd.rh = weatherInfo.wdt.humidity;
         tw_data->wd.icon = weatherInfo.wdt.icon;
+        tw_data->name = weatherInfo.wdt.location;
 
         mc->notify(str, str);
 

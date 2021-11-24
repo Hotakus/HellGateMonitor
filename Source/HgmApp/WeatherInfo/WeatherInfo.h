@@ -24,6 +24,8 @@ namespace HgmApplication {
 	class WeatherData
 	{
 	public:
+        String location;
+
 		// Unit: Celsius
         uint8_t temp = 0;
 
@@ -42,12 +44,12 @@ namespace HgmApplication {
 	private:
         
 	public:
-
         WeatherData wdt;
 
         String nowWeatherAPI = "https://devapi.qweather.com/v7/weather/now?";
         String threeWeatherAPI = "https://devapi.qweather.com/v7/weather/3d?";
         String airAPI = "https://devapi.qweather.com/v7/air/now?";
+        String locationAPI = "https://geoapi.qweather.com/v2/city/lookup?";
 
         String _id = "";
         String _key = "";

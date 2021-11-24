@@ -46,6 +46,10 @@ LV_IMG_DECLARE(signal_3);
 LV_IMG_DECLARE(signal_4);
 LV_IMG_DECLARE(signal_5);
 
+LV_FONT_DECLARE(black_8px);
+LV_FONT_DECLARE(black_10px);
+LV_FONT_DECLARE(fangpx_10px);
+LV_FONT_DECLARE(fangpx_12px);
 LV_FONT_DECLARE(k12x8_6px);
 LV_FONT_DECLARE(k12x8_7px);
 LV_FONT_DECLARE(k12x8_8px);
@@ -179,12 +183,17 @@ void HgmGUI::HgmTwView::status_bar_create()
 {
     // TODO: Check battery
     widget->status_bar.battery.icon = lv_img_create(widget->weather.tw_weather);
+    lv_obj_set_style_opa(widget->status_bar.battery.icon, LV_OPA_0, 0);
     lv_obj_align(widget->status_bar.battery.icon, LV_ALIGN_TOP_LEFT, 5, 5);
     lv_img_set_src(widget->status_bar.battery.icon, &bat_null);
 
     widget->status_bar.signal.icon = lv_img_create(widget->weather.tw_weather);
+    lv_obj_set_style_opa(widget->status_bar.signal.icon, LV_OPA_0, 0);
     lv_obj_align_to(widget->status_bar.signal.icon, widget->status_bar.battery.icon, LV_ALIGN_OUT_RIGHT_TOP, 5, 0);
     lv_img_set_src(widget->status_bar.signal.icon, &signal_0);
+
+    lv_obj_set_style_opa(widget->status_bar.battery.icon, LV_OPA_100, 0);
+    lv_obj_set_style_opa(widget->status_bar.signal.icon, LV_OPA_100, 0);
 }
 
 void HgmGUI::HgmTwView::widgetCreate()
@@ -278,6 +287,7 @@ void HgmTwView::animDestroy()
 void HgmTwView::widgetDestroy()
 {
     hotakusFree(instance->widget->weather.icon_buf);
+    hotakusFree(instance->widget);
 }
 
 void HgmTwView::frameDestroy()
@@ -322,6 +332,7 @@ static void biliWidgetsCreate()
 
     // Bili label
     instance->widget->bili.biliName = lv_label_create(instance->widget->bili.book);
+    lv_obj_set_style_opa(instance->widget->bili.biliName, LV_OPA_0, 0);
     lv_obj_set_style_text_font(instance->widget->bili.biliName, &k12x8_10px, 0);
     lv_obj_set_width(instance->widget->bili.biliName, 85);
     lv_label_set_recolor(instance->widget->bili.biliName, true);
@@ -331,45 +342,102 @@ static void biliWidgetsCreate()
     lv_obj_align(instance->widget->bili.biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
     instance->widget->bili.biliFans = lv_label_create(instance->widget->bili.book);
+    lv_obj_set_style_opa(instance->widget->bili.biliFans, LV_OPA_0, 0);
     lv_label_set_recolor(instance->widget->bili.biliFans, true);
     lv_label_set_text_fmt(instance->widget->bili.biliFans, "#59493f %s#", "------");
     lv_obj_set_style_text_align(instance->widget->bili.biliFans, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_align(instance->widget->bili.biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
     lv_obj_set_style_text_font(instance->widget->bili.biliFans, &k12x8_6px, 0);
+
+    lv_obj_set_style_opa(instance->widget->bili.biliName, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget->bili.biliFans, LV_OPA_100, 0);
 }
 
 static void weatherWidgetsCreate()
 {
+    instance->widget->weather.location = lv_label_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget->weather.location, LV_OPA_0, 0);
+    lv_obj_set_style_text_font(instance->widget->weather.location, &fangpx_10px, 0);
+    lv_label_set_recolor(instance->widget->weather.location, true);
+    lv_label_set_long_mode(instance->widget->weather.location, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text_fmt(instance->widget->weather.location, "#39291f #");
+    lv_obj_set_style_text_align(instance->widget->weather.location, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(instance->widget->weather.location, LV_ALIGN_TOP_RIGHT, 0, 0);
+    lv_obj_set_width(instance->widget->weather.location, 70);
+
+    /* temp */
     instance->widget->weather.tempLabel.label = lv_label_create(instance->widget->weather.tw_weather);
     lv_obj_set_style_opa(instance->widget->weather.tempLabel.label, LV_OPA_0, 0);
-    lv_obj_align(instance->widget->weather.tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
     lv_obj_set_style_text_font(instance->widget->weather.tempLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget->weather.tempLabel.label, true);
-    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:---℃#");
+    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f --℃#");
     lv_obj_set_style_text_align(instance->widget->weather.tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(instance->widget->weather.tempLabel.label, LV_ALIGN_TOP_LEFT, 40, 22);
 
+    instance->widget->weather.tempLabel.bar = lv_bar_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_anim_speed(instance->widget->weather.tempLabel.bar, 1, LV_PART_INDICATOR);
+    lv_bar_set_mode(instance->widget->weather.tempLabel.bar, LV_BAR_MODE_SYMMETRICAL);
+    lv_obj_set_size(instance->widget->weather.tempLabel.bar, 38, 8);
+    lv_bar_set_range(instance->widget->weather.tempLabel.bar, -100, 100);
+    lv_bar_set_value(instance->widget->weather.tempLabel.bar, -0, LV_ANIM_ON);
+    lv_obj_set_style_radius(instance->widget->weather.tempLabel.bar, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(instance->widget->weather.tempLabel.bar, 2, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(instance->widget->weather.tempLabel.bar, lv_color_make(0, 0, 0), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(instance->widget->weather.tempLabel.bar, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
+    lv_obj_align_to(instance->widget->weather.tempLabel.bar, instance->widget->weather.tempLabel.label, LV_ALIGN_OUT_RIGHT_TOP, 5, 0);
+
+    /* aqi */
     instance->widget->weather.aqiLabel.label = lv_label_create(instance->widget->weather.tw_weather);
     lv_obj_set_style_opa(instance->widget->weather.aqiLabel.label, LV_OPA_0, 0);
-    lv_obj_align_to(instance->widget->weather.aqiLabel.label, instance->widget->weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+    lv_obj_align_to(instance->widget->weather.aqiLabel.label, instance->widget->weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
     lv_obj_set_style_text_font(instance->widget->weather.aqiLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget->weather.aqiLabel.label, true);
-    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI:---#");
+    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI ");
     lv_obj_set_style_text_align(instance->widget->weather.aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
 
+    instance->widget->weather.aqiLabel.bar = lv_bar_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_anim_speed(instance->widget->weather.aqiLabel.bar, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_anim_speed(instance->widget->weather.aqiLabel.bar, 1, 0);
+    lv_obj_set_size(instance->widget->weather.aqiLabel.bar, 38, 8);
+    lv_bar_set_range(instance->widget->weather.aqiLabel.bar, 0, 400);
+    lv_bar_set_value(instance->widget->weather.aqiLabel.bar, -0, LV_ANIM_ON);
+    lv_obj_set_style_radius(instance->widget->weather.aqiLabel.bar, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(instance->widget->weather.aqiLabel.bar, 2, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(instance->widget->weather.aqiLabel.bar, lv_color_make(0, 0, 0), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(instance->widget->weather.aqiLabel.bar, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
+    lv_obj_align_to(instance->widget->weather.aqiLabel.bar, instance->widget->weather.aqiLabel.label, LV_ALIGN_OUT_RIGHT_TOP, 5, 0);
+    lv_obj_set_style_bg_opa(instance->widget->weather.aqiLabel.bar, LV_OPA_COVER, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_grad_color(instance->widget->weather.aqiLabel.bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_grad_dir(instance->widget->weather.aqiLabel.bar, LV_GRAD_DIR_HOR, LV_PART_INDICATOR);
+
+    /* Relative humidity */
     instance->widget->weather.humidityLabel.label = lv_label_create(instance->widget->weather.tw_weather);
     lv_obj_set_style_opa(instance->widget->weather.humidityLabel.label, LV_OPA_0, 0);
-    lv_obj_align_to(instance->widget->weather.humidityLabel.label, instance->widget->weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+    lv_obj_align_to(instance->widget->weather.humidityLabel.label, instance->widget->weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
     lv_obj_set_style_text_font(instance->widget->weather.humidityLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget->weather.humidityLabel.label, true);
-    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f RH :---%%#");
+    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f RH  #");
     lv_obj_set_style_text_align(instance->widget->weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+
+    instance->widget->weather.humidityLabel.bar = lv_bar_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_anim_speed(instance->widget->weather.humidityLabel.bar, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_anim_speed(instance->widget->weather.humidityLabel.bar, 1, 0);
+    lv_obj_set_size(instance->widget->weather.humidityLabel.bar, 38, 8);
+    lv_bar_set_range(instance->widget->weather.humidityLabel.bar, 0, 100);
+    lv_bar_set_value(instance->widget->weather.humidityLabel.bar, -50, LV_ANIM_ON);
+    lv_obj_set_style_radius(instance->widget->weather.humidityLabel.bar, 2, LV_PART_MAIN);
+    lv_obj_set_style_radius(instance->widget->weather.humidityLabel.bar, 2, LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(instance->widget->weather.humidityLabel.bar, lv_color_make(0, 0, 0), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(instance->widget->weather.humidityLabel.bar, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
+    lv_obj_align_to(instance->widget->weather.humidityLabel.bar, instance->widget->weather.humidityLabel.label, LV_ALIGN_OUT_RIGHT_TOP, 5, 0);
 
     lv_obj_set_style_opa(instance->widget->weather.tempLabel.label, LV_OPA_100, 0);
     lv_obj_set_style_opa(instance->widget->weather.aqiLabel.label, LV_OPA_100, 0);
     lv_obj_set_style_opa(instance->widget->weather.humidityLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget->weather.location, LV_OPA_100, 0);
 
     instance->widget->weather.icon = lv_img_create(instance->widget->weather.tw_weather);
-    lv_obj_align(instance->widget->weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
+    lv_obj_align(instance->widget->weather.icon, LV_ALIGN_LEFT_MID, 0, 7);
     instance->widget->weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
 }
 
@@ -389,32 +457,41 @@ static uint8_t _digitOfNumber(int num)
 static String _numWithUnit(size_t fans)
 {
     uint8_t digit = _digitOfNumber(fans);
-    uint8_t pd = 0; // 要保留的整数位数
+    uint8_t pd = 3; // 要保留的整数位数
     uint8_t times = 0;
     float ffans = (float)fans;
+    String unit;
 
     if (digit < 5)
         return String(fans);
 
-    switch (digit)
-    {
-    case 5:
-    case 6: {   // 百万以下
+    if (digit <= 6) {
         pd = 3;
-        times = digit - pd;
-        for (size_t i = 0; i < times; i++)
-            ffans /= 10;
-        return (String(ffans) + String("K"));
-    }
-    case 7:
-    case 8:
-    case 9: {   // 百万及以上
-        // TODO: 
-    }
-    default:
-        break;
+        unit = String("K");
+    } else {
+        switch (digit) {
+        case 7:
+            pd = 1;
+            break;
+        case 8:
+            pd = 2;
+            break;
+        case 9:
+            pd = 3;
+            break;
+        case 10:
+            // overflow
+        default:
+            break;
+        }
+        unit = String("M");
     }
 
+    times = digit - pd;
+    for (size_t i = 0; i < times; i++)
+        ffans /= 10;
+    
+    return (String(ffans) + unit);
 }
 
 
@@ -462,8 +539,10 @@ void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
     }
 
     if (CheckNoEn(dat->bd.bn)) {
-        lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", dat->bd.uid.c_str());
+        lv_obj_set_style_text_font(instance->widget->bili.biliName, &fangpx_10px, 0);
+        lv_label_set_text_fmt(instance->widget->bili.biliName, "#39291f %s#", dat->bd.bn.c_str());
     } else {
+        lv_obj_set_style_text_font(instance->widget->weather.location, &fangpx_10px, 0);
         lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", dat->bd.bn.c_str());
     }
     lv_label_set_text_fmt(instance->widget->bili.biliFans, "#59493f %s#", _numWithUnit(dat->bd.fans).c_str());
@@ -471,18 +550,21 @@ void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
 
 void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
 {
-    Serial.println(dat->wd.temp);
-    if (dat->wd.temp >= 0)
-        lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", dat->wd.temp);
-    else
-        lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", dat->wd.temp);
+    Serial.println(dat->name);
+    lv_label_set_text_fmt(instance->widget->weather.location, "#59493f %s#", dat->name.c_str());
+    lv_obj_align_to(instance->widget->weather.location, instance->widget->status_bar.signal.icon, LV_ALIGN_OUT_RIGHT_TOP, 5, -2);
 
-    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
-    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
+    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f % 2d℃#", dat->wd.temp);
+    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI #", dat->wd.aqi);
+    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f R H  #", dat->wd.rh);
 
+    lv_bar_set_value(instance->widget->weather.tempLabel.bar, dat->wd.temp, LV_ANIM_ON);
+    lv_bar_set_value(instance->widget->weather.aqiLabel.bar, dat->wd.aqi, LV_ANIM_ON);
+    lv_bar_set_value(instance->widget->weather.humidityLabel.bar, dat->wd.rh, LV_ANIM_ON);
+
+    /* Read icon from SPIFFS to show */
     String path = String("/") + String("w_") + String(dat->wd.icon) + String(".png");
     size_t icon_size = Sfu::read(path, instance->widget->weather.icon_buf);
-
     instance->widget->weather.icon_dsc.data_size = icon_size;
     instance->widget->weather.icon_dsc.header.always_zero = 0;
     instance->widget->weather.icon_dsc.header.w = 40;

@@ -142,11 +142,6 @@ void setup()
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
 
-    char* task_buf = (char*)hotakusAlloc(8192);
-    vTaskList(task_buf);
-    Serial.printf("%s\n", task_buf);
-    hotakusFree(task_buf);
-
     //hgmLvgl.hgmFw->changeGUI("HgmTw");
 }
 
@@ -154,7 +149,6 @@ void loop()
 {
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    
 
     // vTaskDelay(10 * 60 * 1000);
     vTaskDelay(2000);
