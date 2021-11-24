@@ -16,6 +16,7 @@
 #include "../BiliInfoRecv/BiliInfoRecv.h"
 #include "../HotakusHttpUtil.h"
 #include "../../HgmLvgl/HgmGUI/HgmFramework.h"
+#include "../../Utils/SPIFFSUtil/SPIFFSUtil.h"
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -31,6 +32,7 @@ using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 using namespace HgmGUI;
 using namespace fs;
+using namespace spiffsutil;
 
 extern HgmBT hgmBT;
 static HgmComponent component;
@@ -160,7 +162,11 @@ void HgmApplication::WeatherInfo::getWeather()
     String airApi = weatherInfo.airAPI + lonLat + key + gzip;
 
     HDJsonDoc doc(8192);
+    size_t CAcertSize = Sfu::fileSize("/weather.cer");
     uint8_t* buf = (uint8_t*)hotakusAlloc(8192);
+    uint8_t* CAcert = (uint8_t*)hotakusAlloc(CAcertSize);
+
+    Sfu::read("/weather.cer", CAcert, CAcertSize);
 
     /* Air */
     memset(buf, 0, 8192);
@@ -182,6 +188,7 @@ void HgmApplication::WeatherInfo::getWeather()
     /* Three days */
 
     hotakusFree(buf);
+    hotakusFree(CAcert);
 }
 
 static void WeatherCheckTask(void* params)

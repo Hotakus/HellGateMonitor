@@ -24,6 +24,7 @@ namespace HGM {
 	private:
         msg_t component_msg;
         HgmComponent component;
+        HgmSetupView* hgmSetup;
         
         bool _cur;
         bool _wait;

@@ -50,11 +50,9 @@ namespace HgmApplication {
         void deInitTask();
 
     public:
-
+        bool isReady = false;
         bool isHGM = false;
-
         TcpControlMethod tcm = TCP_NULL;
-
         WiFiClient accept;
 
         struct _frtos {

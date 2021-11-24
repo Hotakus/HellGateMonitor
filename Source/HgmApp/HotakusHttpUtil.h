@@ -17,9 +17,10 @@ namespace HgmApplication {
 	class HotakusHttpUtil {
     private:
     public:
-        HotakusHttpUtil();
-        ~HotakusHttpUtil();
+        HotakusHttpUtil() = default;
+        ~HotakusHttpUtil() = default;
 
+        static size_t GET(HTTPClient& https, String& url, uint8_t* CAcert, uint8_t* buf, size_t bufSize, size_t timeout = (10 * 1000));
         static size_t GET(HTTPClient& httpClient, String& url, uint8_t* buf, size_t bufSize, size_t timeout = (10 * 1000));
         static size_t GET(String& url, uint8_t* buf, size_t bufSize, size_t timeout = (10 * 1000));
 	};

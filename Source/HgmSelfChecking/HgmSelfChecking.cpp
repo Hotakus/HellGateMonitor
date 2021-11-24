@@ -49,7 +49,6 @@ extern HgmBT hgmBT;
 extern TimeInfo ti;
 extern BiliInfoRecv bili;
 extern WeatherInfo weatherInfo;
-extern HgmSetupView* hgmSetup;
 
 static void err_cb(const String& err)
 {
@@ -61,11 +60,8 @@ static void err_cb(const String& err)
 
 void HGM::HgmSC::begin()
 {
-    
-
-    // component_msg.id("setup");
-    // component_msg.pData(&component);
-    // HgmFramework::getInstance()->hgmFwCenter.addMsg(&component_msg);
+    hgmSetup = new HgmSetupView();
+    hgmSetup->begin();
 
     checkBT();
     checkSpiffs();
@@ -74,21 +70,19 @@ void HGM::HgmSC::begin()
     checkBili();
     checkWeather();
 
-    // HgmFramework::getInstance()->hgmFwCenter.removeMsg(component_msg.id());
-    
+    hgmSetup->end();
+    delete hgmSetup;
 }
 
 void HGM::HgmSC::setState(HgmComponentType ct, bool cur, bool wait)
 {
-    // _cur = cur;
-    // _wait = wait;
-    // 
-    // component.type = ct;
-    // component.curStatus = _cur;
-    // component.waitStatus = _wait;
-    // hgmSetup->ctl(&component);
-    // component_msg.pData(&component);
-    // HgmFramework::getInstance()->hgmFwCenter.notify("setup", "setup");
+    _cur = cur;
+    _wait = wait;
+    
+    component.type = ct;
+    component.curStatus = _cur;
+    component.waitStatus = _wait;
+    hgmSetup->ctl(&component);
 }
 
 void HGM::HgmSC::checkBT()

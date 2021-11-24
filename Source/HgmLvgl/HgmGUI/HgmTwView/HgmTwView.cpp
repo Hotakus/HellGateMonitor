@@ -97,7 +97,7 @@ HgmTwView::~HgmTwView()
 
 static void _initTask()
 {
-    bili.initTask();
+    //bili.initTask();
     weatherInfo.initTask();
 }
 

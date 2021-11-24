@@ -18,26 +18,16 @@
 
 using namespace HgmApplication;
 
+static size_t _GET(HTTPClient& https, String& url, uint8_t* buf, size_t bufSize, bool isSecure = false, uint8_t* CAcert = nullptr);
 
-
-HotakusHttpUtil::HotakusHttpUtil()
-{
-
-}
-
-HotakusHttpUtil::~HotakusHttpUtil()
-{
-
-}
-
-static size_t _GET(HTTPClient& https, String& url, uint8_t* buf, size_t bufSize)
+static size_t _GET(HTTPClient& https, String& url, uint8_t* buf, size_t bufSize, bool isSecure, uint8_t* CAcert)
 {
     int httpCode = 0;
     WiFiClient* client = NULL;
     size_t packSize = 0;
 
     hgm_log_d(TAG, "begin...");
-    if (https.begin(url)) {
+    if (isSecure ? https.begin(url, (const char*)CAcert) : https.begin(url)) {
         httpCode = https.GET();
         if (httpCode != HTTP_CODE_OK) {
             hgm_log_e(TAG, "Sending URL(%s) request error (%d)", url.c_str(), httpCode);
@@ -87,5 +77,19 @@ size_t HotakusHttpUtil::GET(HTTPClient& https, String& url, uint8_t* buf, size_t
     https.setTimeout(timeout);
     https.setReuse(false);
     size_t ret = _GET(https, url, buf, bufSize);
+    return ret;
+}
+
+size_t HotakusHttpUtil::GET(HTTPClient& https, String& url, uint8_t* CAcert, uint8_t* buf, size_t bufSize, size_t timeout)
+{
+    if (!buf || bufSize == 0 || !CAcert) {
+        hgm_log_e(TAG, "GET failed");
+        return false;
+    }
+    https.end();
+    https.setConnectTimeout(timeout);
+    https.setTimeout(timeout);
+    https.setReuse(false);
+    size_t ret = _GET(https, url, buf, bufSize, true, CAcert);
     return ret;
 }

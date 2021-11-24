@@ -99,25 +99,30 @@ void HgmApplication::HgmTCP::deInitTask()
         vTaskDelete(frtos.tcpControlTaskHandle);
         frtos.tcpControlTaskHandle = NULL;
     }
+    instance->isReady = false;
 }
 
 
 void HgmApplication::HgmTCP::BeginServer()
 {
-    Serial.println(__func__);
+    if (!instance->isReady)
+        return;
     this->tcm = TCP_BEGIN_SERVER;
     xQueueSend(frtos.beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 void HgmApplication::HgmTCP::StopServer()
 {
-    Serial.println(__func__);
+    if (!instance->isReady)
+        return;
     this->tcm = TCP_STOP_SERVER;
     xQueueSend(frtos.beginMsgbox, &tcm, portMAX_DELAY);
 }
 
 void HgmApplication::HgmTCP::BeginClient()
 {
+    if (!instance->isReady)
+        return;
     // Serial.println(__func__);
     // tcm = TCP_BEGIN_CLIENT;
     // this->tcm = tcm;
@@ -126,6 +131,8 @@ void HgmApplication::HgmTCP::BeginClient()
 
 void HgmApplication::HgmTCP::StopClient()
 {
+    if (!instance->isReady)
+        return;
     // Serial.println(__func__);
     // tcm = TCP_STOP_CLIENT;
     // this->tcm = tcm;
@@ -314,6 +321,8 @@ static void TcpControlTask(void* params)
 {
     static TcpControlMethod methodRecv = TCP_NULL;
     static uint8_t checkTime = 20;
+
+    instance->isReady = true;
 
     while (true) {
         if (xQueueReceive(instance->frtos.beginMsgbox, &methodRecv, portMAX_DELAY) != pdPASS) {

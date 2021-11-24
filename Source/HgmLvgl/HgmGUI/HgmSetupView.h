@@ -58,8 +58,12 @@ namespace HgmGUI {
             lv_obj_t* logo;
             lv_obj_t* prevCheckLabel;
             lv_obj_t* curCheckLabel;
-            lv_style_t clStyle;
         } widget;
+
+        struct _frtos {
+            QueueHandle_t msgBox;
+            TaskHandle_t taskHandle;
+        } frtos;
 
         String prevText = "";
         String curText = "";

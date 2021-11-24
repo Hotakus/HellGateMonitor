@@ -58,6 +58,7 @@ void HgmGUI::HgmMonitor::begin()
 	HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);
 	HgmFramework::getInstance()->hgmFwCenter.subscribe(&update_subs);
 
+    hgmWiFi.hgmTcp->begin();
     hgmWiFi.OpenTCP();
 
 	def_vm.view.begin();
@@ -73,6 +74,7 @@ void HgmGUI::HgmMonitor::end()
 	def_vm.model.end();
 
     hgmWiFi.OpenTCP(false);
+    hgmWiFi.hgmTcp->stop();
 }
 
 HgmMonitorModel::monitor_data_t * HgmGUI::HgmMonitor::getData()

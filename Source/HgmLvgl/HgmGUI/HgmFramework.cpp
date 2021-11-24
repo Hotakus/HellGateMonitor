@@ -54,7 +54,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    changeGUI(hgmFwCenter.msgChain().head()->next()->name());
+    changeGUI(hgmFwCenter.msgChain().head()->next()->next()->name());
 }
 
 /**

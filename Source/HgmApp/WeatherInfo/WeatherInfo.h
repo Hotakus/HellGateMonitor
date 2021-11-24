@@ -40,7 +40,7 @@ namespace HgmApplication {
 	class WeatherInfo
 	{
 	private:
-
+        
 	public:
 
         WeatherData wdt;
