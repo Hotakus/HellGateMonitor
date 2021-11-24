@@ -32,6 +32,20 @@ LV_IMG_DECLARE(book_left);
 LV_IMG_DECLARE(book_right);
 LV_IMG_DECLARE(book_mid);
 
+LV_IMG_DECLARE(bat_100);
+LV_IMG_DECLARE(bat_75);
+LV_IMG_DECLARE(bat_50);
+LV_IMG_DECLARE(bat_25);
+LV_IMG_DECLARE(bat_10);
+LV_IMG_DECLARE(bat_null);
+
+LV_IMG_DECLARE(signal_0);
+LV_IMG_DECLARE(signal_1);
+LV_IMG_DECLARE(signal_2);
+LV_IMG_DECLARE(signal_3);
+LV_IMG_DECLARE(signal_4);
+LV_IMG_DECLARE(signal_5);
+
 LV_FONT_DECLARE(k12x8_6px);
 LV_FONT_DECLARE(k12x8_7px);
 LV_FONT_DECLARE(k12x8_8px);
@@ -97,7 +111,7 @@ HgmTwView::~HgmTwView()
 
 static void _initTask()
 {
-    //bili.initTask();
+    bili.initTask();
     weatherInfo.initTask();
 }
 
@@ -105,6 +119,33 @@ static void _deInitTask()
 {
     bili.deInitTask();
     weatherInfo.deInitTask();
+}
+
+
+static lv_timer_t* stateCheckTimer = NULL;
+static void stateCheck(lv_timer_t* timer)
+{
+    //lv_img_set_src(widget->status_bar.battery.icon, &bat_50);
+    // TODO: battery
+
+    if (!WiFi.isConnected()) {
+        lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_0);
+    } else {
+        lv_img_dsc_t* dsc;
+        int8_t rssi = WiFi.RSSI();
+        uint8_t ret = (((rssi + 100) << 1) << 1) >> 1;
+
+        if (ret < 40)
+            lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_1);
+        else if (ret < 60)
+            lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_2);
+        else if (ret < 80)
+            lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_3);
+        else if (ret < 100)
+            lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_4);
+        else if (ret >= 100)
+            lv_img_set_src(instance->widget->status_bar.signal.icon, &signal_5);
+    }
 }
 
 void HgmGUI::HgmTwView::begin()
@@ -115,14 +156,14 @@ void HgmGUI::HgmTwView::begin()
     instance->widgetCreate();
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
+    stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
 
     _initTask();
 
     vTaskDelay(500);
 }
 
-
-void HgmGUI::HgmTwView::stop()
+void HgmGUI::HgmTwView::end()
 {
     _deInitTask();
 
@@ -134,13 +175,25 @@ void HgmGUI::HgmTwView::stop()
     hotakusFree(widget);
 }
 
+void HgmGUI::HgmTwView::status_bar_create()
+{
+    // TODO: Check battery
+    widget->status_bar.battery.icon = lv_img_create(widget->weather.tw_weather);
+    lv_obj_align(widget->status_bar.battery.icon, LV_ALIGN_TOP_LEFT, 5, 5);
+    lv_img_set_src(widget->status_bar.battery.icon, &bat_null);
+
+    widget->status_bar.signal.icon = lv_img_create(widget->weather.tw_weather);
+    lv_obj_align_to(widget->status_bar.signal.icon, widget->status_bar.battery.icon, LV_ALIGN_OUT_RIGHT_TOP, 5, 0);
+    lv_img_set_src(widget->status_bar.signal.icon, &signal_0);
+}
+
 void HgmGUI::HgmTwView::widgetCreate()
 {
     timeWidgetsCreate();
     biliWidgetsCreate();
     weatherWidgetsCreate();
+    status_bar_create();
 }
-
 
 void HgmGUI::HgmTwView::frameCreate()
 {
@@ -157,7 +210,6 @@ void HgmGUI::HgmTwView::frameCreate()
     lv_imgbtn_set_src(instance->widget->bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
     lv_obj_set_width(instance->widget->bili.book, 97);
 }
-
 
 void HgmGUI::HgmTwView::animCreate()
 {

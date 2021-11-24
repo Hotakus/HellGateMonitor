@@ -26,7 +26,7 @@ namespace HgmGUI {
         void widgetDestroy();
         void frameDestroy();
 
-        
+        void status_bar_create();
     public:
         struct _widget {
             struct _biliWidget {
@@ -59,6 +59,19 @@ namespace HgmGUI {
                 } tempLabel, aqiLabel, humidityLabel;
             } weather;
 
+            struct _status_bar {
+                lv_obj_t* bg;
+                struct _bat_icon {
+                    lv_obj_t* icon;
+                    uint8_t value;  // %
+                } battery;
+
+                struct _signal_icon {
+                    lv_obj_t* icon;
+                    uint8_t value;
+                } signal;
+            } status_bar;
+
             struct _animation {
                 lv_anim_timeline_t* at;
                 lv_anim_t* anim_book = NULL;
@@ -72,7 +85,7 @@ namespace HgmGUI {
         ~HgmTwView();
 
         void begin();
-        void stop();
+        void end();
 
         static void update_bili(HgmTwModel::tw_data_t* dat);
         static void update_weather(HgmTwModel::tw_data_t* dat);

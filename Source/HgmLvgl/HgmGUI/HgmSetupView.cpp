@@ -186,7 +186,7 @@ void HgmGUI::HgmSetupView::componentInitDone()
     lv_anim_timeline_add(at, 0, &checkLabelAnim);
     lv_anim_timeline_add(at, 0, &checkLabelAnim2);
     lv_anim_timeline_add(at, 0, &logoAnim);
-    vTaskDelay(lv_anim_timeline_start(at));
+    vTaskDelay(lv_anim_timeline_start(at) + 1000);
     lv_anim_timeline_del(at);
 
     lv_anim_del(&checkLabelAnim, nullptr);

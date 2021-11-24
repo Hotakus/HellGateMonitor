@@ -59,7 +59,7 @@ void HgmGUI::HgmTw::end()
     HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&update_subs);
     HgmFramework::getInstance()->hgmFwCenter.removeMsg(update_msg.id());
 
-    def_vm.view.stop();
+    def_vm.view.end();
     def_vm.model.end();
 }
 

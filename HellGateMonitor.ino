@@ -35,9 +35,9 @@
 
 #define SCREEN_BK_PIN   32
 
-#define HGM_VERSION_INFO  "dev"
+#define HGM_VERSION_INFO  "release"
 #define HGM_VERSION_MAJOR 0
-#define HGM_VERSION_MINOR 7
+#define HGM_VERSION_MINOR 8
 #define HGM_VERSION_PATCH 0
 
 #define COMPILE_DATE __DATE__
@@ -142,6 +142,11 @@ void setup()
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
 
+    char* task_buf = (char*)hotakusAlloc(8192);
+    vTaskList(task_buf);
+    Serial.printf("%s\n", task_buf);
+    hotakusFree(task_buf);
+
     //hgmLvgl.hgmFw->changeGUI("HgmTw");
 }
 
@@ -149,10 +154,7 @@ void loop()
 {
     Serial.printf("[%d] free mem : %d\n", uxTaskGetNumberOfTasks(),
         heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    char* task_buf = (char*)hotakusAlloc(8192);
-    vTaskList(task_buf);
-    Serial.printf("%s\n", task_buf);
-    hotakusFree(task_buf);
+    
 
     // vTaskDelay(10 * 60 * 1000);
     vTaskDelay(2000);
