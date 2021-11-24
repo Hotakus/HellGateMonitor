@@ -66,7 +66,7 @@ namespace HgmGUI {
                 lv_anim_t* anim_w = NULL;
                 lv_anim_t* anim_tw_expand = NULL;
             } anim;
-        } widget;
+        } *widget;
         
         HgmTwView();
         ~HgmTwView();

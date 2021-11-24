@@ -12,30 +12,14 @@
 
 #include <Arduino.h>
 
-namespace HgmApplication {
-
-    class HotakusMem
-    {
-    private:
-    public:
-        HotakusMem();
-        ~HotakusMem();
-
-        static void* alloc(size_t size);
-        static void* realloc(void* ptr, size_t size);
-        static void free(void* ptr);
-
-    };
-}
-
-
+void* hotakusAlloc(size_t size);
+void* hotakusRealloc(void* ptr, size_t size);
+void hotakusFree(void* ptr);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-    void* hotakusAlloc(size_t size);
-    void* hotakusRealloc(void* ptr, size_t size);
-    void hotakusFree(void* ptr);
+    
 #ifdef __cplusplus
 }
 #endif // __cplusplus

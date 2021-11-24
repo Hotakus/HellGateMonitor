@@ -20,17 +20,17 @@ namespace HgmApplication {
 		struct HotakusDefaultAllocator {
 			void *allocate(size_t size)
 			{
-				return HotakusMem::alloc(size);
+				return hotakusAlloc(size);
 			}
 
 			void deallocate(void *ptr)
 			{
-				HotakusMem::free(ptr);
+				hotakusFree(ptr);
 			}
 
 			void *reallocate(void *ptr, size_t new_size)
 			{
-				return HotakusMem::realloc(ptr, new_size);
+				return hotakusRealloc(ptr, new_size);
 			}
 		};
 		typedef BasicJsonDocument <HotakusDefaultAllocator> HotakusDynamicJsonDocument;

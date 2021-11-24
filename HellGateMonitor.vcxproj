@@ -94,8 +94,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc;D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc\lvgl;D:\WorkSpace\Arduino\HellGateMonitor\Source;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>D:\WorkSpace\Arduino\HellGateMonitor\Source;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc;D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc\lvgl;D:\WorkSpace\Arduino\HellGateMonitor\Source;D:\WorkSpace\Arduino\HellGateMonitor\Source\HgmApp;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>D:\WorkSpace\Arduino\HellGateMonitor\Source;D:\WorkSpace\Arduino\HellGateMonitor\Source\HgmApp;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc;D:\WorkSpace\Arduino\HellGateMonitor\Source\LvglSrc\lvgl;$(IncludePath)</IncludePath>

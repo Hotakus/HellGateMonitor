@@ -109,6 +109,7 @@ static void _deInitTask()
 
 void HgmGUI::HgmTwView::begin()
 {
+    widget = (_widget*)hotakusAlloc(sizeof(_widget));
     instance->frameCreate();
     instance->animCreate();
     instance->widgetCreate();
@@ -130,7 +131,7 @@ void HgmGUI::HgmTwView::stop()
     instance->widgetDestroy();
     instance->animDestroy();
     instance->frameDestroy();
-
+    hotakusFree(widget);
 }
 
 void HgmGUI::HgmTwView::widgetCreate()
@@ -143,181 +144,181 @@ void HgmGUI::HgmTwView::widgetCreate()
 
 void HgmGUI::HgmTwView::frameCreate()
 {
-    instance->widget.time.tw_time = lv_img_create(lv_scr_act());
-    lv_obj_align(instance->widget.time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
-    lv_img_set_src(instance->widget.time.tw_time, &tw_t);
+    instance->widget->time.tw_time = lv_img_create(lv_scr_act());
+    lv_obj_align(instance->widget->time.tw_time, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(instance->widget->time.tw_time, &tw_t);
 
-    instance->widget.weather.tw_weather = lv_img_create(lv_scr_act());
-    lv_obj_align(instance->widget.weather.tw_weather, LV_ALIGN_TOP_LEFT, -132, 6);
-    lv_img_set_src(instance->widget.weather.tw_weather, &tw_w);
+    instance->widget->weather.tw_weather = lv_img_create(lv_scr_act());
+    lv_obj_align(instance->widget->weather.tw_weather, LV_ALIGN_TOP_LEFT, -132, 6);
+    lv_img_set_src(instance->widget->weather.tw_weather, &tw_w);
 
-    instance->widget.bili.book = lv_imgbtn_create(lv_scr_act());
-    lv_obj_align(instance->widget.bili.book, LV_ALIGN_LEFT_MID, -97, 0);
-    lv_imgbtn_set_src(instance->widget.bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
-    lv_obj_set_width(instance->widget.bili.book, 97);
+    instance->widget->bili.book = lv_imgbtn_create(lv_scr_act());
+    lv_obj_align(instance->widget->bili.book, LV_ALIGN_LEFT_MID, -97, 0);
+    lv_imgbtn_set_src(instance->widget->bili.book, LV_IMGBTN_STATE_RELEASED, &book_left, &book_mid, &book_right);
+    lv_obj_set_width(instance->widget->bili.book, 97);
 }
 
 
 void HgmGUI::HgmTwView::animCreate()
 {
     /* Animations */
-    instance->widget.anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    instance->widget.anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    instance->widget.anim.anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    instance->widget.anim.anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget->anim.anim_book = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget->anim.anim_t = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget->anim.anim_w = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    instance->widget->anim.anim_tw_expand = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
 
-    lv_anim_init(instance->widget.anim.anim_book);
-    lv_anim_set_var(instance->widget.anim.anim_book, instance->widget.bili.book);
-    lv_anim_set_values(instance->widget.anim.anim_book, -97, 2);
-    lv_anim_set_early_apply(instance->widget.anim.anim_book, false);
-    lv_anim_set_exec_cb(instance->widget.anim.anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(instance->widget.anim.anim_book, lv_anim_path_ease_in_out);
-    lv_anim_set_time(instance->widget.anim.anim_book, 900);
+    lv_anim_init(instance->widget->anim.anim_book);
+    lv_anim_set_var(instance->widget->anim.anim_book, instance->widget->bili.book);
+    lv_anim_set_values(instance->widget->anim.anim_book, -97, 2);
+    lv_anim_set_early_apply(instance->widget->anim.anim_book, false);
+    lv_anim_set_exec_cb(instance->widget->anim.anim_book, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget->anim.anim_book, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget->anim.anim_book, 900);
 
     // anim_tw
-    lv_anim_init(instance->widget.anim.anim_t);
-    lv_anim_set_var(instance->widget.anim.anim_t, instance->widget.time.tw_time);
-    lv_anim_set_values(instance->widget.anim.anim_t, -132, 103);
-    lv_anim_set_exec_cb(instance->widget.anim.anim_t, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(instance->widget.anim.anim_t, lv_anim_path_ease_in_out);
-    lv_anim_set_time(instance->widget.anim.anim_t, 1000);
+    lv_anim_init(instance->widget->anim.anim_t);
+    lv_anim_set_var(instance->widget->anim.anim_t, instance->widget->time.tw_time);
+    lv_anim_set_values(instance->widget->anim.anim_t, -132, 103);
+    lv_anim_set_exec_cb(instance->widget->anim.anim_t, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget->anim.anim_t, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget->anim.anim_t, 1000);
 
-    lv_anim_init(instance->widget.anim.anim_w);
-    lv_anim_set_var(instance->widget.anim.anim_w, instance->widget.weather.tw_weather);
-    lv_anim_set_values(instance->widget.anim.anim_w, -132, 104);
-    lv_anim_set_exec_cb(instance->widget.anim.anim_w, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(instance->widget.anim.anim_w, lv_anim_path_ease_in_out);
-    lv_anim_set_time(instance->widget.anim.anim_w, 1000);
+    lv_anim_init(instance->widget->anim.anim_w);
+    lv_anim_set_var(instance->widget->anim.anim_w, instance->widget->weather.tw_weather);
+    lv_anim_set_values(instance->widget->anim.anim_w, -132, 104);
+    lv_anim_set_exec_cb(instance->widget->anim.anim_w, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(instance->widget->anim.anim_w, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget->anim.anim_w, 1000);
 
-    lv_anim_init(instance->widget.anim.anim_tw_expand);
-    lv_anim_set_var(instance->widget.anim.anim_tw_expand, instance->widget.weather.tw_weather);
-    lv_anim_set_values(instance->widget.anim.anim_tw_expand, 6, 63);
-    lv_anim_set_exec_cb(instance->widget.anim.anim_tw_expand, (lv_anim_exec_xcb_t)lv_obj_set_y);
-    lv_anim_set_path_cb(instance->widget.anim.anim_tw_expand, lv_anim_path_ease_in_out);
-    lv_anim_set_time(instance->widget.anim.anim_tw_expand, 500);
+    lv_anim_init(instance->widget->anim.anim_tw_expand);
+    lv_anim_set_var(instance->widget->anim.anim_tw_expand, instance->widget->weather.tw_weather);
+    lv_anim_set_values(instance->widget->anim.anim_tw_expand, 6, 63);
+    lv_anim_set_exec_cb(instance->widget->anim.anim_tw_expand, (lv_anim_exec_xcb_t)lv_obj_set_y);
+    lv_anim_set_path_cb(instance->widget->anim.anim_tw_expand, lv_anim_path_ease_in_out);
+    lv_anim_set_time(instance->widget->anim.anim_tw_expand, 500);
 
     // anim time line
-    instance->widget.anim.at = lv_anim_timeline_create();
-    lv_anim_timeline_add(instance->widget.anim.at, 0, instance->widget.anim.anim_book);
-    lv_anim_timeline_add(instance->widget.anim.at, 800, instance->widget.anim.anim_t);
-    lv_anim_timeline_add(instance->widget.anim.at, 800, instance->widget.anim.anim_w);
-    lv_anim_timeline_add(instance->widget.anim.at, 1800, instance->widget.anim.anim_tw_expand);
-    vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
+    instance->widget->anim.at = lv_anim_timeline_create();
+    lv_anim_timeline_add(instance->widget->anim.at, 0, instance->widget->anim.anim_book);
+    lv_anim_timeline_add(instance->widget->anim.at, 800, instance->widget->anim.anim_t);
+    lv_anim_timeline_add(instance->widget->anim.at, 800, instance->widget->anim.anim_w);
+    lv_anim_timeline_add(instance->widget->anim.at, 1800, instance->widget->anim.anim_tw_expand);
+    vTaskDelay(lv_anim_timeline_start(instance->widget->anim.at));
 }
 
 void HgmTwView::animDestroy()
 {
-    lv_anim_timeline_set_reverse(instance->widget.anim.at, true);
-    vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
+    lv_anim_timeline_set_reverse(instance->widget->anim.at, true);
+    vTaskDelay(lv_anim_timeline_start(instance->widget->anim.at));
 
-    lv_anim_timeline_del(instance->widget.anim.at);
-    lv_anim_del(instance->widget.anim.anim_book     , NULL);
-    lv_anim_del(instance->widget.anim.anim_t        , NULL);
-    lv_anim_del(instance->widget.anim.anim_w        , NULL);
-    lv_anim_del(instance->widget.anim.anim_tw_expand, NULL);
+    lv_anim_timeline_del(instance->widget->anim.at);
+    lv_anim_del(instance->widget->anim.anim_book     , NULL);
+    lv_anim_del(instance->widget->anim.anim_t        , NULL);
+    lv_anim_del(instance->widget->anim.anim_w        , NULL);
+    lv_anim_del(instance->widget->anim.anim_tw_expand, NULL);
 
-    lv_mem_free(instance->widget.anim.anim_book);
-    lv_mem_free(instance->widget.anim.anim_t);
-    lv_mem_free(instance->widget.anim.anim_w);
-    lv_mem_free(instance->widget.anim.anim_tw_expand);
+    lv_mem_free(instance->widget->anim.anim_book);
+    lv_mem_free(instance->widget->anim.anim_t);
+    lv_mem_free(instance->widget->anim.anim_w);
+    lv_mem_free(instance->widget->anim.anim_tw_expand);
 }
 
 void HgmTwView::widgetDestroy()
 {
-    hotakusFree(instance->widget.weather.icon_buf);
+    hotakusFree(instance->widget->weather.icon_buf);
 }
 
 void HgmTwView::frameDestroy()
 {
-    lv_obj_del(instance->widget.time.tw_time);
-    lv_obj_del(instance->widget.weather.tw_weather);
-    lv_obj_del(instance->widget.bili.book);
+    lv_obj_del(instance->widget->time.tw_time);
+    lv_obj_del(instance->widget->weather.tw_weather);
+    lv_obj_del(instance->widget->bili.book);
 }
 
 static void timeWidgetsCreate()
 {
-    instance->widget.time.main_time_label = lv_label_create(instance->widget.time.tw_time);
-    lv_label_set_recolor(instance->widget.time.main_time_label, true);
-    lv_label_set_text(instance->widget.time.main_time_label, "#59493f --:--#");
-    lv_obj_align(instance->widget.time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
-    lv_obj_set_style_text_font(instance->widget.time.main_time_label, &k12x8_14px_time, 0);
+    instance->widget->time.main_time_label = lv_label_create(instance->widget->time.tw_time);
+    lv_label_set_recolor(instance->widget->time.main_time_label, true);
+    lv_label_set_text(instance->widget->time.main_time_label, "#59493f --:--#");
+    lv_obj_align(instance->widget->time.main_time_label, LV_ALIGN_TOP_RIGHT, -3, 10);
+    lv_obj_set_style_text_font(instance->widget->time.main_time_label, &k12x8_14px_time, 0);
 
-    instance->widget.time.date_label = lv_label_create(instance->widget.time.tw_time);
-    lv_label_set_recolor(instance->widget.time.date_label, true);
-    lv_label_set_text(instance->widget.time.date_label, "#59493f 1970.01.01 ---#");
-    lv_obj_align(instance->widget.time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
-    lv_obj_set_style_text_font(instance->widget.time.date_label, &k12x8_6px, 0);
+    instance->widget->time.date_label = lv_label_create(instance->widget->time.tw_time);
+    lv_label_set_recolor(instance->widget->time.date_label, true);
+    lv_label_set_text(instance->widget->time.date_label, "#59493f 1970.01.01 ---#");
+    lv_obj_align(instance->widget->time.date_label, LV_ALIGN_BOTTOM_RIGHT, -8, -5);
+    lv_obj_set_style_text_font(instance->widget->time.date_label, &k12x8_6px, 0);
 
     // clock image
-    instance->widget.time.clock_img = lv_img_create(instance->widget.time.tw_time);
-    lv_obj_align(instance->widget.time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
+    instance->widget->time.clock_img = lv_img_create(instance->widget->time.tw_time);
+    lv_obj_align(instance->widget->time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
 }
 
 static void biliWidgetsCreate()
 {
     // Face
-    instance->widget.bili.face_dsc.header.always_zero = 0;
-    instance->widget.bili.face_dsc.header.w = 64;
-    instance->widget.bili.face_dsc.header.h = 64;
-    instance->widget.bili.face_dsc.data_size = 4096 * 2;
-    instance->widget.bili.face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-    instance->widget.bili.face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
-    instance->widget.bili.faceImg = lv_img_create(instance->widget.bili.book);
-    lv_img_set_src(instance->widget.bili.faceImg, &instance->widget.bili.face_dsc);
-    lv_obj_align(instance->widget.bili.faceImg, LV_ALIGN_TOP_MID, 0, 10);
-    lv_obj_set_size(instance->widget.bili.faceImg, 64, 64);
+    instance->widget->bili.face_dsc.header.always_zero = 0;
+    instance->widget->bili.face_dsc.header.w = 64;
+    instance->widget->bili.face_dsc.header.h = 64;
+    instance->widget->bili.face_dsc.data_size = 4096 * 2;
+    instance->widget->bili.face_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+    instance->widget->bili.face_dsc.data = (uint8_t*)BiliInfoRecv::getUserFaceBitmap();
+    instance->widget->bili.faceImg = lv_img_create(instance->widget->bili.book);
+    lv_img_set_src(instance->widget->bili.faceImg, &instance->widget->bili.face_dsc);
+    lv_obj_align(instance->widget->bili.faceImg, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_set_size(instance->widget->bili.faceImg, 64, 64);
 
     // Bili label
-    instance->widget.bili.biliName = lv_label_create(instance->widget.bili.book);
-    lv_obj_set_style_text_font(instance->widget.bili.biliName, &k12x8_10px, 0);
-    lv_obj_set_width(instance->widget.bili.biliName, 85);
-    lv_label_set_recolor(instance->widget.bili.biliName, true);
-    lv_label_set_long_mode(instance->widget.bili.biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", "------");
-    lv_obj_set_style_text_align(instance->widget.bili.biliName, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(instance->widget.bili.biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
+    instance->widget->bili.biliName = lv_label_create(instance->widget->bili.book);
+    lv_obj_set_style_text_font(instance->widget->bili.biliName, &k12x8_10px, 0);
+    lv_obj_set_width(instance->widget->bili.biliName, 85);
+    lv_label_set_recolor(instance->widget->bili.biliName, true);
+    lv_label_set_long_mode(instance->widget->bili.biliName, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", "------");
+    lv_obj_set_style_text_align(instance->widget->bili.biliName, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(instance->widget->bili.biliName, LV_ALIGN_BOTTOM_MID, 0, -35);
 
-    instance->widget.bili.biliFans = lv_label_create(instance->widget.bili.book);
-    lv_label_set_recolor(instance->widget.bili.biliFans, true);
-    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %s#", "------");
-    lv_obj_set_style_text_align(instance->widget.bili.biliFans, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(instance->widget.bili.biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
-    lv_obj_set_style_text_font(instance->widget.bili.biliFans, &k12x8_6px, 0);
+    instance->widget->bili.biliFans = lv_label_create(instance->widget->bili.book);
+    lv_label_set_recolor(instance->widget->bili.biliFans, true);
+    lv_label_set_text_fmt(instance->widget->bili.biliFans, "#59493f %s#", "------");
+    lv_obj_set_style_text_align(instance->widget->bili.biliFans, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(instance->widget->bili.biliFans, LV_ALIGN_BOTTOM_MID, 0, -20);
+    lv_obj_set_style_text_font(instance->widget->bili.biliFans, &k12x8_6px, 0);
 }
 
 static void weatherWidgetsCreate()
 {
-    instance->widget.weather.tempLabel.label = lv_label_create(instance->widget.weather.tw_weather);
-    lv_obj_set_style_opa(instance->widget.weather.tempLabel.label, LV_OPA_0, 0);
-    lv_obj_align(instance->widget.weather.tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
-    lv_obj_set_style_text_font(instance->widget.weather.tempLabel.label, &k12x8_7px, 0);
-    lv_label_set_recolor(instance->widget.weather.tempLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:---℃#");
-    lv_obj_set_style_text_align(instance->widget.weather.tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    instance->widget->weather.tempLabel.label = lv_label_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget->weather.tempLabel.label, LV_OPA_0, 0);
+    lv_obj_align(instance->widget->weather.tempLabel.label, LV_ALIGN_RIGHT_MID, -3, -8);
+    lv_obj_set_style_text_font(instance->widget->weather.tempLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(instance->widget->weather.tempLabel.label, true);
+    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:---℃#");
+    lv_obj_set_style_text_align(instance->widget->weather.tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
 
-    instance->widget.weather.aqiLabel.label = lv_label_create(instance->widget.weather.tw_weather);
-    lv_obj_set_style_opa(instance->widget.weather.aqiLabel.label, LV_OPA_0, 0);
-    lv_obj_align_to(instance->widget.weather.aqiLabel.label, instance->widget.weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
-    lv_obj_set_style_text_font(instance->widget.weather.aqiLabel.label, &k12x8_7px, 0);
-    lv_label_set_recolor(instance->widget.weather.aqiLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI:---#");
-    lv_obj_set_style_text_align(instance->widget.weather.aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    instance->widget->weather.aqiLabel.label = lv_label_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget->weather.aqiLabel.label, LV_OPA_0, 0);
+    lv_obj_align_to(instance->widget->weather.aqiLabel.label, instance->widget->weather.tempLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+    lv_obj_set_style_text_font(instance->widget->weather.aqiLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(instance->widget->weather.aqiLabel.label, true);
+    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI:---#");
+    lv_obj_set_style_text_align(instance->widget->weather.aqiLabel.label, LV_TEXT_ALIGN_CENTER, 0);
 
-    instance->widget.weather.humidityLabel.label = lv_label_create(instance->widget.weather.tw_weather);
-    lv_obj_set_style_opa(instance->widget.weather.humidityLabel.label, LV_OPA_0, 0);
-    lv_obj_align_to(instance->widget.weather.humidityLabel.label, instance->widget.weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
-    lv_obj_set_style_text_font(instance->widget.weather.humidityLabel.label, &k12x8_7px, 0);
-    lv_label_set_recolor(instance->widget.weather.humidityLabel.label, true);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH :---%%#");
-    lv_obj_set_style_text_align(instance->widget.weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
+    instance->widget->weather.humidityLabel.label = lv_label_create(instance->widget->weather.tw_weather);
+    lv_obj_set_style_opa(instance->widget->weather.humidityLabel.label, LV_OPA_0, 0);
+    lv_obj_align_to(instance->widget->weather.humidityLabel.label, instance->widget->weather.aqiLabel.label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
+    lv_obj_set_style_text_font(instance->widget->weather.humidityLabel.label, &k12x8_7px, 0);
+    lv_label_set_recolor(instance->widget->weather.humidityLabel.label, true);
+    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f RH :---%%#");
+    lv_obj_set_style_text_align(instance->widget->weather.humidityLabel.label, LV_TEXT_ALIGN_CENTER, 0);
 
-    lv_obj_set_style_opa(instance->widget.weather.tempLabel.label, LV_OPA_100, 0);
-    lv_obj_set_style_opa(instance->widget.weather.aqiLabel.label, LV_OPA_100, 0);
-    lv_obj_set_style_opa(instance->widget.weather.humidityLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget->weather.tempLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget->weather.aqiLabel.label, LV_OPA_100, 0);
+    lv_obj_set_style_opa(instance->widget->weather.humidityLabel.label, LV_OPA_100, 0);
 
-    instance->widget.weather.icon = lv_img_create(instance->widget.weather.tw_weather);
-    lv_obj_align(instance->widget.weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
-    instance->widget.weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
+    instance->widget->weather.icon = lv_img_create(instance->widget->weather.tw_weather);
+    lv_obj_align(instance->widget->weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
+    instance->widget->weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
 }
 
 static uint8_t _digitOfNumber(int num)
@@ -383,60 +384,60 @@ static void ShowTime(lv_timer_t* timer)
     String text2 = "#59493f %02d %02d#";
 
     if (secIndicator) {
-        lv_label_set_text_fmt(instance->widget.time.main_time_label, text1.c_str(), _tm.tm_hour, _tm.tm_min);
+        lv_label_set_text_fmt(instance->widget->time.main_time_label, text1.c_str(), _tm.tm_hour, _tm.tm_min);
         secIndicator = false;
     } else {
-        lv_label_set_text_fmt(instance->widget.time.main_time_label, text2.c_str(), _tm.tm_hour, _tm.tm_min);
+        lv_label_set_text_fmt(instance->widget->time.main_time_label, text2.c_str(), _tm.tm_hour, _tm.tm_min);
         secIndicator = true;
     }
 
-    lv_label_set_text_fmt(instance->widget.time.date_label, "#59493f %04d.%02d.%02d %s#",
+    lv_label_set_text_fmt(instance->widget->time.date_label, "#59493f %04d.%02d.%02d %s#",
         _tm.tm_year + 1900,
         _tm.tm_mon + 1,
         _tm.tm_mday,
         wd[_tm.tm_wday]
     );
 
-    lv_img_set_src(instance->widget.time.clock_img, clock_imgs_array[_tm.tm_hour / 2]);
+    lv_img_set_src(instance->widget->time.clock_img, clock_imgs_array[_tm.tm_hour / 2]);
 }
 
 
 void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
 {
     if (dat->bd.ufb) {
-        instance->widget.bili.face_dsc.data = dat->bd.ufb;
-        lv_img_set_src(instance->widget.bili.faceImg, &instance->widget.bili.face_dsc);
+        instance->widget->bili.face_dsc.data = dat->bd.ufb;
+        lv_img_set_src(instance->widget->bili.faceImg, &instance->widget->bili.face_dsc);
     }
 
     if (CheckNoEn(dat->bd.bn)) {
-        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", dat->bd.uid.c_str());
+        lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", dat->bd.uid.c_str());
     } else {
-        lv_label_set_text_fmt(instance->widget.bili.biliName, "#59493f %s#", dat->bd.bn.c_str());
+        lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", dat->bd.bn.c_str());
     }
-    lv_label_set_text_fmt(instance->widget.bili.biliFans, "#59493f %s#", _numWithUnit(dat->bd.fans).c_str());
+    lv_label_set_text_fmt(instance->widget->bili.biliFans, "#59493f %s#", _numWithUnit(dat->bd.fans).c_str());
 }
 
 void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
 {
     Serial.println(dat->wd.temp);
     if (dat->wd.temp >= 0)
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", dat->wd.temp);
+        lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:%s%02d℃#", " ", dat->wd.temp);
     else
-        lv_label_set_text_fmt(instance->widget.weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", dat->wd.temp);
+        lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f Now:%s%02d℃#", "-", dat->wd.temp);
 
-    lv_label_set_text_fmt(instance->widget.weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
-    lv_label_set_text_fmt(instance->widget.weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
+    lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI: %02d#", dat->wd.aqi);
+    lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f RH : %02d%%#", dat->wd.rh);
 
     String path = String("/") + String("w_") + String(dat->wd.icon) + String(".png");
-    size_t icon_size = Sfu::read(path, instance->widget.weather.icon_buf);
+    size_t icon_size = Sfu::read(path, instance->widget->weather.icon_buf);
 
-    instance->widget.weather.icon_dsc.data_size = icon_size;
-    instance->widget.weather.icon_dsc.header.always_zero = 0;
-    instance->widget.weather.icon_dsc.header.w = 40;
-    instance->widget.weather.icon_dsc.header.h = 40;
-    instance->widget.weather.icon_dsc.header.cf = LV_IMG_CF_RAW_ALPHA;
-    instance->widget.weather.icon_dsc.data = instance->widget.weather.icon_buf;
-    lv_img_set_src(instance->widget.weather.icon, &instance->widget.weather.icon_dsc);
+    instance->widget->weather.icon_dsc.data_size = icon_size;
+    instance->widget->weather.icon_dsc.header.always_zero = 0;
+    instance->widget->weather.icon_dsc.header.w = 40;
+    instance->widget->weather.icon_dsc.header.h = 40;
+    instance->widget->weather.icon_dsc.header.cf = LV_IMG_CF_RAW_ALPHA;
+    instance->widget->weather.icon_dsc.data = instance->widget->weather.icon_buf;
+    lv_img_set_src(instance->widget->weather.icon, &instance->widget->weather.icon_dsc);
 }
 
 void HgmGUI::HgmTwView::update_time(HgmTwModel::tw_data_t* dat)

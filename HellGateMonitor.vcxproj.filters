@@ -1270,15 +1270,6 @@
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_fs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_10.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1325,6 +1316,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\signal_5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
