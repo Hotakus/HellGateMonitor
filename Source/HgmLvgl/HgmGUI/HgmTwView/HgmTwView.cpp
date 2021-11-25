@@ -272,7 +272,7 @@ void HgmTwView::animDestroy()
     lv_anim_t fa;
     lv_anim_init(&fa);
     lv_anim_set_values(&fa, LV_OPA_100, LV_OPA_0);
-    lv_anim_set_time(&fa, 500);
+    lv_anim_set_time(&fa, 300);
     lv_anim_set_exec_cb(&fa, (lv_anim_exec_xcb_t)fade);
     lv_anim_set_path_cb(&fa, lv_anim_path_ease_in_out);
     

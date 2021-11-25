@@ -438,6 +438,10 @@
     <ClCompile Include="Source\LvglSrc\Assets\clock_img\clock_62.c" />
     <ClCompile Include="Source\LvglSrc\Assets\clock_img\clock_63.c" />
     <ClCompile Include="Source\LvglSrc\Assets\clock_img\clock_64.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\font\black_10px.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\font\black_8px.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\font\fangpx_10px.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\font\fangpx_12px.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_10.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_100.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_25.c" />

@@ -64,7 +64,6 @@ void HgmGUI::HgmFramework::begin()
  */
 bool HgmGUI::HgmFramework::changeGUI(String name)
 {
-
     hgm_log_d(TAG, "Change to %s", name.c_str());
 
     msg_t* msg = nullptr;

@@ -35,10 +35,10 @@
 
 #define SCREEN_BK_PIN   32
 
-#define HGM_VERSION_INFO  "release"
+#define HGM_VERSION_INFO  "dev"
 #define HGM_VERSION_MAJOR 0
 #define HGM_VERSION_MINOR 8
-#define HGM_VERSION_PATCH 0
+#define HGM_VERSION_PATCH 1
 
 #define COMPILE_DATE __DATE__
 #define COMPILE_TIME __TIME__
