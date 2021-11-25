@@ -87,8 +87,7 @@ void HgmMonitor::monitor_ui_cb(msg_t* msg)
 	HgmFramework::gui_data_t* gd = ((HgmFramework::gui_data_t*)msg->pData());
 	HgmFramework::CTL_t ctl = gd->ctl;
 
-	switch (ctl)
-	{
+	switch (ctl) {
 		case HgmFramework::BEGIN: {
 			instance->begin();
 			break;

@@ -21,7 +21,7 @@ namespace HgmGUI {
         void frameCreate();
         void widgetCreate();
         void animCreate();
-        
+
         void animDestroy();
         void widgetDestroy();
         void frameDestroy();
@@ -75,13 +75,13 @@ namespace HgmGUI {
 
             struct _animation {
                 lv_anim_timeline_t* at;
-                lv_anim_t* anim_book = NULL;
-                lv_anim_t* anim_t = NULL;
-                lv_anim_t* anim_w = NULL;
-                lv_anim_t* anim_tw_expand = NULL;
+                lv_anim_t anim_book;
+                lv_anim_t anim_t;
+                lv_anim_t anim_w;
+                lv_anim_t anim_tw_expand;
             } anim;
         } *widget;
-        
+
         HgmTwView();
         ~HgmTwView();
 

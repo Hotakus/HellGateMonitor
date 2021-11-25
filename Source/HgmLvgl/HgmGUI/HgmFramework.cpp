@@ -54,7 +54,7 @@ HgmFramework::~HgmFramework()
  */
 void HgmGUI::HgmFramework::begin()
 {
-    changeGUI(hgmFwCenter.msgChain().head()->next()->next()->name());
+    changeGUI("HgmTw");
 }
 
 /**
@@ -78,7 +78,7 @@ bool HgmGUI::HgmFramework::changeGUI(String name)
         _gd.ctl = END;
         msg->pData(&_gd);
         ret = hgmFwCenter.notify(curr, curr);
-        if (ret) return false;
+        if (!ret) return ret;
         prev = curr;
     }
 

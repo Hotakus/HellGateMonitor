@@ -41,7 +41,7 @@ namespace HgmApplication {
             size_t userFaceImgBufSize = 0;
             uint8_t* userFaceImgBuf = NULL;   // default 64 x 64 jpg format
             uint16_t* userFaceBitmap = NULL;  // Bitmap that was decoded.
-        } *info;
+        } info;
 
         HgmTwModel::bili_dat_t bd;
 

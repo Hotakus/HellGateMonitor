@@ -9,6 +9,8 @@
 *******************************************************************/
 #include "HotakusMemUtil.h"
 
+static uint32_t alloc_size = 0;
+
 void* hotakusAlloc(size_t size)
 {
     return heap_caps_calloc(1, size, MALLOC_CAP_SPIRAM);
