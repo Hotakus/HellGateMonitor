@@ -200,14 +200,20 @@ static void WeatherCheckTask(void* params)
         while (!WiFi.isConnected())
             vTaskDelay(1000);
 
-        xSemaphoreTake(wbs, portMAX_DELAY);
-        WeatherInfo::getWeather();
-        xSemaphoreGive(wbs);
-
         String str = String("HgmTwUpdate");
         MsgCenter* mc = &HgmFramework::getInstance()->hgmFwCenter;
         msg_t* msg = mc->findMsg(str);
         HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
+
+        xSemaphoreTake(wbs, portMAX_DELAY);
+        tw_data->tdt = HgmTwModel::CONTROLLABLE;
+        tw_data->controllable = false;
+        mc->notify(str, str);
+        WeatherInfo::getWeather();
+        tw_data->tdt = HgmTwModel::CONTROLLABLE;
+        tw_data->controllable = true;
+        mc->notify(str, str);
+        xSemaphoreGive(wbs);
 
         tw_data->tdt = HgmTwModel::WEATHER;
         tw_data->wd.aqi = weatherInfo.wdt.aqi;
