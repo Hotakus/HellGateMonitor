@@ -55,6 +55,7 @@ HgmFramework::~HgmFramework()
 void HgmGUI::HgmFramework::begin()
 {
     changeGUI("HgmTw");
+    //changeGUI("HgmMonitor");
 }
 
 /**

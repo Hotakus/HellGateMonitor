@@ -467,6 +467,10 @@
     <ClCompile Include="Source\LvglSrc\Assets\img\book_mid.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\book_right.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\mem_icon.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_pr.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_rel.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\img\prev_pr.c" />
+    <ClCompile Include="Source\LvglSrc\Assets\img\prev_rel.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\signal_0.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\signal_1.c" />
     <ClCompile Include="Source\LvglSrc\Assets\img\signal_2.c" />

@@ -71,6 +71,11 @@ LV_IMG_DECLARE(clock_49)
 LV_IMG_DECLARE(clock_54)
 LV_IMG_DECLARE(clock_60)
 
+LV_IMG_DECLARE(next_pr)
+LV_IMG_DECLARE(next_rel)
+LV_IMG_DECLARE(prev_pr)
+LV_IMG_DECLARE(prev_rel)
+
 static const lv_img_dsc_t* clock_imgs_array[] = {
     // 24:00
     &clock_32,
@@ -297,7 +302,8 @@ void HgmTwView::animDestroy()
     lv_anim_start(&fa);
     lv_anim_set_var(&fa, instance->widget->status_bar.battery.icon);
     lv_anim_start(&fa);
-    
+    vTaskDelay(300);
+
     // time
     lv_anim_set_var(&fa, instance->widget->time.date_label);
     lv_anim_start(&fa);
@@ -305,7 +311,8 @@ void HgmTwView::animDestroy()
     lv_anim_start(&fa);
     lv_anim_set_var(&fa, instance->widget->time.clock_img);
     lv_anim_start(&fa);
-    
+    vTaskDelay(300);
+
     // bilibili
     lv_anim_set_var(&fa, instance->widget->bili.faceImg);
     lv_anim_start(&fa);
@@ -373,6 +380,27 @@ static void biliWidgetsCreate()
     lv_obj_align(instance->widget->bili.faceImg, LV_ALIGN_TOP_MID, 0, 10);
     lv_obj_set_size(instance->widget->bili.faceImg, 64, 64);
 
+    lv_style_init(&instance->widget->style_pr);
+    lv_style_set_img_recolor_opa(&instance->widget->style_pr, LV_OPA_30);
+    lv_style_set_img_recolor(&instance->widget->style_pr, lv_color_black());
+    instance->widget->next_btn = lv_imgbtn_create(instance->widget->bili.book);
+    lv_obj_set_size(instance->widget->next_btn, 15, 8);
+    lv_obj_add_style(instance->widget->next_btn, &instance->widget->style_pr, LV_STATE_PRESSED);
+    lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_PRESSED, &next_pr, 0, 0);
+    lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_RELEASED, &next_rel, 0, 0);
+    lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &next_pr, 0, 0);
+    lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &next_pr, 0, 0);
+    lv_obj_align(instance->widget->next_btn, LV_ALIGN_BOTTOM_RIGHT, -15, -10);
+
+    instance->widget->prev_btn = lv_imgbtn_create(instance->widget->bili.book);
+    lv_obj_set_size(instance->widget->prev_btn, 15, 8);
+    lv_obj_add_style(instance->widget->prev_btn, &instance->widget->style_pr, LV_STATE_PRESSED);
+    lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_PRESSED, &prev_pr, 0, 0);
+    lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_RELEASED, &prev_rel, 0, 0);
+    lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &prev_pr, 0, 0);
+    lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &prev_pr, 0, 0);
+    lv_obj_align(instance->widget->prev_btn, LV_ALIGN_BOTTOM_LEFT, 15, -10);
+
     // Bili label
     instance->widget->bili.biliName = lv_label_create(instance->widget->bili.book);
     lv_obj_set_style_opa(instance->widget->bili.biliName, LV_OPA_0, 0);
@@ -414,8 +442,8 @@ static void weatherWidgetsCreate()
     lv_obj_set_style_text_font(instance->widget->weather.tempLabel.label, &k12x8_7px, 0);
     lv_label_set_recolor(instance->widget->weather.tempLabel.label, true);
     lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f --℃#");
-    lv_obj_set_style_text_align(instance->widget->weather.tempLabel.label, LV_TEXT_ALIGN_CENTER, 0);
-    lv_obj_align(instance->widget->weather.tempLabel.label, LV_ALIGN_TOP_LEFT, 40, 22);
+    lv_obj_set_style_text_align(instance->widget->weather.tempLabel.label, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_align(instance->widget->weather.tempLabel.label, LV_ALIGN_TOP_LEFT, 45, 22);
 
     instance->widget->weather.tempLabel.bar = lv_bar_create(instance->widget->weather.tw_weather);
     lv_bar_set_mode(instance->widget->weather.tempLabel.bar, LV_BAR_MODE_SYMMETRICAL);
@@ -475,7 +503,7 @@ static void weatherWidgetsCreate()
     lv_obj_set_style_opa(instance->widget->weather.location, LV_OPA_100, 0);
 
     instance->widget->weather.icon = lv_img_create(instance->widget->weather.tw_weather);
-    lv_obj_align(instance->widget->weather.icon, LV_ALIGN_LEFT_MID, 0, 7);
+    lv_obj_align(instance->widget->weather.icon, LV_ALIGN_LEFT_MID, 5, 7);
     instance->widget->weather.icon_buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * 8192);
 }
 
@@ -541,6 +569,17 @@ static bool CheckNoEn(String& str)
     return false;
 }
 
+void HgmGUI::HgmTwView::controllable(bool ca)
+{
+    // TODO: contollable
+    instance->_controllable = ca;
+}
+
+bool HgmGUI::HgmTwView::controllable()
+{
+    return instance->_controllable;
+}
+
 static void ShowTime(lv_timer_t* timer)
 {
     extern TimeInfo ti;
@@ -578,21 +617,20 @@ void HgmGUI::HgmTwView::update_bili(HgmTwModel::tw_data_t* dat)
 
     if (CheckNoEn(dat->bd.bn)) {
         lv_obj_set_style_text_font(instance->widget->bili.biliName, &fangpx_10px, 0);
-        lv_label_set_text_fmt(instance->widget->bili.biliName, "#39291f %s#", dat->bd.bn.c_str());
     } else {
-        lv_obj_set_style_text_font(instance->widget->weather.location, &fangpx_10px, 0);
-        lv_label_set_text_fmt(instance->widget->bili.biliName, "#59493f %s#", dat->bd.bn.c_str());
+        lv_obj_set_style_text_font(instance->widget->bili.biliName, &k12x8_7px, 0);
     }
+    lv_label_set_text_fmt(instance->widget->bili.biliName, "#39291f %s#", dat->bd.bn.c_str());
     lv_label_set_text_fmt(instance->widget->bili.biliFans, "#59493f %s#", _numWithUnit(dat->bd.fans).c_str());
 }
 
 void HgmGUI::HgmTwView::update_weather(HgmTwModel::tw_data_t* dat)
 {
     Serial.println(dat->name);
-    lv_label_set_text_fmt(instance->widget->weather.location, "#59493f %s#", dat->name.c_str());
+    lv_label_set_text_fmt(instance->widget->weather.location, "#39291f %s#", dat->name.c_str());
     lv_obj_align_to(instance->widget->weather.location, instance->widget->status_bar.signal.icon, LV_ALIGN_OUT_RIGHT_TOP, 5, -2);
 
-    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f % 2d℃#", dat->wd.temp);
+    lv_label_set_text_fmt(instance->widget->weather.tempLabel.label, "#59493f %02d℃#", dat->wd.temp);
     lv_label_set_text_fmt(instance->widget->weather.aqiLabel.label, "#59493f AQI #", dat->wd.aqi);
     lv_label_set_text_fmt(instance->widget->weather.humidityLabel.label, "#59493f R H  #", dat->wd.rh);
 

@@ -18,6 +18,8 @@ namespace HgmGUI {
     class HgmTwView
     {
     private:
+        bool _controllable = false;
+
         void frameCreate();
         void widgetCreate();
         void animCreate();
@@ -29,6 +31,11 @@ namespace HgmGUI {
         void status_bar_create();
     public:
         struct _widget {
+            lv_group_t group;
+            lv_style_t style_pr;
+            lv_obj_t* next_btn = NULL;
+            lv_obj_t* prev_btn = NULL;
+
             struct _biliWidget {
                 lv_img_dsc_t face_dsc;
                 lv_obj_t* book = NULL;
@@ -88,6 +95,8 @@ namespace HgmGUI {
         void begin();
         void end();
 
+        static void controllable(bool ca);
+        static bool controllable();
         static void update_bili(HgmTwModel::tw_data_t* dat);
         static void update_weather(HgmTwModel::tw_data_t* dat);
         static void update_time(HgmTwModel::tw_data_t* dat);

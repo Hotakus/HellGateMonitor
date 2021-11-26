@@ -96,8 +96,7 @@ void HgmTw::tw_update_cb(msg_t* msg)
         return;
     }
     
-    switch (tw_data->tdt)
-    {
+    switch (tw_data->tdt) {
     case HgmTwModel::BILI: {
         HgmTwView::update_bili(tw_data);
         break;
@@ -108,6 +107,9 @@ void HgmTw::tw_update_cb(msg_t* msg)
     }
     case HgmTwModel::WEATHER: {
         HgmTwView::update_weather(tw_data);
+        break;
+    }case HgmTwModel::CONTROLLABLE: {
+        HgmTwView::controllable(tw_data->controllable);
         break;
     }
     default:

@@ -1339,5 +1339,17 @@
     <ClCompile Include="Source\LvglSrc\Assets\font\fangpx_10px.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_pr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prev_pr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prev_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -142,10 +142,10 @@ void setup()
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
 
-    vTaskDelay(15000);
-    hgmLvgl.hgmFw->changeGUI("HgmTw");
-    vTaskDelay(15000);
-    hgmLvgl.hgmFw->changeGUI("HgmMonitor");
+    // vTaskDelay(15000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
+    // vTaskDelay(15000);
+    // hgmLvgl.hgmFw->changeGUI("HgmMonitor");
 
     vTaskDelay(1000);
 }

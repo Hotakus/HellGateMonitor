@@ -22,7 +22,8 @@ namespace HgmGUI {
         typedef enum _tw_data_type_t{
             TIME,
             BILI,
-            WEATHER
+            WEATHER,
+            CONTROLLABLE
         } tw_data_type_t;
 
         typedef struct _bili_dat_t {
@@ -49,6 +50,7 @@ namespace HgmGUI {
             weather_dat_t wd;
             time_dat_t td;
             String name;
+            bool controllable;
         } tw_data_t;
 
         tw_data_t dat;
