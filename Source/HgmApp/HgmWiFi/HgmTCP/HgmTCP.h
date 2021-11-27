@@ -14,6 +14,8 @@
 
 namespace HgmApplication {
 #define TCP_PACK_HEADER "HgmTCP"
+#define SERVER_DEFAULT_PORT 20
+
     typedef enum HgmTcpPackMethod
     {
         // Send method

@@ -41,6 +41,7 @@ LV_IMG_DECLARE(signal_3);
 LV_IMG_DECLARE(signal_4);
 LV_IMG_DECLARE(signal_5);
 
+LV_FONT_DECLARE(fangpx_10px);
 LV_FONT_DECLARE(k12x8_6px);
 LV_FONT_DECLARE(k12x8_7px);
 LV_FONT_DECLARE(k12x8_8px);
@@ -48,6 +49,15 @@ LV_FONT_DECLARE(k12x8_10px);
 LV_FONT_DECLARE(k12x8_14px_time);
 LV_FONT_DECLARE(k12x8_16px_time);
 LV_FONT_DECLARE(k12x8_24px_time);
+
+LV_IMG_DECLARE(next_btn2_pr);
+LV_IMG_DECLARE(next_btn2_rel);
+LV_IMG_DECLARE(promt_btn_rel);
+LV_IMG_DECLARE(promt_btn_checked);
+
+LV_IMG_DECLARE(prompt_frame_left);
+LV_IMG_DECLARE(prompt_frame_mid);
+LV_IMG_DECLARE(prompt_frame_right);
 
 static HgmMonitorView* instance;
 
@@ -276,6 +286,41 @@ void HgmMonitorView::network_widget_create(HgmHardwarePosition pos)
     lv_obj_align_to(widget.network.label.download, widget.network.label.upload, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
 }
 
+static void fade(void* obj, int32_t val)
+{
+    lv_obj_set_style_opa((lv_obj_t*)obj, val, 0);
+}
+
+static void ctl_event_cb(lv_event_t* e)
+{
+    lv_obj_t* obj = lv_event_get_current_target(e);
+
+    if (obj == instance->widget.status_bar.prompt.btn) {
+        instance->widget.status_bar.prompt.value = ~(instance->widget.status_bar.prompt.value);
+        if (instance->widget.status_bar.prompt.value) {
+            lv_label_set_text_fmt(instance->widget.status_bar.prompt.frame.ip_label, "#ffffff IP: %s#", WiFi.localIP().toString().c_str());
+            lv_label_set_text_fmt(instance->widget.status_bar.prompt.frame.port_label, "#ffffff 端口: %d#", SERVER_DEFAULT_PORT);
+
+            lv_anim_set_values(&instance->widget.status_bar.prompt.fa, LV_OPA_0, LV_OPA_80);
+            lv_anim_set_time(&instance->widget.status_bar.prompt.fa, 200);
+            lv_anim_set_exec_cb(&instance->widget.status_bar.prompt.fa, (lv_anim_exec_xcb_t)fade);
+            lv_anim_set_path_cb(&instance->widget.status_bar.prompt.fa, lv_anim_path_ease_in_out);
+            lv_anim_set_var(&instance->widget.status_bar.prompt.fa, instance->widget.status_bar.prompt.frame.self);
+            lv_anim_start(&instance->widget.status_bar.prompt.fa);
+        } else {
+            lv_anim_set_values(&instance->widget.status_bar.prompt.fa, LV_OPA_80, LV_OPA_0);
+            lv_anim_set_time(&instance->widget.status_bar.prompt.fa, 200);
+            lv_anim_set_exec_cb(&instance->widget.status_bar.prompt.fa, (lv_anim_exec_xcb_t)fade);
+            lv_anim_set_path_cb(&instance->widget.status_bar.prompt.fa, lv_anim_path_ease_in_out);
+            lv_anim_set_var(&instance->widget.status_bar.prompt.fa, instance->widget.status_bar.prompt.frame.self);
+            lv_anim_start(&instance->widget.status_bar.prompt.fa);
+        }
+    } else {
+        HgmFramework::getInstance()->changeGUI("HgmTw");
+    }
+
+}
+
 void HgmGUI::HgmMonitorView::status_bar_create()
 {
     // TODO: Check battery
@@ -292,6 +337,60 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     lv_obj_align_to(widget.status_bar.time_label, widget.status_bar.signal.icon, LV_ALIGN_OUT_BOTTOM_LEFT, 1, 4);
     lv_label_set_recolor(widget.status_bar.time_label, true);
     lv_label_set_text_fmt(widget.status_bar.time_label, "#c5b8b0 --#\n#c5b8b0 --#", 0);
+
+    lv_style_init(&widget.style_pr);
+    lv_style_set_img_recolor_opa(&widget.style_pr, LV_OPA_30);
+    lv_style_set_img_recolor(&widget.style_pr, lv_color_black());
+
+    widget.status_bar.next_btn = lv_imgbtn_create(widget.status_bar.bg);
+    lv_obj_set_size(widget.status_bar.next_btn, 13, 20);
+    lv_obj_add_style(widget.status_bar.next_btn, &widget.style_pr, LV_STATE_PRESSED);
+    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_PRESSED, &next_btn2_pr, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_RELEASED, &next_btn2_rel, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &next_btn2_pr, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &next_btn2_pr, 0, 0);
+    lv_obj_align(widget.status_bar.next_btn, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_add_event_cb(widget.status_bar.next_btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_anim_init(&widget.status_bar.prompt.fa);
+    widget.status_bar.prompt.value = 0;
+    widget.status_bar.prompt.btn = lv_imgbtn_create(widget.status_bar.bg);
+    lv_obj_set_size(widget.status_bar.prompt.btn, 20, 20);
+    lv_obj_add_style(widget.status_bar.prompt.btn, &widget.style_pr, LV_STATE_PRESSED);
+    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_PRESSED, &promt_btn_checked, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_RELEASED, &promt_btn_rel, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &promt_btn_checked, 0, 0);
+    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &promt_btn_checked, 0, 0);
+    lv_obj_align_to(widget.status_bar.prompt.btn, widget.status_bar.next_btn, LV_ALIGN_OUT_TOP_MID, 0, -5);
+    lv_obj_add_event_cb(widget.status_bar.prompt.btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
+
+    // prompt frame
+    widget.status_bar.prompt.frame.self = lv_imgbtn_create(lv_scr_act());
+    lv_obj_set_width(widget.status_bar.prompt.frame.self, 200);
+    lv_obj_set_style_opa(widget.status_bar.prompt.frame.self, LV_OPA_0, 0);
+    lv_obj_align(widget.status_bar.prompt.frame.self, LV_ALIGN_CENTER, 0, 0);
+    // lv_img_set_src(widget.status_bar.prompt.frame.self, &prompt_frame);
+    lv_imgbtn_set_src(widget.status_bar.prompt.frame.self, LV_IMGBTN_STATE_RELEASED, &prompt_frame_left, &prompt_frame_mid, &prompt_frame_right);
+
+    widget.status_bar.prompt.frame.conn_status = lv_label_create(widget.status_bar.prompt.frame.self);
+    lv_obj_set_style_text_font(widget.status_bar.prompt.frame.conn_status, &fangpx_10px, 0);
+    lv_label_set_recolor(widget.status_bar.prompt.frame.conn_status, true);
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, "#ffffff 数据源验证失败#");
+    lv_obj_align(widget.status_bar.prompt.frame.conn_status, LV_ALIGN_TOP_MID, 0, 10);
+
+    widget.status_bar.prompt.frame.ip_label = lv_label_create(widget.status_bar.prompt.frame.self);
+    lv_obj_set_style_text_font(widget.status_bar.prompt.frame.ip_label, &fangpx_10px, 0);
+    lv_label_set_recolor(widget.status_bar.prompt.frame.ip_label, true);
+    lv_obj_set_style_text_align(widget.status_bar.prompt.frame.ip_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.ip_label, "#ffffff IP: 192.169.223.233#");
+    lv_obj_align_to(widget.status_bar.prompt.frame.ip_label, widget.status_bar.prompt.frame.conn_status, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
+
+    widget.status_bar.prompt.frame.port_label = lv_label_create(widget.status_bar.prompt.frame.self);
+    lv_obj_set_style_text_font(widget.status_bar.prompt.frame.port_label, &fangpx_10px, 0);
+    lv_label_set_recolor(widget.status_bar.prompt.frame.port_label, true);
+    lv_obj_set_style_text_align(widget.status_bar.prompt.frame.port_label, LV_TEXT_ALIGN_CENTER, 0);
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.port_label, "#ffffff 端口: 20#");
+    lv_obj_align_to(widget.status_bar.prompt.frame.port_label, widget.status_bar.prompt.frame.ip_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
 }
 
 void HgmGUI::HgmMonitorView::frameCreate()
@@ -481,7 +580,7 @@ void HgmGUI::HgmMonitorView::net_update(HardwareRequest* hrr)
 
 void HgmGUI::HgmMonitorView::disk_update(HardwareRequest* hrr)
 {
-
+    // TODO:
 }
 
 static String hdt = "{\"Header\":\"HgmTCP\",\"DataType\":\"4\",\"Data\":{\"CPU\":{\"name\":\"Intel Core i7-8700\",\"coreCount\":6,\"freq\":{\"bus\":99.75,\"current\":[4289.25,4289.25,4289.25,798.0,798.0,798.0]},\"temp\":{\"current\":[51.0,51.0,51.0,52.0,52.0,66.0],\"max\":66.0,\"average\":53.83},\"load\":{\"total\":9.02,\"current\":[7.06,10.59,5.29,4.12,7.06,20.0]},\"power\":{\"current\":26.29,\"max\":30.29}},\"GPU\":{\"name\":\"NVIDIA GeForce GTX 1660 Ti\",\"temp\":{\"current\":38.0,\"max\":59.0},\"freq\":{\"core\":{\"current\":300.0,\"max\":300.0},\"mem\":{\"current\":405.0,\"max\":405.0}},\"load\":{\"coreCurrent\":1.0,\"coreMax\":5.0},\"mem\":{\"free\":4814.0,\"used\":1329.0,\"total\":6144.0},\"power\":{\"current\":17.55,\"max\":233.55}},\"Memory\":{\"data\":{\"free\":5.7,\"used\":10.22,\"total\":15.92},\"load\":{\"current\":78.71,\"max\":78.71}},\"HardDisk\":{\"count\":3,\"data\":[{\"name\":\"Nameless Hard Disk #0\",\"temp\":{\"current\":0.0,\"max\":0.0},\"load\":{\"current\":77.87},\"throughput\":{\"readRate\":150.5,\"writeRate\":175934.2}},{\"name\":\"Colorful SL500 512GB DDR\",\"temp\":{\"current\":40.0,\"max\":40.0},\"load\":{\"current\":52.07},\"throughput\":{\"readRate\":251773.0,\"writeRate\":422494.4}},{\"name\":\"GALAX TA1D0120A\",\"temp\":{\"current\":33.0,\"max\":33.0},\"load\":{\"current\":85.58},\"throughput\":{\"readRate\":467368.1,\"writeRate\":497647.8}}]},\"Network\":{\"wlan\":{\"data\":{\"uploaded\":0.0,\"downloaded\":0.0},\"throughput\":{\"upload\":0.0,\"download\":0.0}},\"ethernet\":{\"data\":{\"uploaded\":0.02,\"downloaded\":0.2},\"throughput\":{\"upload\":111111.0,\"download\":16878000.14}}}}}";
@@ -528,7 +627,8 @@ void HgmGUI::HgmMonitorView::begin()
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
     stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
-    // TODO: delete
+    
+    lv_event_send(widget.status_bar.prompt.btn, LV_EVENT_CLICKED, NULL);
 }
 
 void HgmGUI::HgmMonitorView::end()
@@ -541,7 +641,7 @@ void HgmGUI::HgmMonitorView::end()
 
 void HgmGUI::HgmMonitorView::alter_pos(HgmHardwarePosition from, HgmHardwarePosition to)
 {
-    // TODO: 
+    // TODO: alter position
 }
 
 void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)

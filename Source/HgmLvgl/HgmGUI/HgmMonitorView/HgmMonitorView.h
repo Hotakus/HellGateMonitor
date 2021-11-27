@@ -40,8 +40,9 @@ namespace HgmGUI {
         void disk_update(HardwareRequest* hrr);
 
 	public:
-        struct _widget
-        {
+        struct _widget {
+            lv_style_t style_pr;
+
             struct _status_bar {
                 lv_obj_t* bg;
                 struct _bat_icon {
@@ -54,8 +55,19 @@ namespace HgmGUI {
                     uint8_t value;
                 } signal;
 
+                struct {
+                    struct {
+                        lv_obj_t* self;
+                        lv_obj_t* conn_status;
+                        lv_obj_t* ip_label;
+                        lv_obj_t* port_label;
+                    } frame;
+                    lv_obj_t* btn;
+                    uint8_t value;
+                    lv_anim_t fa;
+                } prompt;
+
                 lv_obj_t* time_label;
-                lv_obj_t* more_btn;
                 lv_obj_t* next_btn;
 
             } status_bar;

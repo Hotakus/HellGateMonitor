@@ -32,8 +32,6 @@ using namespace HgmGUI;
 using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
-#define SERVER_DEFAULT_PORT 20
-
 extern SemaphoreHandle_t wbs;
 
 static void TcpControlTask(void* params);

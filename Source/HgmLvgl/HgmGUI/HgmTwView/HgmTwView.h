@@ -31,7 +31,7 @@ namespace HgmGUI {
         void status_bar_create();
     public:
         struct _widget {
-            lv_group_t group;
+            lv_group_t* group;
             lv_style_t style_pr;
             lv_obj_t* next_btn = NULL;
             lv_obj_t* prev_btn = NULL;

@@ -48,6 +48,7 @@ LV_IMG_DECLARE(signal_5);
 
 LV_FONT_DECLARE(black_8px);
 LV_FONT_DECLARE(black_10px);
+LV_FONT_DECLARE(fangpx_8px);
 LV_FONT_DECLARE(fangpx_10px);
 LV_FONT_DECLARE(fangpx_12px);
 LV_FONT_DECLARE(k12x8_6px);
@@ -75,6 +76,9 @@ LV_IMG_DECLARE(next_pr)
 LV_IMG_DECLARE(next_rel)
 LV_IMG_DECLARE(prev_pr)
 LV_IMG_DECLARE(prev_rel)
+LV_IMG_DECLARE(prompt_frame_left);
+LV_IMG_DECLARE(prompt_frame_mid);
+LV_IMG_DECLARE(prompt_frame_right);
 
 static const lv_img_dsc_t* clock_imgs_array[] = {
     // 24:00
@@ -205,6 +209,9 @@ void HgmGUI::HgmTwView::widgetCreate()
     biliWidgetsCreate();
     weatherWidgetsCreate();
     status_bar_create();
+    widget->group = lv_group_create();
+    lv_group_add_obj(widget->group, widget->next_btn);
+    lv_group_add_obj(widget->group, widget->prev_btn);
 }
 
 void HgmGUI::HgmTwView::frameCreate()
@@ -336,6 +343,7 @@ void HgmTwView::animDestroy()
 
 void HgmTwView::widgetDestroy()
 {
+    lv_group_del(widget->group);
     hotakusFree(instance->widget->weather.icon_buf);
     hotakusFree(instance->widget);
 }
@@ -366,6 +374,19 @@ static void timeWidgetsCreate()
     lv_obj_align(instance->widget->time.clock_img, LV_ALIGN_TOP_LEFT, 5, 2);
 }
 
+static void ctl_event_cb(lv_event_t* e)
+{
+    lv_obj_t* obj = lv_event_get_current_target(e);
+
+    instance->controllable(false);
+
+    if (obj == instance->widget->next_btn) {
+        HgmFramework::getInstance()->changeGUI("ScreenRecv");
+    } else {
+        HgmFramework::getInstance()->changeGUI("HgmMonitor");
+    }
+}
+
 static void biliWidgetsCreate()
 {
     // Face
@@ -391,6 +412,7 @@ static void biliWidgetsCreate()
     lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &next_pr, 0, 0);
     lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &next_pr, 0, 0);
     lv_obj_align(instance->widget->next_btn, LV_ALIGN_BOTTOM_RIGHT, -15, -10);
+    lv_obj_add_event_cb(instance->widget->next_btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
 
     instance->widget->prev_btn = lv_imgbtn_create(instance->widget->bili.book);
     lv_obj_set_size(instance->widget->prev_btn, 15, 8);
@@ -400,6 +422,7 @@ static void biliWidgetsCreate()
     lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &prev_pr, 0, 0);
     lv_imgbtn_set_src(instance->widget->prev_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &prev_pr, 0, 0);
     lv_obj_align(instance->widget->prev_btn, LV_ALIGN_BOTTOM_LEFT, 15, -10);
+    lv_obj_add_event_cb(instance->widget->prev_btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
 
     // Bili label
     instance->widget->bili.biliName = lv_label_create(instance->widget->bili.book);
@@ -448,7 +471,7 @@ static void weatherWidgetsCreate()
     instance->widget->weather.tempLabel.bar = lv_bar_create(instance->widget->weather.tw_weather);
     lv_bar_set_mode(instance->widget->weather.tempLabel.bar, LV_BAR_MODE_SYMMETRICAL);
     lv_obj_set_size(instance->widget->weather.tempLabel.bar, 38, 8);
-    lv_bar_set_range(instance->widget->weather.tempLabel.bar, -100, 100);
+    lv_bar_set_range(instance->widget->weather.tempLabel.bar, -60, 60);
     lv_bar_set_value(instance->widget->weather.tempLabel.bar, -0, LV_ANIM_ON);
     lv_obj_set_style_radius(instance->widget->weather.tempLabel.bar, 2, LV_PART_MAIN);
     lv_obj_set_style_radius(instance->widget->weather.tempLabel.bar, 2, LV_PART_INDICATOR);
