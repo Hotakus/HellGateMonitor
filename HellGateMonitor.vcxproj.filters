@@ -434,9 +434,6 @@
     <ClInclude Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\LvglSrc\Assets\clock_img\lvgl\lvgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -470,12 +467,6 @@
     <ClInclude Include="Source\Utils\MsgCenter\MsgCenter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\LvglSrc\libs\lv_lib_png\lodepng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\LvglSrc\libs\lv_lib_png\lv_png.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -498,6 +489,42 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\lv_libs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_lru.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_mask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_stack_blur.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_texture_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_sdl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\lv_conf_template.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\rt-thread\lv_rt_thread_conf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -572,9 +599,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_draw_line.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_draw_mask.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_draw_rect.c">
@@ -970,13 +994,7 @@
     <ClCompile Include="Source\HgmApp\HardwareInfoRecv\HardwareDiskData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\HGM_LOGO.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\Assets\img\HGMBG.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\font\k12x8_6px.c">
@@ -1016,12 +1034,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\book_right.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\Assets\img\testbg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\Assets\img\TW.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\tw_t.c">
@@ -1246,18 +1258,6 @@
     <ClCompile Include="Source\Utils\MsgCenter\MsgCenter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\w_100_png.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\lodepng.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\lv_png.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\libs\lv_lib_png\png_decoder_test.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1292,9 +1292,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\frame_right.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\Assets\img\mem_icon.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_null.c">
@@ -1349,6 +1346,117 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\prev_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prompt_frame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\promt_btn_checked.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\promt_btn_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_btn2_rel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\next_btn2_pr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prompt_frame_left.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prompt_frame_mid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\img\prompt_frame_right.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\Assets\font\fangpx_8px.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_arc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_blend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_img.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_letter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_line.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_mask.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_polygon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\sw\lv_draw_sw_rect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_draw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_arc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_blend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_img.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_label.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_line.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_rect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_lru.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_mask.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_stack_blur.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_texture_cache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_sdl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_cases\test_arc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_cases\test_checkbox.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_cases\test_txt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\rt-thread\lv_rt_thread_port.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lodepng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
