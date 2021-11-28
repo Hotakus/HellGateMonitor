@@ -19,6 +19,7 @@ using namespace HgmApplication;
 using namespace spiffsutil;
 
 extern TimeInfo ti;
+extern lv_group_t* keypad_group;
 
 LV_IMG_DECLARE(mem_icon);
 LV_IMG_DECLARE(vc_icon);
@@ -437,6 +438,10 @@ void HgmGUI::HgmMonitorView::widgetCreate()
     gpu_widget_create(hrr->GetHardwareObj(HGM_GPU)->pos);
     mem_widget_create(hrr->GetHardwareObj(HGM_MEMORY)->pos);
     network_widget_create(hrr->GetHardwareObj(HGM_NETWORK)->pos);
+
+    widget.group = keypad_group;
+    lv_group_add_obj(widget.group, widget.status_bar.prompt.btn);
+    lv_group_add_obj(widget.group, widget.status_bar.next_btn);
 }
 
 void HgmGUI::HgmMonitorView::animCreate()
@@ -503,6 +508,7 @@ void HgmGUI::HgmMonitorView::animDestroy()
 
 void HgmGUI::HgmMonitorView::widgetDestroy()
 {
+
 }
 
 void HgmGUI::HgmMonitorView::frameDestroy()

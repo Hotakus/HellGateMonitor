@@ -479,9 +479,6 @@
     <ClInclude Include="hgm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_fs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -525,6 +522,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_indev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1267,9 +1267,6 @@
     <ClCompile Include="Source\Utils\SPIFFSUtil\SPIFFSUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_fs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LvglSrc\Assets\img\bat_10.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1457,6 +1454,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\png\lv_png.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_indev.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -42,6 +42,7 @@ namespace HgmGUI {
 	public:
         struct _widget {
             lv_style_t style_pr;
+            lv_group_t* group;
 
             struct _status_bar {
                 lv_obj_t* bg;

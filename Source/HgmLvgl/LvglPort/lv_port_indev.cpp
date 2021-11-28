@@ -21,11 +21,11 @@ using namespace HGM;
  *********************/
  /*
  *   INPUT_DEVICE
- *   Touchpad    £º0
- *   Mouse       £º1
- *   Keypad      £º2
- *   Encoder     £º3
- *   Button      £º4
+ *   Touchpad    ï¼š0
+ *   Mouse       ï¼š1
+ *   Keypad      ï¼š2
+ *   Encoder     ï¼š3
+ *   Button      ï¼š4
  */
 #define LV_USE_INDEV_TOUCHPAD 	    0x1u
 #define LV_USE_INDEV_MOUSE	 	    0x2u
@@ -310,10 +310,19 @@ static void mouse_get_xy(lv_coord_t * x, lv_coord_t * y)
  * Keypad
  * -----------------*/
 
+#define BTN_A 39
+#define BTN_B 38
+#define BTN_C 37
+
 /*Initialize your keypad*/
 static void keypad_init(void)
 {
     /*Your code comes here*/
+
+    pinMode(BTN_A, INPUT);
+    pinMode(BTN_B, INPUT);
+    pinMode(BTN_C, INPUT);
+
 }
 
 /*Will be called by the library to read the mouse*/
@@ -368,21 +377,28 @@ static uint32_t keypad_get_key(void)
 {
     /*Your code comes here*/
 
-    MotionType mt = hgmLvgl->hcl->AnalyzeTask();
+    // MotionType mt = hgmLvgl->hcl->AnalyzeTask();
+    // 
+    // if (mt == MotionType::DOWN_HEAD) {
+    //     return 5;
+    // }
+    // else if (mt == MotionType::RIGHT_TO_LEFT)
+    //     return 4;
+    // else if (mt == MotionType::LEFT_TO_RIGHT)
+    //     return 3;
+    // 
+    // else if (mt == MotionType::ANTICLOCKWISE)
+    //     return 6;
+    // else if (mt == MotionType::CLOCKWISE)
+    //     return 7;
 
-    if (mt == MotionType::DOWN_HEAD) {
+    if (!digitalRead(BTN_A)) {
+        return 2;
+    } else if (!digitalRead(BTN_B)) {
         return 5;
+    } else if (!digitalRead(BTN_B)) {
+        return 1;
     }
-    else if (mt == MotionType::RIGHT_TO_LEFT)
-        return 4;
-    else if (mt == MotionType::LEFT_TO_RIGHT)
-        return 3;
-
-    else if (mt == MotionType::ANTICLOCKWISE)
-        return 6;
-    else if (mt == MotionType::CLOCKWISE)
-        return 7;
-
 
     return 0;
 }

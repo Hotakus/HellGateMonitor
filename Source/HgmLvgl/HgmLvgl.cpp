@@ -71,15 +71,12 @@ void HGM::HgmLvgl::begin()
     /* LVGL init */
     lv_init();
     this->HgmLvglDispInit();
-    // this->HgmLvglIndevInit();
+    this->HgmLvglIndevInit();
     // this->HgmLvglFsInit();
 
-    lv_png_init();
-    
     /* Create All basic UI */
     // lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), 0); // Set the bg color as black default
     // lv_obj_set_style_bg_img_src(lv_scr_act(), &HGMBG, 0);
-    
     
     lv_obj_t* bg = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(bg, LV_IMGBTN_STATE_RELEASED, &bg_left, &bg_mid, &bg_right);

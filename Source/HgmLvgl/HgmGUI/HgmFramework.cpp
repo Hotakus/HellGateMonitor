@@ -49,14 +49,66 @@ HgmFramework::~HgmFramework()
     instance = NULL;
 }
 
+void HgmGUI::HgmFramework::framework_task(void* params)
+{
+    String name = "";
+
+    while (true) {
+        if (xQueueReceive(instance->msgBox, &name, portMAX_DELAY) != pdPASS)
+            continue;
+
+        name = instance->to;
+
+        hgm_log_d(TAG, "Change to %s", name.c_str());
+
+        msg_t* msg = nullptr;
+        bool ret = false;
+
+        /* Kill the previous GUI  */
+        if (!instance->curr.isEmpty()) {
+            msg = instance->hgmFwCenter.findMsg(instance->curr);
+            if (!msg) continue;
+
+            instance->_gd.ctl = END;
+            msg->pData(&instance->_gd);
+            ret = instance->hgmFwCenter.notify(instance->curr, instance->curr);
+            if (!ret) continue;
+            instance->prev = instance->curr;
+        }
+
+        /* Create the designated GUI  */
+        msg = instance->hgmFwCenter.findMsg(name);
+        if (!msg) continue;
+        instance->_gd.ctl = BEGIN;
+        msg->pData(&instance->_gd);
+        ret = instance->hgmFwCenter.notify(name, name);
+        if (ret)
+            instance->curr = name;
+        
+        name = "";
+    }
+}
+
 /**
  * @brief initialize the hgm framework
  */
 void HgmGUI::HgmFramework::begin()
 {
+    instance->msgBox = xQueueCreate(1, sizeof(void*));
+    xTaskCreatePinnedToCore(
+        framework_task,
+        "framework_task",
+        3072,
+        NULL,
+        3,
+        &this->th,
+        1
+    );
+
     changeGUI("HgmTw");
     //changeGUI("HgmMonitor");
 }
+
 
 /**
  * @brief Change GUI by name.
@@ -65,32 +117,8 @@ void HgmGUI::HgmFramework::begin()
  */
 bool HgmGUI::HgmFramework::changeGUI(String name)
 {
-    hgm_log_d(TAG, "Change to %s", name.c_str());
-
-    msg_t* msg = nullptr;
-    bool ret = false;
-
-	/* Kill the previous GUI  */
-    if (!curr.isEmpty()) {
-        msg = hgmFwCenter.findMsg(curr);
-        if (!msg) return false;
-
-        _gd.ctl = END;
-        msg->pData(&_gd);
-        ret = hgmFwCenter.notify(curr, curr);
-        if (!ret) return ret;
-        prev = curr;
-    }
-
-	/* Create the designated GUI  */
-    msg = hgmFwCenter.findMsg(name);
-    if (!msg) return false;
-    _gd.ctl = BEGIN;
-    msg->pData(&_gd);
-    ret = hgmFwCenter.notify(name, name);
-    if (ret)
-        curr = name;
-    return ret;
+    to = name;
+    xQueueSend(instance->msgBox, &to, portMAX_DELAY);
 }
 
 bool HgmGUI::HgmFramework::changePrev()

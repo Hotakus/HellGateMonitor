@@ -144,10 +144,10 @@ void setup()
 
     // vTaskDelay(15000);
     // hgmLvgl.hgmFw->changeGUI("HgmTw");
-    // vTaskDelay(15000);
-    // hgmLvgl.hgmFw->changeGUI("HgmMonitor");
-
-    vTaskDelay(1000);
+    // // vTaskDelay(15000);
+    // // hgmLvgl.hgmFw->changeGUI("HgmMonitor");
+    // 
+    // vTaskDelay(1000);
 }
 
 void loop()

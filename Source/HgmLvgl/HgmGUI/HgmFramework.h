@@ -34,12 +34,16 @@ namespace HgmGUI {
         } gui_data_t;
 
     private:
-        String prev = "";
-        String curr = "";
-
         HgmFramework::gui_data_t _gd;
 
+        QueueHandle_t msgBox;
+        TaskHandle_t th;
+        static void framework_task(void* params);
+        
     public:
+        String prev = "";
+        String curr = "";
+        String to = "";
 
         MsgCenter hgmFwCenter;
         Chain guiChain;
@@ -50,6 +54,7 @@ namespace HgmGUI {
         void begin();
         void stop();
 
+        
         bool changeGUI(String name);
         bool changePrev();
         bool changeNext();

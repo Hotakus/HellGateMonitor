@@ -24,6 +24,8 @@ using namespace HgmGUI;
 using namespace HGM;
 using namespace spiffsutil;
 
+extern lv_group_t* keypad_group;
+
 /* Assets */
 // TODO: Add btn
 LV_IMG_DECLARE(tw_t);
@@ -181,9 +183,13 @@ void HgmGUI::HgmTwView::end()
     lv_timer_del(stateCheckTimer);
     lv_timer_del(showTimeTimer);
 
+    Serial.println("-------------------------------------------------- 01");
     instance->animDestroy();
+    Serial.println("-------------------------------------------------- 02");
     instance->widgetDestroy();
+    Serial.println("-------------------------------------------------- 03");
     instance->frameDestroy();
+    Serial.println("-------------------------------------------------- 04");
 }
 
 void HgmGUI::HgmTwView::status_bar_create()
@@ -209,7 +215,8 @@ void HgmGUI::HgmTwView::widgetCreate()
     biliWidgetsCreate();
     weatherWidgetsCreate();
     status_bar_create();
-    widget->group = lv_group_create();
+
+    widget->group = keypad_group;
     lv_group_add_obj(widget->group, widget->next_btn);
     lv_group_add_obj(widget->group, widget->prev_btn);
 }
@@ -343,7 +350,6 @@ void HgmTwView::animDestroy()
 
 void HgmTwView::widgetDestroy()
 {
-    lv_group_del(widget->group);
     hotakusFree(instance->widget->weather.icon_buf);
     hotakusFree(instance->widget);
 }
@@ -404,9 +410,11 @@ static void biliWidgetsCreate()
     lv_style_init(&instance->widget->style_pr);
     lv_style_set_img_recolor_opa(&instance->widget->style_pr, LV_OPA_30);
     lv_style_set_img_recolor(&instance->widget->style_pr, lv_color_black());
+
     instance->widget->next_btn = lv_imgbtn_create(instance->widget->bili.book);
     lv_obj_set_size(instance->widget->next_btn, 15, 8);
     lv_obj_add_style(instance->widget->next_btn, &instance->widget->style_pr, LV_STATE_PRESSED);
+    lv_obj_add_style(instance->widget->next_btn, &instance->widget->style_pr, LV_STATE_FOCUSED);
     lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_PRESSED, &next_pr, 0, 0);
     lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_RELEASED, &next_rel, 0, 0);
     lv_imgbtn_set_src(instance->widget->next_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &next_pr, 0, 0);
