@@ -83,9 +83,9 @@ void HgmApplication::HgmTCP::initTask()
     xTaskCreatePinnedToCore(
         TcpControlTask,
         "TcpControlTask",
-        2048,
+        3072,
         NULL,
-        10,
+        6,
         &frtos.tcpControlTaskHandle,
         1
     );
@@ -264,7 +264,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
     }
     case HGM_TCP_PACK_METHOD_HWI: {
         str = "HgmMonitorUpdate";
-        MsgCenter& mc = HgmFramework::getInstance()->hgmFwCenter;
+        MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
         msg_t* msg = mc.findMsg(str);
         if (!msg) {
             hgm_log_e(TAG, "Monitor msg is null.");

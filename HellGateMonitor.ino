@@ -38,7 +38,7 @@
 #define HGM_VERSION_INFO  "dev"
 #define HGM_VERSION_MAJOR 0
 #define HGM_VERSION_MINOR 8
-#define HGM_VERSION_PATCH 1
+#define HGM_VERSION_PATCH 5
 
 #define COMPILE_DATE __DATE__
 #define COMPILE_TIME __TIME__
@@ -142,12 +142,16 @@ void setup()
     Serial.printf("%s\n", task_buf);
     hotakusFree(task_buf);
 
-    // vTaskDelay(15000);
-    // hgmLvgl.hgmFw->changeGUI("HgmTw");
-    // // vTaskDelay(15000);
-    // // hgmLvgl.hgmFw->changeGUI("HgmMonitor");
-    // 
     // vTaskDelay(1000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
+    // vTaskDelay(1000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
+    // vTaskDelay(1000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
+    // vTaskDelay(1000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
+    // vTaskDelay(1000);
+    // hgmLvgl.hgmFw->changeGUI("HgmTw");
 }
 
 void loop()

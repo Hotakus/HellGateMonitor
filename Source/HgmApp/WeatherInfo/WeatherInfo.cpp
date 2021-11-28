@@ -201,7 +201,7 @@ static void WeatherCheckTask(void* params)
             vTaskDelay(1000);
 
         String str = String("HgmTwUpdate");
-        MsgCenter* mc = &HgmFramework::getInstance()->hgmFwCenter;
+        MsgCenter* mc = &HgmFramework::getInstance()->dataCenter;
         msg_t* msg = mc->findMsg(str);
         HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
 

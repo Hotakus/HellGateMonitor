@@ -87,7 +87,7 @@ namespace HgmGUI {
                 lv_anim_t anim_w;
                 lv_anim_t anim_tw_expand;
             } anim;
-        } *widget;
+        } widget;
 
         HgmTwView();
         ~HgmTwView();

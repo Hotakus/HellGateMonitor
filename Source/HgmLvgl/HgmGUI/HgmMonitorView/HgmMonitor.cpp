@@ -32,21 +32,23 @@ HgmGUI::HgmMonitor::HgmMonitor()
 	gui_subs.name(_name);
 	gui_subs.subscribe_msg(_name, HgmMonitor::monitor_ui_cb);
 
-	HgmFramework::getInstance()->hgmFwCenter.addMsg(&gui_msg);
-	HgmFramework::getInstance()->hgmFwCenter.subscribe(&gui_subs);
+	HgmFramework::getInstance()->viewsCenter.addMsg(&gui_msg);
+	HgmFramework::getInstance()->viewsCenter.subscribe(&gui_subs);
 }
 
 HgmGUI::HgmMonitor::~HgmMonitor()
 {
-	HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&gui_subs);
-	HgmFramework::getInstance()->hgmFwCenter.removeMsg(gui_msg.id());
+	HgmFramework::getInstance()->viewsCenter.unsubscribe(&gui_subs);
+	HgmFramework::getInstance()->viewsCenter.removeMsg(gui_msg.id());
 
 	instance = nullptr;
 }
 
 void HgmGUI::HgmMonitor::begin()
 {
+    Serial.println("------------------------------------------------- 01");
 	def_vm.model.begin();
+    Serial.println("------------------------------------------------- 02");
 
 	// 订阅数据更新消息
 	update_msg.id(_name + String("Update"));
@@ -54,27 +56,42 @@ void HgmGUI::HgmMonitor::begin()
 	update_subs.name(_name + String("Update"));
 	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
 
+    Serial.println("------------------------------------------------- 03");
+
 	// 注册消息和订阅者
-	HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);
-	HgmFramework::getInstance()->hgmFwCenter.subscribe(&update_subs);
+	HgmFramework::getInstance()->dataCenter.addMsg(&update_msg);
+	HgmFramework::getInstance()->dataCenter.subscribe(&update_subs);
+
+    Serial.println("------------------------------------------------- 04");
 
     hgmWiFi.hgmTcp->begin();
     hgmWiFi.OpenTCP();
 
+    Serial.println("------------------------------------------------- 05");
+
 	def_vm.view.begin();
     def_vm.model.hrr->initTask();
+
+    Serial.println("------------------------------------------------- 06");
 }
 
 void HgmGUI::HgmMonitor::end()
 {
-	HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&update_subs);
-	HgmFramework::getInstance()->hgmFwCenter.removeMsg(update_msg.id());
-
-	def_vm.view.end();
-	def_vm.model.end();
+    Serial.println("------------------------------------------------- 11");
+    def_vm.model.hrr->deInitTask();
+    Serial.println("------------------------------------------------- 12");
+    def_vm.view.end();
+    Serial.println("------------------------------------------------- 13");
+    def_vm.model.end();
+    Serial.println("------------------------------------------------- 14");
 
     hgmWiFi.OpenTCP(false);
     hgmWiFi.hgmTcp->stop();
+    Serial.println("------------------------------------------------- 15");
+
+	HgmFramework::getInstance()->dataCenter.unsubscribe(&update_subs);
+	HgmFramework::getInstance()->dataCenter.removeMsg(update_msg.id());
+    Serial.println("------------------------------------------------- 16");
 }
 
 HgmMonitorModel::monitor_data_t * HgmGUI::HgmMonitor::getData()

@@ -58,16 +58,12 @@ static void hrtask(void* params)
 
 void HgmApplication::HardwareRequest::initTask()
 {
-    if (!frtos.hardwareReqTaskHandle)
-        xTaskCreatePinnedToCore(hrtask, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
+    xTaskCreatePinnedToCore(hrtask, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
 }
 
 void HgmApplication::HardwareRequest::deInitTask()
 {
-    if (frtos.hardwareReqTaskHandle) {
-        vTaskDelete(frtos.hardwareReqTaskHandle);
-        frtos.hardwareReqTaskHandle = NULL;
-    }
+    vTaskDelete(frtos.hardwareReqTaskHandle);
 }
 
 HgmApplication::HardwareRequest::HardwareRequest()
@@ -102,9 +98,9 @@ void HardwareRequest::begin()
 
     RegisterNewHardware(hd->cpuData, HGM_CPU, HGM_LEFT_TOP);
     RegisterNewHardware(hd->gpuData, HGM_GPU, HGM_LEFT_BOTTOM);
-    RegisterNewHardware(hd->memData, HGM_MEMORY, HGM_RIGHT_TOP );
+    RegisterNewHardware(hd->memData, HGM_MEMORY, HGM_RIGHT_TOP);
     RegisterNewHardware(hd->diskData, HGM_HARD_DISK, HGM_POS_NULL);
-    RegisterNewHardware(hd->netData, HGM_NETWORK, HGM_RIGHT_BOTTOM );
+    RegisterNewHardware(hd->netData, HGM_NETWORK, HGM_RIGHT_BOTTOM);
 
     SetHardwareRequest(HGM_CPU, true);
     SetHardwareRequest(HGM_GPU, true);

@@ -45,8 +45,8 @@ namespace HgmGUI {
         String curr = "";
         String to = "";
 
-        MsgCenter hgmFwCenter;
-        Chain guiChain;
+        MsgCenter viewsCenter;
+        MsgCenter dataCenter;
 
         HgmFramework();
         ~HgmFramework();

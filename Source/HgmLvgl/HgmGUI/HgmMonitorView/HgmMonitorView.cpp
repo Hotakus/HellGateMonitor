@@ -205,7 +205,6 @@ void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
     //lv_obj_set_width(widget.mem.label.name, 90);
     lv_obj_align(widget.mem.label.name, LV_ALIGN_TOP_LEFT, 5, 3);
     lv_label_set_recolor(widget.mem.label.name, true);
-    lv_label_set_long_mode(widget.mem.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text_fmt(widget.mem.label.name, "Memory");
 
     widget.mem.label.percent = lv_label_create(f);
@@ -253,9 +252,7 @@ void HgmMonitorView::network_widget_create(HgmHardwarePosition pos)
     lv_obj_set_width(widget.network.label.name, 90);
     lv_obj_align(widget.network.label.name, LV_ALIGN_TOP_MID, 0, 4);
     lv_label_set_recolor(widget.network.label.name, true);
-    lv_label_set_long_mode(widget.network.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text_fmt(widget.network.label.name, "Network");
-    lv_obj_set_style_anim_speed(widget.network.label.name, 20, 0);
 
     widget.network.label.percent = lv_label_create(f);
     lv_obj_set_style_text_font(widget.network.label.percent, &k12x8_7px, 0);
@@ -271,7 +268,6 @@ void HgmMonitorView::network_widget_create(HgmHardwarePosition pos)
     lv_obj_set_style_radius(widget.network.bar.usage, 2, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(widget.network.bar.usage, lv_color_make(0, 0, 0), LV_PART_MAIN);
     lv_obj_set_style_bg_color(widget.network.bar.usage, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
-    //lv_obj_align_to(widget.network.bar.usage, widget.network.label.percent, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
     lv_obj_align(widget.network.bar.usage, LV_ALIGN_TOP_RIGHT, -10, 6);
 
     widget.network.label.upload = lv_label_create(f);
@@ -322,6 +318,32 @@ static void ctl_event_cb(lv_event_t* e)
 
 }
 
+static void focus_event_cb(lv_event_t* e)
+{
+    lv_obj_t* obj = lv_event_get_current_target(e);
+    lv_event_code_t code = lv_event_get_code(e);
+
+    switch (code) {
+    case LV_EVENT_FOCUSED:
+        if (obj == instance->widget.status_bar.prompt.btn) {
+            lv_imgbtn_set_src(obj, LV_IMGBTN_STATE_RELEASED, &promt_btn_checked, 0, 0);
+        } else if (obj == instance->widget.status_bar.next_btn) {
+            lv_imgbtn_set_src(obj, LV_IMGBTN_STATE_RELEASED, &next_btn2_pr, 0, 0);
+        }
+        break;
+    case LV_EVENT_DEFOCUSED:
+        if (obj == instance->widget.status_bar.prompt.btn) {
+            lv_imgbtn_set_src(obj, LV_IMGBTN_STATE_RELEASED, &promt_btn_rel, 0, 0);
+        } else if (obj == instance->widget.status_bar.next_btn) {
+            lv_imgbtn_set_src(obj, LV_IMGBTN_STATE_RELEASED, &next_btn2_rel, 0, 0);
+        }
+        break;
+    default:
+        break;
+    }
+
+}
+
 void HgmGUI::HgmMonitorView::status_bar_create()
 {
     // TODO: Check battery
@@ -348,10 +370,10 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     lv_obj_add_style(widget.status_bar.next_btn, &widget.style_pr, LV_STATE_PRESSED);
     lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_PRESSED, &next_btn2_pr, 0, 0);
     lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_RELEASED, &next_btn2_rel, 0, 0);
-    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &next_btn2_pr, 0, 0);
-    lv_imgbtn_set_src(widget.status_bar.next_btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &next_btn2_pr, 0, 0);
     lv_obj_align(widget.status_bar.next_btn, LV_ALIGN_BOTTOM_MID, 0, -10);
     lv_obj_add_event_cb(widget.status_bar.next_btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(widget.status_bar.next_btn, focus_event_cb, LV_EVENT_FOCUSED, NULL);
+    lv_obj_add_event_cb(widget.status_bar.next_btn, focus_event_cb, LV_EVENT_DEFOCUSED, NULL);
 
     lv_anim_init(&widget.status_bar.prompt.fa);
     widget.status_bar.prompt.value = 0;
@@ -360,10 +382,10 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     lv_obj_add_style(widget.status_bar.prompt.btn, &widget.style_pr, LV_STATE_PRESSED);
     lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_PRESSED, &promt_btn_checked, 0, 0);
     lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_RELEASED, &promt_btn_rel, 0, 0);
-    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_CHECKED_RELEASED, &promt_btn_checked, 0, 0);
-    lv_imgbtn_set_src(widget.status_bar.prompt.btn, LV_IMGBTN_STATE_CHECKED_PRESSED, &promt_btn_checked, 0, 0);
     lv_obj_align_to(widget.status_bar.prompt.btn, widget.status_bar.next_btn, LV_ALIGN_OUT_TOP_MID, 0, -5);
     lv_obj_add_event_cb(widget.status_bar.prompt.btn, ctl_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(widget.status_bar.prompt.btn, focus_event_cb, LV_EVENT_FOCUSED, NULL);
+    lv_obj_add_event_cb(widget.status_bar.prompt.btn, focus_event_cb, LV_EVENT_DEFOCUSED, NULL);
 
     // prompt frame
     widget.status_bar.prompt.frame.self = lv_imgbtn_create(lv_scr_act());
@@ -376,7 +398,7 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     widget.status_bar.prompt.frame.conn_status = lv_label_create(widget.status_bar.prompt.frame.self);
     lv_obj_set_style_text_font(widget.status_bar.prompt.frame.conn_status, &fangpx_10px, 0);
     lv_label_set_recolor(widget.status_bar.prompt.frame.conn_status, true);
-    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, "#ffffff 数据源验证失败#");
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, "#ffffff 数据源未连接#");
     lv_obj_align(widget.status_bar.prompt.frame.conn_status, LV_ALIGN_TOP_MID, 0, 10);
 
     widget.status_bar.prompt.frame.ip_label = lv_label_create(widget.status_bar.prompt.frame.self);
@@ -431,7 +453,7 @@ void HgmGUI::HgmMonitorView::widgetCreate()
     /* widgets */
     HgmFramework* fw = HgmFramework::getInstance();
     String _name = String("HgmMonitorUpdate");
-    msg_t* msg = fw->hgmFwCenter.findMsg(_name);
+    msg_t* msg = fw->dataCenter.findMsg(_name);
     HardwareRequest* hrr = (HardwareRequest*)msg->pData();
 
     cpu_widget_create(hrr->GetHardwareObj(HGM_CPU)->pos);
@@ -451,7 +473,7 @@ void HgmGUI::HgmMonitorView::animCreate()
     widget.anim.flb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     widget.anim.frt = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
     widget.anim.frb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.sb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    widget.anim.sb  = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
 
     lv_anim_init(widget.anim.flt);
     lv_anim_set_var(widget.anim.flt, widget.frame.lt);
@@ -504,6 +526,22 @@ void HgmGUI::HgmMonitorView::animCreate()
 
 void HgmGUI::HgmMonitorView::animDestroy()
 {
+
+    lv_anim_timeline_set_reverse(instance->widget.anim.at, true);
+    vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
+
+    lv_anim_timeline_del(widget.anim.at);
+    lv_anim_del(&instance->widget.anim.flt, NULL);
+    lv_anim_del(&instance->widget.anim.flb, NULL);
+    lv_anim_del(&instance->widget.anim.frt, NULL);
+    lv_anim_del(&instance->widget.anim.frb, NULL);
+    lv_anim_del(&instance->widget.anim.sb, NULL);
+
+    lv_mem_free(widget.anim.flt);      
+    lv_mem_free(widget.anim.flb);
+    lv_mem_free(widget.anim.frt);
+    lv_mem_free(widget.anim.frb);
+    lv_mem_free(widget.anim.sb );
 }
 
 void HgmGUI::HgmMonitorView::widgetDestroy()
@@ -513,6 +551,11 @@ void HgmGUI::HgmMonitorView::widgetDestroy()
 
 void HgmGUI::HgmMonitorView::frameDestroy()
 {
+    lv_obj_del(instance->widget.frame.lb);
+    lv_obj_del(instance->widget.frame.rb);
+    lv_obj_del(instance->widget.frame.lt);
+    lv_obj_del(instance->widget.frame.rt);
+    lv_obj_del(instance->widget.status_bar.bg);
 }
 
 
@@ -633,12 +676,15 @@ void HgmGUI::HgmMonitorView::begin()
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
     stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
-    
-    lv_event_send(widget.status_bar.prompt.btn, LV_EVENT_CLICKED, NULL);
 }
 
 void HgmGUI::HgmMonitorView::end()
 {
+    lv_timer_del(stateCheckTimer);
+    lv_timer_del(showTimeTimer);
+
+    lv_group_remove_all_objs(widget.group);
+
     // TODO: Destroy
     widgetDestroy();
     animDestroy();

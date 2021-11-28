@@ -25,14 +25,14 @@ HgmGUI::HgmTw::HgmTw()
     gui_subs.name(_name);
     gui_subs.subscribe_msg(_name, HgmTw::tw_ui_cb);
 
-    HgmFramework::getInstance()->hgmFwCenter.addMsg(&gui_msg);
-    HgmFramework::getInstance()->hgmFwCenter.subscribe(&gui_subs);
+    HgmFramework::getInstance()->viewsCenter.addMsg(&gui_msg);
+    HgmFramework::getInstance()->viewsCenter.subscribe(&gui_subs);
 }
 
 HgmGUI::HgmTw::~HgmTw()
 {
-    HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&gui_subs);
-    HgmFramework::getInstance()->hgmFwCenter.removeMsg(gui_msg.id());
+    HgmFramework::getInstance()->viewsCenter.unsubscribe(&gui_subs);
+    HgmFramework::getInstance()->viewsCenter.removeMsg(gui_msg.id());
 
     instance = nullptr;
 }
@@ -48,16 +48,16 @@ void HgmGUI::HgmTw::begin()
     update_subs.subscribe_msg(update_subs.name(), HgmTw::tw_update_cb);
 
     // 注册消息和订阅者
-    HgmFramework::getInstance()->hgmFwCenter.addMsg(&update_msg);
-    HgmFramework::getInstance()->hgmFwCenter.subscribe(&update_subs);
+    HgmFramework::getInstance()->dataCenter.addMsg(&update_msg);
+    HgmFramework::getInstance()->dataCenter.subscribe(&update_subs);
 
     def_vm.view.begin();
 } 
 
 void HgmGUI::HgmTw::end()
 {
-    HgmFramework::getInstance()->hgmFwCenter.unsubscribe(&update_subs);
-    HgmFramework::getInstance()->hgmFwCenter.removeMsg(update_msg.id());
+    HgmFramework::getInstance()->dataCenter.unsubscribe(&update_subs);
+    HgmFramework::getInstance()->dataCenter.removeMsg(update_msg.id());
 
     def_vm.view.end();
     def_vm.model.end();

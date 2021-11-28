@@ -31,7 +31,8 @@ HgmFramework::HgmFramework()
 {
     instance = this;
 
-    hgmFwCenter.begin();
+    viewsCenter.begin();
+    dataCenter.begin();
 
     /* Create All UI */
     hgmMonitor = new HgmMonitor();
@@ -44,7 +45,8 @@ HgmFramework::~HgmFramework()
     delete hgmTw;
     delete hgmMonitor;
 
-    hgmFwCenter.end();
+    dataCenter.end();
+    viewsCenter.end();
     
     instance = NULL;
 }
@@ -66,22 +68,22 @@ void HgmGUI::HgmFramework::framework_task(void* params)
 
         /* Kill the previous GUI  */
         if (!instance->curr.isEmpty()) {
-            msg = instance->hgmFwCenter.findMsg(instance->curr);
+            msg = instance->viewsCenter.findMsg(instance->curr);
             if (!msg) continue;
 
             instance->_gd.ctl = END;
             msg->pData(&instance->_gd);
-            ret = instance->hgmFwCenter.notify(instance->curr, instance->curr);
+            ret = instance->viewsCenter.notify(instance->curr, instance->curr);
             if (!ret) continue;
             instance->prev = instance->curr;
         }
 
         /* Create the designated GUI  */
-        msg = instance->hgmFwCenter.findMsg(name);
+        msg = instance->viewsCenter.findMsg(name);
         if (!msg) continue;
         instance->_gd.ctl = BEGIN;
         msg->pData(&instance->_gd);
-        ret = instance->hgmFwCenter.notify(name, name);
+        ret = instance->viewsCenter.notify(name, name);
         if (ret)
             instance->curr = name;
         
@@ -105,8 +107,8 @@ void HgmGUI::HgmFramework::begin()
         1
     );
 
-    changeGUI("HgmTw");
-    //changeGUI("HgmMonitor");
+    //changeGUI("HgmTw");
+    changeGUI("HgmMonitor");
 }
 
 

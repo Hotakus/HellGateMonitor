@@ -91,7 +91,7 @@ void HGM::HgmLvgl::begin()
         "HgmLvglTask",
         3072,
         NULL,
-        5,
+        7,
         &hgmLvglTaskHandle,
         1
     );
