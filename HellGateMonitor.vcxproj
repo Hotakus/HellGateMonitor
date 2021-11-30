@@ -271,6 +271,7 @@
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\led\lv_led.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\list\lv_list.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\lv_widgets.h" />
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\meter\lv_meter.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\msgbox\lv_msgbox.h" />
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\span\lv_span.h" />
@@ -550,6 +551,7 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\keyboard\lv_keyboard.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\led\lv_led.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\list\lv_list.c" />
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\meter\lv_meter.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\msgbox\lv_msgbox.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\span\lv_span.c" />
@@ -593,17 +595,6 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_vglite.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_sdl.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_stm32_dma2d.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_arc.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_blend.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_img.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_label.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_line.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_rect.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_lru.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_mask.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_stack_blur.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_texture_cache.c" />
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_utils.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\hal\lv_hal_disp.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\hal\lv_hal_indev.c" />
     <ClCompile Include="Source\LvglSrc\lvgl\src\hal\lv_hal_tick.c" />

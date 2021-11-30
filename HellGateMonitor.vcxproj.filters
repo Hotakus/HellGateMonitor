@@ -527,6 +527,9 @@
     <ClInclude Include="Source\HgmLvgl\LvglPort\lv_port_indev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -779,18 +782,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\font\lv_font_unscii_16.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_pxp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_pxp_osa.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_vglite.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_stm32_dma2d.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\hal\lv_hal_disp.c">
@@ -1402,42 +1393,6 @@
     <ClCompile Include="Source\LvglSrc\lvgl\src\draw\lv_draw.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_arc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_blend.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_img.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_label.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_line.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_draw_rect.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_lru.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_mask.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_stack_blur.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_texture_cache.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\sdl\lv_gpu_sdl_utils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_sdl.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\tests\src\test_cases\test_arc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1457,6 +1412,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmLvgl\LvglPort\lv_port_indev.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_pxp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_pxp_osa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_nxp_vglite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_sdl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\gpu\lv_gpu_stm32_dma2d.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

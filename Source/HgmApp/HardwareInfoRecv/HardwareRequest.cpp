@@ -36,22 +36,22 @@ static void hrtask(void* params)
     String str = "";
 
     while (true) {
-        if (!hgmWiFi.hgmTcp->accept) {
-            vTaskDelay(3000);
-            continue;
-        }
-
-        if (!hgmWiFi.hgmTcp->accept.connected()) {
-            vTaskDelay(1000);
-            continue;
-        }
-
-        if (!hgmWiFi.hgmTcp->isHGM) {
-            vTaskDelay(1000);
-            continue;
-        }
-
-        HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        // if (!hgmWiFi.hgmTcp->accept) {
+        //     vTaskDelay(3000);
+        //     continue;
+        // }
+        // 
+        // if (!hgmWiFi.hgmTcp->accept.connected()) {
+        //     vTaskDelay(1000);
+        //     continue;
+        // }
+        // 
+        // if (!hgmWiFi.hgmTcp->isHGM) {
+        //     vTaskDelay(1000);
+        //     continue;
+        // }
+        // 
+        // HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
         vTaskDelay(HARDWARE_REQUEST_GAP);
     }
 }

@@ -77,13 +77,17 @@ lv_obj_t* HgmMonitorView::frame(HgmHardwarePosition pos)
     switch (pos)
     {
     case HGM_LEFT_TOP:
-        return widget.frame.lt;
+        // return widget.frame.lt;
+        return widget.frame.inner.lt;
     case HGM_LEFT_BOTTOM:
-        return widget.frame.lb;
+        //return widget.frame.lb;
+        return widget.frame.inner.lb;
     case HGM_RIGHT_TOP:
-        return widget.frame.rt;
+        //return widget.frame.rt;
+        return widget.frame.inner.rt;
     case HGM_RIGHT_BOTTOM:
-        return widget.frame.rb;
+        //return widget.frame.rb;
+        return widget.frame.inner.rb;
     default:
         return NULL;
     }
@@ -202,7 +206,6 @@ void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
 
     widget.mem.label.name = lv_label_create(f);
     lv_obj_set_style_text_font(widget.mem.label.name, &k12x8_7px, 0);
-    //lv_obj_set_width(widget.mem.label.name, 90);
     lv_obj_align(widget.mem.label.name, LV_ALIGN_TOP_LEFT, 5, 3);
     lv_label_set_recolor(widget.mem.label.name, true);
     lv_label_set_text_fmt(widget.mem.label.name, "Memory");
@@ -212,7 +215,6 @@ void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
     lv_label_set_recolor(widget.mem.label.percent, true);
     lv_label_set_text_fmt(widget.mem.label.percent, "Load:----", 0);
     lv_obj_align_to(widget.mem.label.percent, widget.mem.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 1);
-    //lv_obj_align_to(widget.mem.label.percent, widget.mem.bar.usage, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
 
     widget.mem.bar.usage = lv_bar_create(f);
     lv_obj_set_size(widget.mem.bar.usage, 30, 8);
@@ -222,8 +224,6 @@ void HgmMonitorView::mem_widget_create(HgmHardwarePosition pos)
     lv_obj_set_style_radius(widget.mem.bar.usage, 2, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(widget.mem.bar.usage, lv_color_make(0, 0, 0), LV_PART_MAIN);
     lv_obj_set_style_bg_color(widget.mem.bar.usage, lv_color_make(0x6a, 0x83, 0x33), LV_PART_INDICATOR);
-    //lv_obj_align_to(widget.mem.bar.usage, widget.mem.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
-    //lv_obj_align_to(widget.mem.bar.usage, widget.mem.label.name, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
     lv_obj_align(widget.mem.bar.usage, LV_ALIGN_TOP_RIGHT, -8, 6);
 
     widget.mem.label.free = lv_label_create(f);
@@ -423,21 +423,45 @@ void HgmGUI::HgmMonitorView::frameCreate()
     lv_imgbtn_set_src(widget.frame.lt, LV_IMGBTN_STATE_RELEASED, &frame_left, &frame_mid, &frame_right);
     lv_obj_align(widget.frame.lt, LV_ALIGN_TOP_LEFT, 5 + 240, 5);
     lv_obj_set_width(widget.frame.lt, 100);
+    widget.frame.inner.lt = lv_img_create(widget.frame.lt);
+    lv_obj_set_style_opa(widget.frame.inner.lt, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_size(widget.frame.inner.lt, 100, 60);
+    lv_obj_align(widget.frame.inner.lt, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_opa(widget.frame.inner.lt, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(widget.frame.inner.lt, LV_OPA_0, LV_PART_MAIN);
 
     widget.frame.lb = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(widget.frame.lb, LV_IMGBTN_STATE_RELEASED, &frame_left, &frame_mid, &frame_right);
     lv_obj_align(widget.frame.lb, LV_ALIGN_TOP_LEFT, 5 + 240, 70);
     lv_obj_set_width(widget.frame.lb, 100);
+    widget.frame.inner.lb = lv_img_create(widget.frame.lb);
+    lv_obj_set_style_opa(widget.frame.inner.lb, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_size(widget.frame.inner.lb, 100, 60);
+    lv_obj_align(widget.frame.inner.lb, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_opa(widget.frame.inner.lb, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(widget.frame.inner.lb, LV_OPA_0, LV_PART_MAIN);
 
     widget.frame.rt = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(widget.frame.rt, LV_IMGBTN_STATE_RELEASED, &frame_left, &frame_mid, &frame_right);
     lv_obj_align(widget.frame.rt, LV_ALIGN_TOP_LEFT, 110 + 240, 5);
     lv_obj_set_width(widget.frame.rt, 100);
+    widget.frame.inner.rt = lv_img_create(widget.frame.rt);
+    lv_obj_set_style_opa(widget.frame.inner.rt, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_size(widget.frame.inner.rt, 100, 60);
+    lv_obj_align(widget.frame.inner.rt, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_opa(widget.frame.inner.rt, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(widget.frame.inner.rt, LV_OPA_0, LV_PART_MAIN);
 
     widget.frame.rb = lv_imgbtn_create(lv_scr_act());
     lv_imgbtn_set_src(widget.frame.rb, LV_IMGBTN_STATE_RELEASED, &frame_left, &frame_mid, &frame_right);
     lv_obj_align(widget.frame.rb, LV_ALIGN_TOP_LEFT, 110 + 240, 70);
     lv_obj_set_width(widget.frame.rb, 100);
+    widget.frame.inner.rb = lv_img_create(widget.frame.rb);
+    lv_obj_set_style_opa(widget.frame.inner.rb, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_size(widget.frame.inner.rb, 100, 60);
+    lv_obj_align(widget.frame.inner.rb, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_opa(widget.frame.inner.rb, LV_OPA_0, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(widget.frame.inner.rb, LV_OPA_0, LV_PART_MAIN);
 
     widget.status_bar.bg = lv_img_create(lv_scr_act());
     lv_obj_set_size(widget.status_bar.bg, 29, 135);
@@ -469,63 +493,105 @@ void HgmGUI::HgmMonitorView::widgetCreate()
 void HgmGUI::HgmMonitorView::animCreate()
 {
     /* Animations */
-    widget.anim.flt = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.flb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.frt = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.frb = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
-    widget.anim.sb  = (lv_anim_t*)lv_mem_alloc(sizeof(lv_anim_t));
+    lv_anim_init(&widget.anim.flt);
+    lv_anim_set_var(&widget.anim.flt, widget.frame.lt);
+    lv_anim_set_values(&widget.anim.flt, 5 + 240, 5);
+    lv_anim_set_early_apply(&widget.anim.flt, false);
+    lv_anim_set_exec_cb(&widget.anim.flt, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&widget.anim.flt, lv_anim_path_ease_in_out);
+    lv_anim_set_time(&widget.anim.flt, 1500);
 
-    lv_anim_init(widget.anim.flt);
-    lv_anim_set_var(widget.anim.flt, widget.frame.lt);
-    lv_anim_set_values(widget.anim.flt, 5 + 240, 5);
-    lv_anim_set_early_apply(widget.anim.flt, false);
-    lv_anim_set_exec_cb(widget.anim.flt, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.flt, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.flt, 1500);
+    lv_anim_init(&widget.anim.flb);
+    lv_anim_set_var(&widget.anim.flb, widget.frame.lb);
+    lv_anim_set_values(&widget.anim.flb, 5 + 240, 5);
+    lv_anim_set_early_apply(&widget.anim.flb, false);
+    lv_anim_set_exec_cb(&widget.anim.flb, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&widget.anim.flb, lv_anim_path_ease_in_out);
+    lv_anim_set_time(&widget.anim.flb, 1500);
 
-    lv_anim_init(widget.anim.flb);
-    lv_anim_set_var(widget.anim.flb, widget.frame.lb);
-    lv_anim_set_values(widget.anim.flb, 5 + 240, 5);
-    lv_anim_set_early_apply(widget.anim.flb, false);
-    lv_anim_set_exec_cb(widget.anim.flb, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.flb, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.flb, 1500);
+    lv_anim_init(&widget.anim.frt);
+    lv_anim_set_var(&widget.anim.frt, widget.frame.rt);
+    lv_anim_set_values(&widget.anim.frt, 110 + 240, 110);
+    lv_anim_set_early_apply(&widget.anim.frt, false);
+    lv_anim_set_exec_cb(&widget.anim.frt, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&widget.anim.frt, lv_anim_path_ease_in_out);
+    lv_anim_set_time(&widget.anim.frt, 1500);
 
-    lv_anim_init(widget.anim.frt);
-    lv_anim_set_var(widget.anim.frt, widget.frame.rt);
-    lv_anim_set_values(widget.anim.frt, 110 + 240, 110);
-    lv_anim_set_early_apply(widget.anim.frt, false);
-    lv_anim_set_exec_cb(widget.anim.frt, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.frt, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.frt, 1500);
+    lv_anim_init(&widget.anim.frb);
+    lv_anim_set_var(&widget.anim.frb, widget.frame.rb);
+    lv_anim_set_values(&widget.anim.frb, 110 + 240, 110);
+    lv_anim_set_early_apply(&widget.anim.frb, false);
+    lv_anim_set_exec_cb(&widget.anim.frb, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&widget.anim.frb, lv_anim_path_ease_in_out);
+    lv_anim_set_time(&widget.anim.frb, 1500);
 
-    lv_anim_init(widget.anim.frb);
-    lv_anim_set_var(widget.anim.frb, widget.frame.rb);
-    lv_anim_set_values(widget.anim.frb, 110 + 240, 110);
-    lv_anim_set_early_apply(widget.anim.frb, false);
-    lv_anim_set_exec_cb(widget.anim.frb, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.frb, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.frb, 1500);
-
-    lv_anim_init(widget.anim.sb);
-    lv_anim_set_var(widget.anim.sb, widget.status_bar.bg);
-    lv_anim_set_values(widget.anim.sb, 30, 0);
-    lv_anim_set_early_apply(widget.anim.sb, false);
-    lv_anim_set_exec_cb(widget.anim.sb, (lv_anim_exec_xcb_t)lv_obj_set_x);
-    lv_anim_set_path_cb(widget.anim.sb, lv_anim_path_ease_in_out);
-    lv_anim_set_time(widget.anim.sb, 500);
+    lv_anim_init(&widget.anim.sb);
+    lv_anim_set_var(&widget.anim.sb, widget.status_bar.bg);
+    lv_anim_set_values(&widget.anim.sb, 30, 0);
+    lv_anim_set_early_apply(&widget.anim.sb, false);
+    lv_anim_set_exec_cb(&widget.anim.sb, (lv_anim_exec_xcb_t)lv_obj_set_x);
+    lv_anim_set_path_cb(&widget.anim.sb, lv_anim_path_ease_in_out);
+    lv_anim_set_time(&widget.anim.sb, 500);
 
     widget.anim.at = lv_anim_timeline_create();
-    lv_anim_timeline_add(widget.anim.at, 0, widget.anim.flt);
-    lv_anim_timeline_add(widget.anim.at, 200, widget.anim.flb);
-    lv_anim_timeline_add(widget.anim.at, 600, widget.anim.frt);
-    lv_anim_timeline_add(widget.anim.at, 800, widget.anim.frb);
-    lv_anim_timeline_add(widget.anim.at, 2700, widget.anim.sb);
-    lv_anim_timeline_start(widget.anim.at);
+    lv_anim_timeline_add(widget.anim.at, 0, &widget.anim.flt);
+    lv_anim_timeline_add(widget.anim.at, 200, &widget.anim.flb);
+    lv_anim_timeline_add(widget.anim.at, 600, &widget.anim.frt);
+    lv_anim_timeline_add(widget.anim.at, 800, &widget.anim.frb);
+    lv_anim_timeline_add(widget.anim.at, 2600, &widget.anim.sb);
+    vTaskDelay(lv_anim_timeline_start(widget.anim.at) + 100);
+
+    lv_anim_t fa;
+    lv_anim_init(&fa);
+    lv_anim_set_values(&fa, LV_OPA_0, LV_OPA_100);
+    lv_anim_set_time(&fa, 200);
+    lv_anim_set_exec_cb(&fa, (lv_anim_exec_xcb_t)fade);
+    lv_anim_set_path_cb(&fa, lv_anim_path_ease_in_out);
+    
+    lv_anim_set_var(&fa, instance->widget.frame.inner.lt);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.lb);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.rt);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.rb);
+    lv_anim_start(&fa);
+    vTaskDelay(500);
+    lv_anim_del(&fa, nullptr);
+
+    //lv_obj_set_style_opa(widget.frame.inner.lt, LV_OPA_100, LV_PART_MAIN);
+    //lv_obj_set_style_opa(widget.frame.inner.rt, LV_OPA_100, LV_PART_MAIN);
+    //lv_obj_set_style_opa(widget.frame.inner.lb, LV_OPA_100, LV_PART_MAIN);
+    //lv_obj_set_style_opa(widget.frame.inner.rb, LV_OPA_100, LV_PART_MAIN);
+
 }
 
 void HgmGUI::HgmMonitorView::animDestroy()
 {
+    // fade out effect
+    lv_anim_t fa;
+    lv_anim_init(&fa);
+    lv_anim_set_values(&fa, LV_OPA_100, LV_OPA_0);
+    lv_anim_set_time(&fa, 200);
+    lv_anim_set_exec_cb(&fa, (lv_anim_exec_xcb_t)fade);
+    lv_anim_set_path_cb(&fa, lv_anim_path_ease_in_out);
+
+    lv_anim_set_var(&fa, instance->widget.frame.inner.lt);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.lb);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.rt);
+    lv_anim_start(&fa);
+    vTaskDelay(100);
+    lv_anim_set_var(&fa, instance->widget.frame.inner.rb);
+    lv_anim_start(&fa);
+    vTaskDelay(200);
+    lv_anim_del(&fa, nullptr);
 
     lv_anim_timeline_set_reverse(instance->widget.anim.at, true);
     vTaskDelay(lv_anim_timeline_start(instance->widget.anim.at));
@@ -536,12 +602,6 @@ void HgmGUI::HgmMonitorView::animDestroy()
     lv_anim_del(&instance->widget.anim.frt, NULL);
     lv_anim_del(&instance->widget.anim.frb, NULL);
     lv_anim_del(&instance->widget.anim.sb, NULL);
-
-    lv_mem_free(widget.anim.flt);      
-    lv_mem_free(widget.anim.flb);
-    lv_mem_free(widget.anim.frt);
-    lv_mem_free(widget.anim.frb);
-    lv_mem_free(widget.anim.sb );
 }
 
 void HgmGUI::HgmMonitorView::widgetDestroy()
@@ -665,14 +725,18 @@ static void stateCheck(lv_timer_t* timer)
         else if (ret >= 100)
             lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_5);
     }
-    
+
 }
 
 void HgmGUI::HgmMonitorView::begin()
 {
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 01");
     frameCreate();
-    animCreate();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 02");
     widgetCreate();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 03");
+    animCreate();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 04");
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
     stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
@@ -685,10 +749,19 @@ void HgmGUI::HgmMonitorView::end()
 
     lv_group_remove_all_objs(widget.group);
 
+    if (instance->widget.status_bar.prompt.value) {
+        lv_event_send(instance->widget.status_bar.prompt.btn, LV_EVENT_CLICKED, NULL);
+        vTaskDelay(300);
+    }
+
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 05");
     // TODO: Destroy
     widgetDestroy();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 06");
     animDestroy();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 07");
     frameDestroy();
+    Serial.println("HgmMonitorView::begin() ----------------------------------------- 08");
 }
 
 void HgmGUI::HgmMonitorView::alter_pos(HgmHardwarePosition from, HgmHardwarePosition to)

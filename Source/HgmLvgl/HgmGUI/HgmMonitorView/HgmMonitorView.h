@@ -89,11 +89,11 @@ namespace HgmGUI {
 
             struct _anim {
                 lv_anim_timeline_t* at;
-                lv_anim_t* flt;
-                lv_anim_t* flb;
-                lv_anim_t* frt;
-                lv_anim_t* frb;
-                lv_anim_t* sb;
+                lv_anim_t flt;
+                lv_anim_t flb;
+                lv_anim_t frt;
+                lv_anim_t frb;
+                lv_anim_t sb;
             } anim;
 
             struct {
