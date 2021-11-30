@@ -28,6 +28,7 @@ namespace HgmGUI {
 		static void monitor_ui_cb(msg_t* msg);
 		static void monitor_update_cb(msg_t* msg);
 		static void monitor_pos_cb(msg_t* msg);
+		static void monitor_status_cb(msg_t* msg);
 	public:
 
 		/**
@@ -42,6 +43,7 @@ namespace HgmGUI {
 		subscriber_t update_subs;
 		msg_t gui_msg;
 		msg_t update_msg;
+		msg_t status_msg;
 
 		HgmMonitor();
 		~HgmMonitor();

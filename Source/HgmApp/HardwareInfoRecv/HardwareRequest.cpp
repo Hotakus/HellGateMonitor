@@ -36,22 +36,17 @@ static void hrtask(void* params)
     String str = "";
 
     while (true) {
-        // if (!hgmWiFi.hgmTcp->accept) {
-        //     vTaskDelay(3000);
-        //     continue;
-        // }
-        // 
-        // if (!hgmWiFi.hgmTcp->accept.connected()) {
-        //     vTaskDelay(1000);
-        //     continue;
-        // }
-        // 
-        // if (!hgmWiFi.hgmTcp->isHGM) {
-        //     vTaskDelay(1000);
-        //     continue;
-        // }
-        // 
-        // HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        if (!hgmWiFi.hgmTcp->hasClient) {
+            vTaskDelay(2000);
+            continue;
+        }
+
+        if (!hgmWiFi.hgmTcp->isDataSrc) {
+            vTaskDelay(2000);
+            continue;
+        }
+        
+        HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
         vTaskDelay(HARDWARE_REQUEST_GAP);
     }
 }
@@ -69,9 +64,9 @@ void HgmApplication::HardwareRequest::deInitTask()
 HgmApplication::HardwareRequest::HardwareRequest()
 {
     instance = this;
-    hgmHardObj = (HgmHardwareObject**)hotakusAlloc(sizeof(HgmHardwareObject*) * supportHardwareCnt);
+    hgmHardObj = (HgmHardwareObject**)malloc(sizeof(HgmHardwareObject*) * supportHardwareCnt);
     for (uint8_t i = 0; i < supportHardwareCnt; i++) {
-        hgmHardObj[i] = (HgmHardwareObject*)hotakusAlloc(sizeof(HgmHardwareObject));
+        hgmHardObj[i] = (HgmHardwareObject*)malloc(sizeof(HgmHardwareObject));
         hgmHardObj[i]->hardware = HGM_HARD_NULL;
         hgmHardObj[i]->pos = HGM_POS_NULL;
         hgmHardObj[i]->params = NULL;
@@ -82,14 +77,14 @@ HgmApplication::HardwareRequest::HardwareRequest()
 HgmApplication::HardwareRequest::~HardwareRequest()
 {
     for (uint8_t i = 0; i < supportHardwareCnt; i++)
-        hotakusFree(hgmHardObj[i]);
-    hotakusFree(hgmHardObj);
+        free(hgmHardObj[i]);
+    free(hgmHardObj);
     instance = nullptr;
 }
 
 void HardwareRequest::begin()
 {
-    hd = (_hardData*)hotakusAlloc(sizeof(_hardData));
+    hd = (_hardData*)malloc(sizeof(_hardData));
     hd->cpuData = new HardwareCpuData();
     hd->gpuData = new HardwareGpuData();
     hd->memData = new HardwareMemData();
@@ -130,7 +125,7 @@ void HardwareRequest::end()
     delete hd->memData;
     delete hd->diskData;
     delete hd->netData;
-    hotakusFree(hd);
+    free(hd);
 
     hgm_log_d(TAG, "end");
 }

@@ -156,28 +156,26 @@ WiFiClient* HgmApplication::HgmTCP::GetWiFiClient()
  */
 String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod method)
 {
+    String out = "";
     HDJsonDoc hgmPack(dataToPack.length() + 1024);
 
     hgmPack["Header"] = TCP_PACK_HEADER;
+    hgmPack["DataType"] = String(method);
 
     switch (method) {
     case HGM_TCP_PACK_METHOD_OK: {
-        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_OK);
         hgmPack["Data"] = "ok";
         break;
     }
     case HGM_TCP_PACK_METHOD_ERROR: {
-        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_ERROR);
         hgmPack["Data"] = "error";
         break;
     }
     case HGM_TCP_PACK_METHOD_NORMAL: {
-        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_NULL - 1);
         hgmPack["Data"] = dataToPack;
         break;
     }
     case HGM_TCP_PACK_METHOD_REQUEST_HWI: {
-        hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_REQUEST_HWI);
         // TODO:
         // hgmPack["Data"]["CPU"] = String(hrr->isRequest(HGM_CPU));
         // hgmPack["Data"]["GPU"] = String(hrr->isRequest(HGM_GPU));
@@ -186,14 +184,18 @@ String HgmApplication::HgmTCP::packRawData(String& dataToPack, HgmTcpPackMethod 
         // hgmPack["Data"]["Network"] = String(hrr->isRequest(HGM_NETWORK));
         break;
     }
+    case HGM_TCP_PACK_METHOD_DS_MATCH: {
+        hgmPack["Data"] = "match";
+        break;
+    }
     default:
         hgmPack["DataType"] = String(HGM_TCP_PACK_METHOD_ERROR);
         hgmPack["Data"] = "null";
         break;
     }
 
-    serializeJson(hgmPack, dataToPack);
-    return dataToPack;
+    serializeJson(hgmPack, out);
+    return out;
 }
 
 
@@ -300,6 +302,21 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         return HGM_TCP_PACK_METHOD_PROJECTION;
     }
+    case HGM_TCP_PACK_METHOD_DS_MATCH: {
+        instance->isDataSrc = true;
+        MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
+        msg_t* msg = mc.findMsg("HgmMonitorStatus");
+        if (msg) {
+            msg->pData(&instance->isDataSrc);
+            mc.notify("HgmMonitorUpdate", msg->id());
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+            return HGM_TCP_PACK_METHOD_OK;
+        } else {
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+            return HGM_TCP_PACK_METHOD_ERROR;
+        }
+        
+    }
     default:
         str = "DataType error. it's not a valid HGM TCP pack";
         Serial.println(str);
@@ -308,6 +325,13 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
     }
 
     return HGM_TCP_PACK_METHOD_ERROR;
+}
+
+bool HgmApplication::HgmTCP::matchDataSrc(size_t timeout)
+{
+    /* 01 Send the pairing request */
+    String str;
+    HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_DS_MATCH);
 }
 
 /**
@@ -388,8 +412,8 @@ static void TcpServerListeningTask(void* params)
         }
 
         Serial.printf("A client has connected into server.\n");
-
-        // TODO: HGM match
+        instance->hasClient = true;
+        instance->matchDataSrc();
 
         while (instance->accept.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
@@ -397,10 +421,14 @@ static void TcpServerListeningTask(void* params)
             xSemaphoreGive(wbs);
             vTaskDelay(10);
         }
+
+        instance->hasClient = false;
+        instance->isDataSrc = false;
+        MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
+        msg_t* msg = mc.findMsg("HgmMonitorStatus");
+        if (msg) {
+            msg->pData(&instance->isDataSrc);
+            mc.notify("HgmMonitorUpdate", msg->id());
+        }
     }
-
-
-
-
-
 }

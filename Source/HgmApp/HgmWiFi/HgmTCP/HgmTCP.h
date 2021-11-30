@@ -25,8 +25,9 @@ namespace HgmApplication {
 
         HGM_TCP_PACK_METHOD_REQUEST_HWI,		    // (3) Request Hardware info from HGMC, it will get hardware info from HGMC according to config params
         HGM_TCP_PACK_METHOD_HWI,                    // (4) Hardware info pack
+        HGM_TCP_PACK_METHOD_DS_MATCH,               // (5) Match data source 
 
-        HGM_TCP_PACK_METHOD_PROJECTION,             // (5) 
+        HGM_TCP_PACK_METHOD_PROJECTION,             // (6) 
 
         HGM_TCP_PACK_METHOD_NORMAL,                 // (M-1) Pack is Normal data
         HGM_TCP_PACK_METHOD_NULL,                   // (M) Null
@@ -53,7 +54,8 @@ namespace HgmApplication {
 
     public:
         bool isReady = false;
-        bool isHGM = false;
+        bool isDataSrc = false;
+        bool hasClient = false;
         TcpControlMethod tcm = TCP_NULL;
         WiFiClient accept;
 
@@ -84,6 +86,8 @@ namespace HgmApplication {
         /* To send data pack, used by another Hgm App */
         static void sendDatePack(String& rawData, HgmTcpPackMethod method);
         static HgmTcpPackMethod receiveDataPack();
+
+        bool matchDataSrc(size_t timeout = (5 * 1000));
     };
 
 

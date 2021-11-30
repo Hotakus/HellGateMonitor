@@ -145,6 +145,7 @@ namespace HgmGUI {
 		void end();
 
 		void update_monitor(HardwareRequest* hrr);
+		void update_status(bool ds);
         void alter_pos(HgmHardwarePosition from, HgmHardwarePosition to);
 	};
 }

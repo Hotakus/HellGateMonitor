@@ -398,7 +398,7 @@ void HgmGUI::HgmMonitorView::status_bar_create()
     widget.status_bar.prompt.frame.conn_status = lv_label_create(widget.status_bar.prompt.frame.self);
     lv_obj_set_style_text_font(widget.status_bar.prompt.frame.conn_status, &fangpx_10px, 0);
     lv_label_set_recolor(widget.status_bar.prompt.frame.conn_status, true);
-    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, "#ffffff 数据源未连接#");
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, "#ffffff 无数据源#");
     lv_obj_align(widget.status_bar.prompt.frame.conn_status, LV_ALIGN_TOP_MID, 0, 10);
 
     widget.status_bar.prompt.frame.ip_label = lv_label_create(widget.status_bar.prompt.frame.self);
@@ -474,16 +474,23 @@ void HgmGUI::HgmMonitorView::frameCreate()
 
 void HgmGUI::HgmMonitorView::widgetCreate()
 {
+    Serial.println("widgetCreate ----------------------------------------- 01");
     /* widgets */
     HgmFramework* fw = HgmFramework::getInstance();
     String _name = String("HgmMonitorUpdate");
     msg_t* msg = fw->dataCenter.findMsg(_name);
     HardwareRequest* hrr = (HardwareRequest*)msg->pData();
 
+    Serial.println("widgetCreate ----------------------------------------- 02");
+
     cpu_widget_create(hrr->GetHardwareObj(HGM_CPU)->pos);
+    Serial.println("widgetCreate ----------------------------------------- 03");
     gpu_widget_create(hrr->GetHardwareObj(HGM_GPU)->pos);
+    Serial.println("widgetCreate ----------------------------------------- 04");
     mem_widget_create(hrr->GetHardwareObj(HGM_MEMORY)->pos);
+    Serial.println("widgetCreate ----------------------------------------- 05");
     network_widget_create(hrr->GetHardwareObj(HGM_NETWORK)->pos);
+    Serial.println("widgetCreate ----------------------------------------- 06");
 
     widget.group = keypad_group;
     lv_group_add_obj(widget.group, widget.status_bar.prompt.btn);
@@ -547,7 +554,7 @@ void HgmGUI::HgmMonitorView::animCreate()
     lv_anim_set_time(&fa, 200);
     lv_anim_set_exec_cb(&fa, (lv_anim_exec_xcb_t)fade);
     lv_anim_set_path_cb(&fa, lv_anim_path_ease_in_out);
-    
+
     lv_anim_set_var(&fa, instance->widget.frame.inner.lt);
     lv_anim_start(&fa);
     vTaskDelay(100);
@@ -725,7 +732,6 @@ static void stateCheck(lv_timer_t* timer)
         else if (ret >= 100)
             lv_img_set_src(instance->widget.status_bar.signal.icon, &signal_5);
     }
-
 }
 
 void HgmGUI::HgmMonitorView::begin()
@@ -740,6 +746,8 @@ void HgmGUI::HgmMonitorView::begin()
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
     stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
+
+    lv_event_send(instance->widget.status_bar.prompt.btn, LV_EVENT_CLICKED, NULL);
 }
 
 void HgmGUI::HgmMonitorView::end()
@@ -792,4 +800,9 @@ void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)
         net_update(hrr);
     if (hrr->isRequest(HGM_HARD_DISK))
         disk_update(hrr);
+}
+
+void HgmGUI::HgmMonitorView::update_status(bool ds)
+{
+    lv_label_set_text_fmt(widget.status_bar.prompt.frame.conn_status, (ds ? "#ffffff 数据源已连接#" : "#ffffff 无数据源#"));
 }

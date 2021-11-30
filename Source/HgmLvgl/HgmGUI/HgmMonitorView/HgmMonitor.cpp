@@ -56,10 +56,14 @@ void HgmGUI::HgmMonitor::begin()
 	update_subs.name(_name + String("Update"));
 	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
 
+    status_msg.id(_name + String("Status"));
+    update_subs.subscribe_msg(status_msg.id(), HgmMonitor::monitor_status_cb);
+
     Serial.println("------------------------------------------------- 03");
 
 	// 注册消息和订阅者
 	HgmFramework::getInstance()->dataCenter.addMsg(&update_msg);
+	HgmFramework::getInstance()->dataCenter.addMsg(&status_msg);
 	HgmFramework::getInstance()->dataCenter.subscribe(&update_subs);
 
     Serial.println("------------------------------------------------- 04");
@@ -70,7 +74,7 @@ void HgmGUI::HgmMonitor::begin()
     Serial.println("------------------------------------------------- 05");
 
 	def_vm.view.begin();
-    //def_vm.model.hrr->initTask();
+    def_vm.model.hrr->initTask();
 
     Serial.println("------------------------------------------------- 06");
 }
@@ -78,7 +82,7 @@ void HgmGUI::HgmMonitor::begin()
 void HgmGUI::HgmMonitor::end()
 {
     Serial.println("------------------------------------------------- 11");
-    //def_vm.model.hrr->deInitTask();
+    def_vm.model.hrr->deInitTask();
     Serial.println("------------------------------------------------- 12");
     def_vm.view.end();
     Serial.println("------------------------------------------------- 13");
@@ -91,6 +95,7 @@ void HgmGUI::HgmMonitor::end()
 
 	HgmFramework::getInstance()->dataCenter.unsubscribe(&update_subs);
 	HgmFramework::getInstance()->dataCenter.removeMsg(update_msg.id());
+	HgmFramework::getInstance()->dataCenter.removeMsg(status_msg.id());
     Serial.println("------------------------------------------------- 16");
 }
 
@@ -122,4 +127,15 @@ void HgmMonitor::monitor_update_cb(msg_t *msg)
 {
     HardwareRequest* hrr = (HardwareRequest*)msg->pData();
     instance->def_vm.view.update_monitor(hrr);
+}
+
+void HgmGUI::HgmMonitor::monitor_pos_cb(msg_t* msg)
+{
+    // TODO: 
+}
+
+void HgmGUI::HgmMonitor::monitor_status_cb(msg_t* msg)
+{
+    bool* ds = (bool*)msg->pData();
+    instance->def_vm.view.update_status(*ds);
 }
