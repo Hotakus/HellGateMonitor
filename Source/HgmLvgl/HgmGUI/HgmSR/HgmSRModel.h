@@ -1,14 +1,32 @@
-﻿#ifndef HELLGATEMONITOR_HGMSRMODEL_H
+/******************************************************************
+ * @file HgmSRModel.h
+ * @author Hotakus (...)
+ * @email ttowfive@gmail.com
+ * @brief ...
+ * @version 1.0
+ * @date 2021/12/1 10:57
+ * @copyright Copyright (c) 2021/12/1
+*******************************************************************/
+#ifndef HELLGATEMONITOR_HGMSRMODEL_H
 #define HELLGATEMONITOR_HGMSRMODEL_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace HgmGUI {
+    class HgmSRModel {
+    public:
+        HgmSRModel ();
+        ~HgmSRModel ();
 
-/*...*/
+    private:
 
-#ifdef __cplusplus
+    };
+
+    HgmSRModel ::HgmSRModel ()
+    {
+    }
+
+    HgmSRModel ::~HgmSRModel ()
+    {
+    }
 }
-#endif // __cplusplus
 
 #endif //HELLGATEMONITOR_HGMSRMODEL_H

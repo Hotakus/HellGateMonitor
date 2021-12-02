@@ -468,7 +468,7 @@ void HgmGUI::HgmMonitorView::frameCreate()
     lv_obj_align(widget.status_bar.bg, LV_ALIGN_TOP_RIGHT, 30, 0);
     lv_obj_set_style_bg_color(widget.status_bar.bg, lv_color_make(0, 0, 0), 0);
     lv_obj_set_style_bg_opa(widget.status_bar.bg, LV_OPA_40, 0);
-
+    
     status_bar_create();
 }
 
