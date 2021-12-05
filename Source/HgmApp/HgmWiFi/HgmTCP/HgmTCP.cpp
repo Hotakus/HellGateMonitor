@@ -305,10 +305,10 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
     case HGM_TCP_PACK_METHOD_DS_MATCH: {
         instance->isDataSrc = true;
         MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
-        msg_t* msg = mc.findMsg("HgmMonitorStatus");
+        msg_t* msg = mc.findMsg("connStatus");
         if (msg) {
             msg->pData(&instance->isDataSrc);
-            mc.notify("HgmMonitorUpdate", msg->id());
+            mc.broadcast(msg);
             HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
             return HGM_TCP_PACK_METHOD_OK;
         } else {
@@ -425,10 +425,10 @@ static void TcpServerListeningTask(void* params)
         instance->hasClient = false;
         instance->isDataSrc = false;
         MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
-        msg_t* msg = mc.findMsg("HgmMonitorStatus");
+        msg_t* msg = mc.findMsg("connStatus");
         if (msg) {
             msg->pData(&instance->isDataSrc);
-            mc.notify("HgmMonitorUpdate", msg->id());
+            mc.broadcast(msg);
         }
     }
 }
