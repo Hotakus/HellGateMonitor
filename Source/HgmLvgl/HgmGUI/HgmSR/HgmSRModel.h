@@ -12,21 +12,15 @@
 
 namespace HgmGUI {
     class HgmSRModel {
+    private:
     public:
         HgmSRModel ();
         ~HgmSRModel ();
 
-    private:
-
+        void begin();
+        void end();
     };
 
-    HgmSRModel ::HgmSRModel ()
-    {
-    }
-
-    HgmSRModel ::~HgmSRModel ()
-    {
-    }
 }
 
 #endif //HELLGATEMONITOR_HGMSRMODEL_H

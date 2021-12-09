@@ -25,10 +25,9 @@ namespace HgmGUI {
     private:
         String _name = "HgmSR";
 
-        // static void monitor_ui_cb(msg_t* msg);
-        // static void monitor_update_cb(msg_t* msg);
-        // static void monitor_pos_cb(msg_t* msg);
-        // static void monitor_status_cb(msg_t* msg);
+        static void sr_ui_cb(msg_t* msg);
+        static void sr_status_cb(msg_t* msg);
+
     public:
 
         /**

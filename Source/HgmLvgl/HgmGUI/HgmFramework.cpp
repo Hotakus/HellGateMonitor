@@ -13,6 +13,7 @@
 #include "HgmFramework.h"
 #include "HgmTwView/HgmTw.h"
 #include "HgmMonitorView/HgmMonitor.h"
+#include "HgmSR/HgmSR.h"
 
 #define TAG "HgmFramework"
 #define HGM_DEBUG 1
@@ -24,6 +25,7 @@ using namespace HgmGUI;
 
 static HgmTw* hgmTw = nullptr;
 static HgmMonitor* hgmMonitor = nullptr;
+static HgmSR* hgmSR = nullptr;
 
 static HgmFramework* instance = nullptr;
 
@@ -37,11 +39,13 @@ HgmFramework::HgmFramework()
     /* Create All UI */
     hgmMonitor = new HgmMonitor();
     hgmTw = new HgmTw();
+    hgmSR = new HgmSR();
 }
 
 HgmFramework::~HgmFramework()
 {
     /* Remove All UI */
+    delete hgmSR;
     delete hgmTw;
     delete hgmMonitor;
 
@@ -109,6 +113,7 @@ void HgmGUI::HgmFramework::begin()
 
     //changeGUI("HgmTw");
     changeGUI("HgmMonitor");
+    //changeGUI("HgmSR");
 }
 
 

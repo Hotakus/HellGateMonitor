@@ -30,22 +30,29 @@ namespace HgmGUI {
             lv_style_t style_pr;
             lv_group_t* group;
 
-            struct _status_bar {
-                lv_obj_t* bg;
-                struct _bat_icon {
-                    lv_obj_t* icon;
-                    uint8_t value;  // %
-                } battery;
+            lv_obj_t* fps_label;
 
-                struct _signal_icon {
-                    lv_obj_t* icon;
-                    uint8_t value;
-                } signal;
+            struct {
+                lv_obj_t* self;
+                lv_img_dsc_t dsc;
+                uint8_t* buf;
+            } img;
 
-                lv_obj_t* time_label;
-                lv_obj_t* next_btn;
+            struct {
+                struct {
+                    lv_obj_t* self;
+                    lv_obj_t* conn_status;
+                    lv_obj_t* ip_label;
+                    lv_obj_t* port_label;
+                } frame;
+                lv_obj_t* btn;
+                uint8_t value;
+                lv_anim_t fa;
+            } prompt;
 
-            } status_bar;
+            lv_obj_t* prev_btn;
+            lv_obj_t* next_btn;
+
         } widget;
 
         HgmSRView();
@@ -54,7 +61,8 @@ namespace HgmGUI {
         void begin();
         void end();
 
-        void update_screen(HardwareRequest* hrr);
+        // void update_screen(HardwareRequest* hrr);
+        void update_status(bool ds);
     };
 }
 

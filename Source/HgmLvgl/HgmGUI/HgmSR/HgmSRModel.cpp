@@ -1,4 +1,4 @@
-﻿/******************************************************************
+/******************************************************************
  * @file HgmSRModel.cpp
  * @author Hotakus (...)
  * @email ttowfive@gmail.com
@@ -8,3 +8,19 @@
  * @copyright Copyright (c) 2021/12/1
 *******************************************************************/
 #include "HgmSRModel.h"
+
+HgmGUI::HgmSRModel::HgmSRModel()
+{
+}
+
+HgmGUI::HgmSRModel::~HgmSRModel()
+{
+}
+
+void HgmGUI::HgmSRModel::begin()
+{
+}
+
+void HgmGUI::HgmSRModel::end()
+{
+}

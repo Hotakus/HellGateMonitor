@@ -51,12 +51,12 @@ void HgmGUI::HgmMonitor::begin()
     Serial.println("------------------------------------------------- 02");
 
 	// 订阅数据更新消息
+    status_msg.id("connStatus");
 	update_msg.id(_name + String("Update"));
 	update_msg.pData(def_vm.model.hrr);
-	update_subs.name(_name + String("Update"));
-	update_subs.subscribe_msg(_name + String("Update"), HgmMonitor::monitor_update_cb);
 
-    status_msg.id(_name + String("Status"));
+	update_subs.name(_name + String("Update"));
+	update_subs.subscribe_msg(update_msg.id(), HgmMonitor::monitor_update_cb);
     update_subs.subscribe_msg(status_msg.id(), HgmMonitor::monitor_status_cb);
 
     Serial.println("------------------------------------------------- 03");

@@ -197,6 +197,7 @@
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.h" />
     <ClInclude Include="Source\HgmApp\HgmWiFi\HgmWiFi.h" />
     <ClInclude Include="Source\HgmApp\HotakusHttpUtil.h" />
+    <ClInclude Include="Source\HgmApp\ScreenRecv\ScreenRecv.h" />
     <ClInclude Include="Source\HgmApp\TimeInfo\TimeInfo.h" />
     <ClInclude Include="Source\HgmApp\WeatherInfo\WeatherInfo.h" />
     <ClInclude Include="Source\HgmControl\HgmControlLogic.h" />
@@ -206,6 +207,9 @@
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSetupView.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSR.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRModel.h" />
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRView.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.h" />
     <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.h" />
@@ -367,6 +371,7 @@
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmTCP\HgmTCP.cpp" />
     <ClCompile Include="Source\HgmApp\HgmWiFi\HgmWiFi.cpp" />
     <ClCompile Include="Source\HgmApp\HotakusHttpUtil.cpp" />
+    <ClCompile Include="Source\HgmApp\ScreenRecv\ScreenRecv.cpp" />
     <ClCompile Include="Source\HgmApp\TimeInfo\TimeInfo.cpp" />
     <ClCompile Include="Source\HgmApp\WeatherInfo\WeatherInfo.cpp" />
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp" />
@@ -375,6 +380,9 @@
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorModel.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmMonitorView\HgmMonitorView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSetupView.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSR.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRModel.cpp" />
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRView.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTw.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwModel.cpp" />
     <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmTwView\HgmTwView.cpp" />

@@ -530,6 +530,18 @@
     <ClInclude Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HgmApp\ScreenRecv\ScreenRecv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -1430,6 +1442,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\LvglSrc\lvgl\src\extra\widgets\menu\lv_menu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmLvgl\HgmGUI\HgmSR\HgmSRView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HgmApp\ScreenRecv\ScreenRecv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
