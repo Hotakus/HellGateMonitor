@@ -208,6 +208,12 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         String _ssid = rawPack["Data"]["ssid"];
         String _password = rawPack["Data"]["password"];
 
+        if (_ssid != "null" && _password != "null")
+            HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
+        else
+            HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_ERROR);
+            break;
+
         hgmWiFi.stop();
         vTaskDelay(1000);
         BeginWiFiWithConfig(_ssid, _password);
@@ -226,8 +232,6 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         file.close();
 
         Serial.println("WiFi had been config via bluetooth.");
-
-        HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
 
         return HGM_BT_PACK_METHOD_OK;
     }
@@ -276,15 +280,19 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
         file.close();
 
         HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
-        
-        bili.getBasicInfo();
-        bili.getUserFaceImg();
 
         String str = String("HgmTwUpdate");
         MsgCenter* mc = &HgmFramework::getInstance()->dataCenter;
         msg_t* msg = mc->findMsg(str);
-        HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
+        if (!msg) {
+            HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_ERROR);
+            break;
+        }
 
+        bili.getBasicInfo();
+        bili.getUserFaceImg();
+
+        HgmTwModel::tw_data_t* tw_data = (HgmTwModel::tw_data_t*)msg->pData();
         tw_data->tdt = HgmTwModel::BILI;
         tw_data->bd.bn = bili.getUserName();
         tw_data->bd.fans = bili.getFollower();
