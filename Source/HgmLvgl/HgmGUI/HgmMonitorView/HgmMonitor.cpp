@@ -74,7 +74,7 @@ void HgmGUI::HgmMonitor::begin()
     Serial.println("------------------------------------------------- 05");
 
 	def_vm.view.begin();
-    def_vm.model.hrr->initTask();
+    //def_vm.model.hrr->initTask();
 
     Serial.println("------------------------------------------------- 06");
 }
@@ -82,7 +82,7 @@ void HgmGUI::HgmMonitor::begin()
 void HgmGUI::HgmMonitor::end()
 {
     Serial.println("------------------------------------------------- 11");
-    def_vm.model.hrr->deInitTask();
+    //def_vm.model.hrr->deInitTask();
     Serial.println("------------------------------------------------- 12");
     def_vm.view.end();
     Serial.println("------------------------------------------------- 13");

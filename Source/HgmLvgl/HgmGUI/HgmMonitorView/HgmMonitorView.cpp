@@ -313,7 +313,7 @@ static void ctl_event_cb(lv_event_t* e)
             lv_anim_start(&instance->widget.status_bar.prompt.fa);
         }
     } else {
-        HgmFramework::getInstance()->changeGUI("HgmTw");
+        HgmFramework::getInstance()->changeGUI("HgmSR");
     }
 
 }
@@ -628,12 +628,12 @@ void HgmGUI::HgmMonitorView::frameDestroy()
 
 void HgmGUI::HgmMonitorView::cpu_update(HardwareRequest* hrr)
 {
-    // #59493f
+    // // #59493f
     lv_label_set_text_fmt(widget.cpu.label.name, "%s", hrr->hd->cpuData->name.c_str());
     lv_label_set_text_fmt(widget.cpu.label.power, "%dW/%dW", (uint32_t)hrr->hd->cpuData->powerCur, (uint32_t)hrr->hd->cpuData->powerMax);
     lv_label_set_text_fmt(widget.cpu.label.temp, "%03d℃", (uint32_t)hrr->hd->cpuData->tempAverage);
     lv_label_set_text_fmt(widget.cpu.label.usage, "%03d%%", (uint32_t)hrr->hd->cpuData->loadTotal);
-
+    
     lv_bar_set_value(widget.cpu.bar.temp, hrr->hd->cpuData->tempAverage, LV_ANIM_ON);
     lv_bar_set_value(widget.cpu.bar.usage, hrr->hd->cpuData->loadTotal, LV_ANIM_ON);
 }
@@ -691,7 +691,7 @@ void HgmGUI::HgmMonitorView::net_update(HardwareRequest* hrr)
     lv_label_set_text_fmt(widget.network.label.upload, "↑%s/S#", _numWithUnit(dat->nt.upload).c_str());
     lv_label_set_text_fmt(widget.network.label.download, "↓%s/S#", _numWithUnit(dat->nt.download).c_str());
 
-    lv_bar_set_value(widget.network.bar.usage, (int32_t)hrr->hd->memData->load, LV_ANIM_ON);
+    lv_bar_set_value(widget.network.bar.usage, (uint32_t)dat->utilization, LV_ANIM_ON);
 }
 
 void HgmGUI::HgmMonitorView::disk_update(HardwareRequest* hrr)
@@ -790,16 +790,25 @@ void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)
     // hrr->hd->netData->Set(doc);
     // hrr->hd->diskData->Set(doc);
 
-    if (hrr->isRequest(HGM_CPU))
+    Serial.printf("-----------------------------------------------------------update_monitor 08.1\n");
+
+
+    //if (hrr->isRequest(HGM_CPU))
         cpu_update(hrr);
-    if (hrr->isRequest(HGM_GPU))
+    Serial.printf("-----------------------------------------------------------update_monitor 08.2\n");
+    //if (hrr->isRequest(HGM_GPU))
         gpu_update(hrr);
-    if (hrr->isRequest(HGM_MEMORY))
+    Serial.printf("-----------------------------------------------------------update_monitor 08.3\n");
+    //if (hrr->isRequest(HGM_MEMORY))
         mem_update(hrr);
-    if (hrr->isRequest(HGM_NETWORK))
+    Serial.printf("-----------------------------------------------------------update_monitor 08.4\n");
+    //if (hrr->isRequest(HGM_NETWORK))
         net_update(hrr);
-    if (hrr->isRequest(HGM_HARD_DISK))
-        disk_update(hrr);
+    Serial.printf("-----------------------------------------------------------update_monitor 08.5\n");
+    //if (hrr->isRequest(HGM_HARD_DISK))
+    //    disk_update(hrr);
+
+    Serial.printf("-----------------------------------------------------------update_monitor 08.6\n");
 }
 
 void HgmGUI::HgmMonitorView::update_status(bool ds)

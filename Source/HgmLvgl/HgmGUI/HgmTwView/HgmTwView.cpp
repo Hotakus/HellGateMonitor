@@ -400,9 +400,9 @@ static void ctl_event_cb(lv_event_t* e)
         return;
 
     if (obj == instance->widget.next_btn) {
-        HgmFramework::getInstance()->changeGUI("ScreenRecv");
-    } else {
         HgmFramework::getInstance()->changeGUI("HgmMonitor");
+    } else {
+        HgmFramework::getInstance()->changeGUI("HgmSR");
     }
 }
 

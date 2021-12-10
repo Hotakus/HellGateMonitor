@@ -38,15 +38,15 @@ HgmFramework::HgmFramework()
 
     /* Create All UI */
     hgmMonitor = new HgmMonitor();
-    hgmTw = new HgmTw();
     hgmSR = new HgmSR();
+    hgmTw = new HgmTw();
 }
 
 HgmFramework::~HgmFramework()
 {
     /* Remove All UI */
-    delete hgmSR;
     delete hgmTw;
+    delete hgmSR;
     delete hgmMonitor;
 
     dataCenter.end();

@@ -27,6 +27,7 @@
 #define TAG "HgmTCP"
 #define HGM_DEBUG 1
 #include "../../../HgmLogUtil.h"
+#include <mutex>
 
 using namespace HgmGUI;
 using namespace HgmApplication;
@@ -83,7 +84,7 @@ void HgmApplication::HgmTCP::initTask()
     xTaskCreatePinnedToCore(
         TcpControlTask,
         "TcpControlTask",
-        3072,
+        8192,
         NULL,
         6,
         &frtos.tcpControlTaskHandle,
@@ -224,21 +225,31 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 
     String str = "";
 
+    Serial.printf("----------------------------------------------------------- 01\n");
     // Receive raw pack
     size_t packSize = (instance->accept.available() + 1);
     HDJsonDoc rawPack(packSize + 1024);
     uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+
+    Serial.printf("----------------------------------------------------------- 02\n");
+
+    //uint8_t* buf = (uint8_t*)malloc(sizeof(uint8_t) * packSize);
     if (!buf) {
         Serial.println("TCP allocated error");
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
     }
+
+    Serial.printf("----------------------------------------------------------- 03\n");
+
+    instance->accept.readBytes(buf, packSize - 1);
     buf[packSize - 1] = '\0';
-    for (size_t i = 0; i < packSize - 1; i++)
-        buf[i] = (char)instance->accept.read();
-    Serial.printf("%s\n", buf);
+    //Serial.printf("%s\n", buf);
+    Serial.printf("----------------------------------------------------------- 04\n");
     deserializeJson(rawPack, buf);
+    Serial.printf("----------------------------------------------------------- 05\n");
     heap_caps_free(buf);
+    Serial.printf("----------------------------------------------------------- 06\n");
 
     // Match Header
     String Header = rawPack["Header"];
@@ -273,6 +284,8 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
             return HGM_TCP_PACK_METHOD_ERROR;
         }
 
+        Serial.printf("----------------------------------------------------------- 07\n");
+        
         HardwareRequest* hrr = (HardwareRequest*)msg->pData();
         if (hrr->isRequest(HGM_CPU))
             hrr->hd->cpuData->Set(rawPack);
@@ -285,13 +298,18 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         if (hrr->isRequest(HGM_HARD_DISK))
             hrr->hd->diskData->Set(rawPack);
 
+        Serial.printf("----------------------------------------------------------- 08\n");
+
         bool ret = mc.notify(str, str);
+        Serial.printf("----------------------------------------------------------- 09\n");
         if (ret)
             HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         else {
             str = "Monitor has been not open.";
             HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         }
+
+        Serial.printf("----------------------------------------------------------- 10\n");
 
         return HGM_TCP_PACK_METHOD_OK;
     }

@@ -28,7 +28,7 @@ using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
 extern HgmWiFi hgmWiFi;
-
+extern SemaphoreHandle_t wbs;
 static HardwareRequest* instance = nullptr;
 
 static void hrtask(void* params)
@@ -46,14 +46,16 @@ static void hrtask(void* params)
             continue;
         }
         
-        HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        // xSemaphoreTake(wbs, portMAX_DELAY);
+        // HgmTCP::sendDatePack(str, HgmTcpPackMethod::HGM_TCP_PACK_METHOD_REQUEST_HWI);
+        // xSemaphoreGive(wbs);
         vTaskDelay(HARDWARE_REQUEST_GAP);
     }
 }
 
 void HgmApplication::HardwareRequest::initTask()
 {
-    xTaskCreatePinnedToCore(hrtask, "hardwareReqTask", 3072, NULL, 4, &frtos.hardwareReqTaskHandle, 1);
+    xTaskCreatePinnedToCore(hrtask, "hardwareReqTask", 3072, NULL, 3, &frtos.hardwareReqTaskHandle, 1);
 }
 
 void HgmApplication::HardwareRequest::deInitTask()

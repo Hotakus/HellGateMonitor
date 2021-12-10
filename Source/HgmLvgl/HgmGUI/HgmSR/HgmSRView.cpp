@@ -109,7 +109,8 @@ static lv_timer_t* showFpsTimer = NULL;
 static void show_fps(lv_timer_t* timer)
 {
     uint32_t fps = lv_refr_get_fps_avg();
-    lv_label_set_text_fmt(instance->widget.fps_label, "#486817 %02d#", fps);
+    //lv_label_set_text_fmt(instance->widget.fps_label, "#486817 %02d#", fps);
+    lv_label_set_text_fmt(instance->widget.fps_label, "#ffffff %02d#", fps);
 }
 
 
@@ -207,7 +208,8 @@ void HgmGUI::HgmSRView::widgetCreate()
     lv_obj_align(widget.fps_label, LV_ALIGN_TOP_LEFT, 5, 5);
     lv_obj_set_style_text_font(widget.fps_label, &k12x8_10px, 0);
     lv_label_set_recolor(widget.fps_label, true);
-    lv_label_set_text_fmt(widget.fps_label, "#486817 --#", 0);
+    //lv_label_set_text_fmt(widget.fps_label, "#486817 --#", 0);
+    lv_label_set_text_fmt(widget.fps_label, "#ffffff --#", 0);
 
     //prompt_create();
 
