@@ -20,7 +20,7 @@ HGM的TCP数据包格式(JSON)
 
 
 ## 数据包示例
-**识别当前接入设备是否为HGM（被动）** （DataType == 0）
+**识别当前接入设备是否为HGM（主动）** （DataType == 0）
 ```json
 {
   "Header": "HgmTCP",
@@ -44,6 +44,17 @@ HGM的TCP数据包格式(JSON)
   }
 }
 ```
+
+
+**数据源匹配（被动）** （DataType == 5）
+```json
+{
+  "Header": "HgmTCP",
+  "DataType": "5",
+  "Data": "match"
+}
+```
+
 1 为请求，0 为不请求  
 请求成功则接收到OK数据包，紧跟着“硬件信息”数据包
 
