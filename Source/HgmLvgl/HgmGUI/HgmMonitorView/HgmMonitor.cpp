@@ -89,8 +89,8 @@ void HgmGUI::HgmMonitor::end()
     def_vm.model.end();
     Serial.println("------------------------------------------------- 14");
 
-    hgmWiFi.OpenTCP(false);
-    hgmWiFi.hgmTcp->stop();
+    //hgmWiFi.OpenTCP(false);
+    //hgmWiFi.hgmTcp->stop();
     Serial.println("------------------------------------------------- 15");
 
 	HgmFramework::getInstance()->dataCenter.unsubscribe(&update_subs);

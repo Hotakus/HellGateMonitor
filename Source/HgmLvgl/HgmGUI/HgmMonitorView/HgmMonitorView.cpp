@@ -628,8 +628,12 @@ void HgmGUI::HgmMonitorView::frameDestroy()
 
 void HgmGUI::HgmMonitorView::cpu_update(HardwareRequest* hrr)
 {
+    static uint8_t setted = 0;
     // // #59493f
-    lv_label_set_text_fmt(widget.cpu.label.name, "%s", hrr->hd->cpuData->name.c_str());
+    if (setted % 10 == 0) {
+        lv_label_set_text_fmt(widget.cpu.label.name, "%s", hrr->hd->cpuData->name.c_str());
+        setted += 1;
+    }
     lv_label_set_text_fmt(widget.cpu.label.power, "%dW/%dW", (uint32_t)hrr->hd->cpuData->powerCur, (uint32_t)hrr->hd->cpuData->powerMax);
     lv_label_set_text_fmt(widget.cpu.label.temp, "%03d℃", (uint32_t)hrr->hd->cpuData->tempAverage);
     lv_label_set_text_fmt(widget.cpu.label.usage, "%03d%%", (uint32_t)hrr->hd->cpuData->loadTotal);
@@ -640,7 +644,12 @@ void HgmGUI::HgmMonitorView::cpu_update(HardwareRequest* hrr)
 
 void HgmGUI::HgmMonitorView::gpu_update(HardwareRequest* hrr)
 {
-    lv_label_set_text_fmt(widget.gpu.label.name, "%s", hrr->hd->gpuData->name.c_str());
+    static uint8_t setted = 0;
+    // // #59493f
+    if (setted % 10 == 0) {
+        lv_label_set_text_fmt(widget.gpu.label.name, "%s", hrr->hd->gpuData->name.c_str());
+        setted += 1;
+    }
     lv_label_set_text_fmt(widget.gpu.label.power, "%dW/%dW", (uint32_t)hrr->hd->gpuData->powerCur, (uint32_t)hrr->hd->gpuData->powerMax);
     lv_label_set_text_fmt(widget.gpu.label.temp, "%03d℃", (uint32_t)hrr->hd->gpuData->tempCoreCur);
     lv_label_set_text_fmt(widget.gpu.label.usage, "%03d%%", (uint32_t)hrr->hd->gpuData->coreLoad);
@@ -795,18 +804,23 @@ void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)
 
     //if (hrr->isRequest(HGM_CPU))
         cpu_update(hrr);
+    vTaskDelay(50);
     Serial.printf("-----------------------------------------------------------update_monitor 08.2\n");
     //if (hrr->isRequest(HGM_GPU))
         gpu_update(hrr);
+    vTaskDelay(50);
     Serial.printf("-----------------------------------------------------------update_monitor 08.3\n");
     //if (hrr->isRequest(HGM_MEMORY))
         mem_update(hrr);
+    vTaskDelay(50);
     Serial.printf("-----------------------------------------------------------update_monitor 08.4\n");
     //if (hrr->isRequest(HGM_NETWORK))
         net_update(hrr);
+    vTaskDelay(50);
     Serial.printf("-----------------------------------------------------------update_monitor 08.5\n");
     //if (hrr->isRequest(HGM_HARD_DISK))
     //    disk_update(hrr);
+    vTaskDelay(50);
 
     Serial.printf("-----------------------------------------------------------update_monitor 08.6\n");
 }

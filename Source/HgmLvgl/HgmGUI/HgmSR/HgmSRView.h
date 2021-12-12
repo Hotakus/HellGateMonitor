@@ -12,6 +12,7 @@
 
 #include "../../../LvglSrc/lvgl/lvgl.h"
 #include "../../../HgmApp/HardwareInfoRecv/HardwareRequest.h"
+#include "../../../HgmApp/ScreenRecv/ScreenRecv.h"
 
 using namespace HgmApplication;
 
@@ -61,7 +62,7 @@ namespace HgmGUI {
         void begin();
         void end();
 
-        // void update_screen(HardwareRequest* hrr);
+        void update_screen(sr_t* sr);
         void update_status(bool ds);
     };
 }

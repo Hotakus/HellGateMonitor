@@ -72,16 +72,16 @@ HGM的TCP数据包格式(JSON)
 ```
 普通数据模式下，显示Data内容到HGM串口
 
-**投屏图像帧信息数据包（被动）** （DataType == 5）
+**投屏图像帧信息数据包（被动）** （DataType == 6）
 
 ```json
 {
   "Header": "HgmTCP",
-  "DataType": "5",
+  "DataType": "6",
   "Data": {
     "h": "135",  // 表明此帧图像高度
     "w": "240",  // 表明此帧图像宽度
-    "cf": "PNG", // 表明图像格式，如JPG、PNG、RAW
+    "cf": "JPG", // 表明图像格式，如JPG、PNG、RAW
     "fb": "xxxx" // 表明此帧字节数（不包括帧头和帧尾）
   }
 }

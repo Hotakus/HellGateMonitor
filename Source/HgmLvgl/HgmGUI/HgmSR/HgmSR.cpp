@@ -11,6 +11,7 @@
 #include "HgmSRModel.h"
 #include "../../../HgmApp/HardwareInfoRecv/HardwareRequest.h"
 #include "../../../HgmApp/HgmWiFi/HgmWiFi.h"
+#include "../../../HgmApp/ScreenRecv/ScreenRecv.h"
 
 #define TAG "HgmSR"
 #define HGM_DEBUG 1
@@ -21,6 +22,7 @@ using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
 extern HgmWiFi hgmWiFi;
+extern ScreenRecv screenRecv;
 
 static HgmSR* instance = nullptr;
 
@@ -54,7 +56,7 @@ void HgmGUI::HgmSR::begin()
     //update_msg.pData(def_vm.model.hrr);
 
     update_subs.name(_name + String("Update"));
-   // update_subs.subscribe_msg(update_msg.id(), HgmSR::sr_update_cb);
+    update_subs.subscribe_msg(update_msg.id(), HgmSR::sr_screen_cb);
     update_subs.subscribe_msg(status_msg.id(), HgmSR::sr_status_cb);
 
     // 注册消息和订阅者
@@ -63,10 +65,14 @@ void HgmGUI::HgmSR::begin()
     HgmFramework::getInstance()->dataCenter.subscribe(&update_subs);
 
     def_vm.view.begin();
+    screenRecv.begin(SR_OPEN_SINGLE_BUFF);
+    screenRecv.initTask();
 }
 
 void HgmGUI::HgmSR::end()
 {
+    screenRecv.deInitTask();
+    screenRecv.end();
     def_vm.view.end();
     def_vm.model.end();
 
@@ -99,5 +105,11 @@ void HgmGUI::HgmSR::sr_status_cb(msg_t* msg)
 {
     bool* ds = (bool*)msg->pData();
     instance->def_vm.view.update_status(*ds);
+}
+
+void HgmGUI::HgmSR::sr_screen_cb(msg_t* msg)
+{
+    sr_t* sr = (sr_t*)msg->pData();
+    instance->def_vm.view.update_screen(sr);
 }
 

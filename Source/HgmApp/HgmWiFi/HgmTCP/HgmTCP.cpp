@@ -17,6 +17,7 @@
 #include "../../HardwareInfoRecv/HardwareDiskData.h"
 #include "../../HardwareInfoRecv/HardwareRequest.h"
 #include "../../../HgmLvgl/HgmGUI/HgmFramework.h"
+#include "../../ScreenRecv/ScreenRecv.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -34,6 +35,7 @@ using namespace HgmApplication;
 using namespace HgmApplication::HgmJsonParseUtil;
 
 extern SemaphoreHandle_t wbs;
+extern ScreenRecv screenRecv;
 
 static void TcpControlTask(void* params);
 static void TcpServerListeningTask(void* params);
@@ -244,7 +246,11 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 
     instance->accept.readBytes(buf, packSize - 1);
     buf[packSize - 1] = '\0';
-    //Serial.printf("%s\n", buf);
+    for (size_t i = 0; i < packSize; i++)
+    {
+        Serial.printf("%02X ", buf[i]);
+    }
+    Serial.printf("\n", buf);
     Serial.printf("----------------------------------------------------------- 04\n");
     deserializeJson(rawPack, buf);
     Serial.printf("----------------------------------------------------------- 05\n");
@@ -253,7 +259,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
 
     // Match Header
     String Header = rawPack["Header"];
-    Serial.println("");
+    Serial.println(Header);
     if (Header.compareTo(TCP_PACK_HEADER)) {
         str = "Header error. No a valid HGM TCP pack";
         Serial.println(str);
@@ -315,9 +321,47 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
     }
     case HGM_TCP_PACK_METHOD_PROJECTION: {
 
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 1\n");
 
+        sr_data_t dat;
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 2\n");
+        if (rawPack["Data"]["cf"].as<String>() == "JPG") {
+            dat.cf = SR_IMG_FMT_JPG;
+        } else if (rawPack["Data"]["cf"].as<String>() == "PNG") {
+            dat.cf = SR_IMG_FMT_PNG;
+        } else if (rawPack["Data"]["cf"].as<String>() == "RAW") {
+            dat.cf = SR_IMG_FMT_RAW;
+        } else {
+            hgm_log_e(TAG, "Image's format is wrong.");
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+            return HGM_TCP_PACK_METHOD_ERROR;
+        }
 
-        HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 3\n");
+
+        dat.fb = rawPack["Data"]["fb"].as<size_t>();
+        if (!dat.fb) {
+            hgm_log_e(TAG, "Image's size is zero.");
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+            return HGM_TCP_PACK_METHOD_ERROR;
+        }
+
+        dat.w = rawPack["Data"]["w"].as<size_t>();
+        dat.h = rawPack["Data"]["h"].as<size_t>();
+
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 4\n");
+
+        screenRecv.setFrameHead(dat);
+
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 5\n");
+
+        bool ret = screenRecv.imgReceive(instance->accept);
+        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 6\n");
+        if (ret)
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        else 
+            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        
         return HGM_TCP_PACK_METHOD_PROJECTION;
     }
     case HGM_TCP_PACK_METHOD_DS_MATCH: {

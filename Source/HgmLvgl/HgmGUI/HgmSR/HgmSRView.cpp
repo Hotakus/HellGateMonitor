@@ -186,23 +186,20 @@ static void prompt_create()
     lv_obj_align_to(instance->widget.prompt.frame.port_label, instance->widget.prompt.frame.ip_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
 }
 
+#include "../../../HgmApp/ScreenRecv/ScreenRecv.h"
+extern ScreenRecv screenRecv;
+
 void HgmGUI::HgmSRView::widgetCreate()
 {
     widget.img.self = lv_img_create(lv_scr_act());
     lv_obj_set_size(widget.img.self, 240, 135);
     lv_obj_align(widget.img.self, LV_ALIGN_TOP_LEFT, 0, 0);
 
-    String path = String("/") + String("sr_test.png");
-    instance->widget.img.buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * (Sfu::fileSize(path) + 1024));
-    size_t icon_size = Sfu::read(path, instance->widget.img.buf);
+    // String path = String("/") + String("sr_test.jpg");
+    // instance->widget.img.buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * (Sfu::fileSize(path) + 1024));
+    // size_t icon_size = Sfu::read(path, instance->widget.img.buf);
 
-    instance->widget.img.dsc.data_size = icon_size;
-    instance->widget.img.dsc.header.always_zero = 0;
-    instance->widget.img.dsc.header.w = 240;
-    instance->widget.img.dsc.header.h = 135;
-    instance->widget.img.dsc.header.cf = LV_IMG_CF_RAW_ALPHA;
-    instance->widget.img.dsc.data = instance->widget.img.buf;
-    lv_img_set_src(widget.img.self, &instance->widget.img.dsc);
+    
 
     widget.fps_label = lv_label_create(widget.img.self);
     lv_obj_align(widget.fps_label, LV_ALIGN_TOP_LEFT, 5, 5);
@@ -235,6 +232,18 @@ void HgmGUI::HgmSRView::frameDestroy()
 {
 }
 
+
+
+void HgmGUI::HgmSRView::update_screen(sr_t* sr)
+{
+    instance->widget.img.dsc.data_size = (240 * 135 * 2);
+    instance->widget.img.dsc.header.always_zero = 0;
+    instance->widget.img.dsc.header.w = 240;
+    instance->widget.img.dsc.header.h = 135;
+    instance->widget.img.dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+    instance->widget.img.dsc.data = sr->curr_frame_buf;
+    lv_img_set_src(widget.img.self, &instance->widget.img.dsc);
+}
 
 void HgmGUI::HgmSRView::update_status(bool ds)
 {

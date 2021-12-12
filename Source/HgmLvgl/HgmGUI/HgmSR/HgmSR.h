@@ -27,6 +27,7 @@ namespace HgmGUI {
 
         static void sr_ui_cb(msg_t* msg);
         static void sr_status_cb(msg_t* msg);
+        static void sr_screen_cb(msg_t* msg);
 
     public:
 
