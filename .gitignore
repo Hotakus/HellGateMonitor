@@ -141,9 +141,10 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
-*.VC.db
+*.VC.db*
 *.VC.VC.opendb
 *.db-shm
+*.db-wal
 
 # Visual Studio profiler
 *.psess
