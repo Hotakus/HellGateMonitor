@@ -32,8 +32,6 @@ namespace HgmApplication {
     } sr_recv_methid_t;
 
     typedef struct _sr_data_t {
-        uint16_t w;
-        uint16_t h;
         size_t  fb; 
         sr_recv_methid_t cf;
     } sr_data_t;
@@ -45,6 +43,7 @@ namespace HgmApplication {
         uint8_t* curr_frame_buf;        // 指向当前buf的指针， buf1 或 buf2
 
         sr_data_t dat;
+        size_t fps;
     } sr_t;
 
     class ScreenRecv {
@@ -55,6 +54,7 @@ namespace HgmApplication {
         
     public:
         sr_t sr;
+        bool beginFlag = false;
 
         struct _frtos {
             TaskHandle_t decode_th = NULL;

@@ -47,6 +47,7 @@ namespace HgmApplication {
 		~HardwareDiskData();
 
 		void Set(HDJsonDoc& hdjd);
+        void Set(DynamicJsonDocument& hdjd);
 	};
 
 }

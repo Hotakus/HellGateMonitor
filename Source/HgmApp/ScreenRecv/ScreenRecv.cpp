@@ -65,11 +65,10 @@ static bool _DecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16
     return 1;
 }
 
-extern HgmLvgl *hgmLvgl;
+extern HgmLvgl* hgmLvgl;
 
 void HgmApplication::ScreenRecv::decode_task(void* params)
 {
-    Serial.println("decode_task------------------------------------------------- decode_task");
     uint8_t* dummy;
     while (true)
     {
@@ -80,18 +79,18 @@ void HgmApplication::ScreenRecv::decode_task(void* params)
         TJpgDec.setSwapBytes(false);
         TJpgDec.setCallback(_DecodeCallback);
 
+        uint32_t t = millis();
         uint16_t w = 0, h = 0;
-        TJpgDec.getJpgSize(&w, &h, &instance->sr.recv_frame_buf[3], instance->sr.dat.fb);
+        hgm_log_d(TAG, "decode_task Img size : %d", instance->sr.dat.fb);
+        TJpgDec.getJpgSize(&w, &h, &instance->sr.recv_frame_buf[6], instance->sr.dat.fb);
         Serial.printf("Width = %d, height = %d\n", w, h);
-        JRESULT ret = TJpgDec.drawJpg(0, 0, &instance->sr.recv_frame_buf[3], instance->sr.dat.fb);
-        
+        JRESULT ret = TJpgDec.drawJpg(0, 0, &instance->sr.recv_frame_buf[6], instance->sr.dat.fb);
+
         instance->sr.curr_frame_buf = instance->sr.decode_frame_buf1;
 
-        //for (size_t s = 0; s < (HGM_MONITOR_WIDTH * HGM_MONITOR_HEIGHT * 2); s++)
-        //{
-        //    Serial.printf("%X ", instance->sr.curr_frame_buf[s]);
-        //}
-
+        t = millis() - t;
+        Serial.print(t); Serial.println(" ms");
+        
         String _name = "HgmSRUpdate";
         MsgCenter& mc = HgmFramework::getInstance()->dataCenter;
         msg_t* msg = mc.findMsg(_name);
@@ -158,45 +157,72 @@ bool HgmApplication::ScreenRecv::setFrameHead(sr_data_t _dat)
 
 bool HgmApplication::ScreenRecv::imgReceive(WiFiClient& wc, size_t timeout)
 {
-    while (!wc.available() && timeout > 0) {
-        timeout -= 10;
-        vTaskDelay(10);
-    }
-    if (timeout <= 0)
-        return false;
-
-    //vTaskDelay(1000);
-
-    Serial.println("---------------------------------11111111111111111111111111decode_start 01");
-
-    uint8_t* buf = sr.recv_frame_buf;
-    size_t i;
-    for (i = 0; wc.available(); i++)
-        buf[i] = (uint8_t)wc.read();
-    buf[i] = '\0';
-
-    Serial.println(i);
-
-    for (size_t s = 0; s < i; s++)
-    {
-        Serial.printf("%X ", buf[s]);
-    }
-
-    Serial.println("---------------------------------11111111111111111111111111decode_start 02");
-
-    if (buf[0] == 0x20 && buf[1] == 0x21 && buf[2] == 0x12) {
-        if (buf[i - 1] == 0x20 && buf[i - 2] == 0x21 && buf[i - 3] == 0x12) {
-            decode_start();
+    while (beginFlag) {
+        while (!wc.connected()) {
+            vTaskDelay(5);
+            wc.flush();
             return true;
         }
-    } else
-        return false;
 
+        while (!wc.available()) {
+            vTaskDelay(5);
+            continue;
+        }
+
+        uint8_t* buf = sr.recv_frame_buf;
+        memset(buf, 0, 6);
+
+        /* Match frame head */
+        wc.readBytes(buf, 3);
+        hgm_log_d(TAG, "Frame head : %02X %02X %02X", buf[0], buf[1], buf[2]);
+        if (buf[0] == 'e' && buf[1] == 'n' && buf[2] == 'd') {
+            hgm_log_d(TAG, "End");
+            wc.flush();
+            return true;
+        }
+
+        if (buf[0] != 0x20 || buf[1] != 0x21 || buf[2] != 0x12) {
+            hgm_log_e(TAG, "Frame's head is wrong.");
+            wc.flush();
+            vTaskDelay(10);
+            continue;
+        }
+
+        buf = &buf[3];
+
+        /* Match img info */
+        wc.readBytes(buf, 3);
+        size_t imgSize = ((buf[0] << 16) | (buf[1] << 8) | (buf[2] << 0));
+        sr.dat.fb = imgSize;
+        hgm_log_d(TAG, "imgSize : %02X %02X %02X", buf[0], buf[1], buf[2]);
+        hgm_log_d(TAG, "Img size : %d", imgSize);
+
+        buf = &buf[3];
+
+        /* Read img body */
+        wc.readBytes(buf, imgSize);
+
+        buf = &buf[imgSize];
+        
+        /* Match frame tail */
+        wc.readBytes(buf, 3);
+        hgm_log_d(TAG, "Frame tail : %02X %02X %02X\n", buf[0], buf[1], buf[2]);
+        if (buf[2] != 0x20 || buf[1] != 0x21 || buf[0] != 0x12) {
+            hgm_log_e(TAG, "Frame's tail is wrong.");
+            wc.flush();
+            vTaskDelay(10);
+            continue;
+        }
+         
+        // TODO: decode mathods
+        decode_start();
+        wc.flush();
+        vTaskDelay(5);
+    }
 }
 
 void HgmApplication::ScreenRecv::decode_start()
 {
-    Serial.println("---------------------------------11111111111111111111111111decode_start 03");
     uint8_t* dummy;
     xQueueSend(instance->frtos.decode_mb, &dummy, portMAX_DELAY);
 }

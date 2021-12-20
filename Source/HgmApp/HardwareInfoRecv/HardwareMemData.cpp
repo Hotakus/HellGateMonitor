@@ -25,7 +25,18 @@ HgmApplication::HardwareMemData::~HardwareMemData()
 {
 }
 
+
 void HgmApplication::HardwareMemData::Set(HDJsonDoc& hdjd)
+{
+    this->load = hdjd["Data"]["Memory"]["load"]["current"].as<float>();
+    this->loadMax = hdjd["Data"]["Memory"]["load"]["max"].as<float>();
+
+    this->free = hdjd["Data"]["Memory"]["data"]["free"].as<float>();
+    this->used = hdjd["Data"]["Memory"]["data"]["used"].as<float>();
+    this->total = hdjd["Data"]["Memory"]["data"]["total"].as<float>();
+}
+
+void HgmApplication::HardwareMemData::Set(DynamicJsonDocument& hdjd)
 {
     this->load = hdjd["Data"]["Memory"]["load"]["current"].as<float>();
     this->loadMax = hdjd["Data"]["Memory"]["load"]["max"].as<float>();

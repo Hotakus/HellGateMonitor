@@ -210,9 +210,10 @@ HgmBTPackMethod HgmApplication::HgmBT::receiveDataPack()
 
         if (_ssid != "null" && _password != "null")
             HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_OK);
-        else
+        else {
             HgmBT::sendDatePack(str, HGM_BT_PACK_METHOD_ERROR);
             break;
+        }
 
         hgmWiFi.stop();
         vTaskDelay(1000);

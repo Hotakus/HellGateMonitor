@@ -103,10 +103,10 @@ void HgmMonitorView::cpu_widget_create(HgmHardwarePosition pos)
     lv_obj_set_width(widget.cpu.label.name, 90);
     lv_obj_align(widget.cpu.label.name, LV_ALIGN_TOP_MID, 0, 4);
     lv_label_set_recolor(widget.cpu.label.name, true);
-    lv_label_set_long_mode(widget.cpu.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(widget.cpu.label.name, LV_LABEL_LONG_CLIP);
     lv_label_set_text_fmt(widget.cpu.label.name, "-----"); // Intel Core i7-8700
-    lv_obj_set_style_anim_speed(widget.cpu.label.name, 15, 0);
-
+    lv_obj_set_style_anim_speed(widget.cpu.label.name, 15, 0);    
+    
     widget.cpu.label.power = lv_label_create(f);
     lv_obj_set_style_text_font(widget.cpu.label.power, &k12x8_7px, 0);
     lv_obj_align_to(widget.cpu.label.power, widget.cpu.label.name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
@@ -120,8 +120,7 @@ void HgmMonitorView::cpu_widget_create(HgmHardwarePosition pos)
     lv_label_set_text_fmt(widget.cpu.label.temp, "---℃", 0);
 
     widget.cpu.label.usage = lv_label_create(f);
-    lv_obj_set_style_text_font(widget.cpu.label.usage, &k12x8_7px, 0);
-    lv_obj_align_to(widget.cpu.label.usage, widget.cpu.label.temp, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+    lv_obj_set_style_text_font(widget.cpu.label.usage, &k12x8_7px, 0);   lv_obj_align_to(widget.cpu.label.usage, widget.cpu.label.temp, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
     lv_label_set_recolor(widget.cpu.label.usage, true);
     lv_label_set_text_fmt(widget.cpu.label.usage, "---%%", 0);
 
@@ -157,7 +156,7 @@ void HgmMonitorView::gpu_widget_create(HgmHardwarePosition pos)
     lv_obj_set_width(widget.gpu.label.name, 90);
     lv_obj_align(widget.gpu.label.name, LV_ALIGN_TOP_MID, 0, 4);
     lv_label_set_recolor(widget.gpu.label.name, true);
-    lv_label_set_long_mode(widget.gpu.label.name, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(widget.gpu.label.name, LV_LABEL_LONG_CLIP);
     lv_label_set_text_fmt(widget.gpu.label.name, "-----");
     lv_obj_set_style_anim_speed(widget.gpu.label.name, 15, 0);
 
@@ -468,7 +467,7 @@ void HgmGUI::HgmMonitorView::frameCreate()
     lv_obj_align(widget.status_bar.bg, LV_ALIGN_TOP_RIGHT, 30, 0);
     lv_obj_set_style_bg_color(widget.status_bar.bg, lv_color_make(0, 0, 0), 0);
     lv_obj_set_style_bg_opa(widget.status_bar.bg, LV_OPA_40, 0);
-    
+
     status_bar_create();
 }
 
@@ -628,28 +627,30 @@ void HgmGUI::HgmMonitorView::frameDestroy()
 
 void HgmGUI::HgmMonitorView::cpu_update(HardwareRequest* hrr)
 {
-    static uint8_t setted = 0;
-    // // #59493f
-    if (setted % 10 == 0) {
-        lv_label_set_text_fmt(widget.cpu.label.name, "%s", hrr->hd->cpuData->name.c_str());
-        setted += 1;
-    }
+    // static bool set = false;
+    // if (!set) {
+    //     lv_label_set_text(widget.cpu.label.name, hrr->hd->cpuData->name.c_str());
+    //     set = true;
+    // }
+
+    lv_label_set_text(widget.cpu.label.name, hrr->hd->cpuData->name.c_str());
     lv_label_set_text_fmt(widget.cpu.label.power, "%dW/%dW", (uint32_t)hrr->hd->cpuData->powerCur, (uint32_t)hrr->hd->cpuData->powerMax);
     lv_label_set_text_fmt(widget.cpu.label.temp, "%03d℃", (uint32_t)hrr->hd->cpuData->tempAverage);
     lv_label_set_text_fmt(widget.cpu.label.usage, "%03d%%", (uint32_t)hrr->hd->cpuData->loadTotal);
-    
+
     lv_bar_set_value(widget.cpu.bar.temp, hrr->hd->cpuData->tempAverage, LV_ANIM_ON);
     lv_bar_set_value(widget.cpu.bar.usage, hrr->hd->cpuData->loadTotal, LV_ANIM_ON);
 }
 
 void HgmGUI::HgmMonitorView::gpu_update(HardwareRequest* hrr)
 {
-    static uint8_t setted = 0;
-    // // #59493f
-    if (setted % 10 == 0) {
-        lv_label_set_text_fmt(widget.gpu.label.name, "%s", hrr->hd->gpuData->name.c_str());
-        setted += 1;
-    }
+    // static bool set = false;
+    // if (!set) {
+    //     lv_label_set_text(widget.gpu.label.name, hrr->hd->gpuData->name.c_str());
+    //     set = true;
+    // }
+
+    lv_label_set_text(widget.gpu.label.name, hrr->hd->gpuData->name.c_str());
     lv_label_set_text_fmt(widget.gpu.label.power, "%dW/%dW", (uint32_t)hrr->hd->gpuData->powerCur, (uint32_t)hrr->hd->gpuData->powerMax);
     lv_label_set_text_fmt(widget.gpu.label.temp, "%03d℃", (uint32_t)hrr->hd->gpuData->tempCoreCur);
     lv_label_set_text_fmt(widget.gpu.label.usage, "%03d%%", (uint32_t)hrr->hd->gpuData->coreLoad);
@@ -745,13 +746,9 @@ static void stateCheck(lv_timer_t* timer)
 
 void HgmGUI::HgmMonitorView::begin()
 {
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 01");
     frameCreate();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 02");
     widgetCreate();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 03");
     animCreate();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 04");
 
     showTimeTimer = lv_timer_create(ShowTime, 500, NULL);
     stateCheckTimer = lv_timer_create(stateCheck, 2000, NULL);
@@ -771,14 +768,9 @@ void HgmGUI::HgmMonitorView::end()
         vTaskDelay(300);
     }
 
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 05");
-    // TODO: Destroy
     widgetDestroy();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 06");
     animDestroy();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 07");
     frameDestroy();
-    Serial.println("HgmMonitorView::begin() ----------------------------------------- 08");
 }
 
 void HgmGUI::HgmMonitorView::alter_pos(HgmHardwarePosition from, HgmHardwarePosition to)
@@ -799,30 +791,21 @@ void HgmGUI::HgmMonitorView::update_monitor(HardwareRequest* hrr)
     // hrr->hd->netData->Set(doc);
     // hrr->hd->diskData->Set(doc);
 
-    Serial.printf("-----------------------------------------------------------update_monitor 08.1\n");
-
-
-    //if (hrr->isRequest(HGM_CPU))
+    if (hrr->isRequest(HGM_CPU))
         cpu_update(hrr);
     vTaskDelay(50);
-    Serial.printf("-----------------------------------------------------------update_monitor 08.2\n");
-    //if (hrr->isRequest(HGM_GPU))
+    if (hrr->isRequest(HGM_GPU))
         gpu_update(hrr);
     vTaskDelay(50);
-    Serial.printf("-----------------------------------------------------------update_monitor 08.3\n");
-    //if (hrr->isRequest(HGM_MEMORY))
+    if (hrr->isRequest(HGM_MEMORY))
         mem_update(hrr);
     vTaskDelay(50);
-    Serial.printf("-----------------------------------------------------------update_monitor 08.4\n");
-    //if (hrr->isRequest(HGM_NETWORK))
+    if (hrr->isRequest(HGM_NETWORK))
         net_update(hrr);
     vTaskDelay(50);
-    Serial.printf("-----------------------------------------------------------update_monitor 08.5\n");
-    //if (hrr->isRequest(HGM_HARD_DISK))
-    //    disk_update(hrr);
+    if (hrr->isRequest(HGM_HARD_DISK))
+        disk_update(hrr);
     vTaskDelay(50);
-
-    Serial.printf("-----------------------------------------------------------update_monitor 08.6\n");
 }
 
 void HgmGUI::HgmMonitorView::update_status(bool ds)

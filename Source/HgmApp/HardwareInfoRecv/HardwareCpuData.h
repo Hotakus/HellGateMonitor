@@ -44,6 +44,7 @@ namespace HgmApplication {
         ~HardwareCpuData();
 
         void Set(HDJsonDoc& hdjd);
+        void Set(DynamicJsonDocument& hdjd);
 	};
 }
 

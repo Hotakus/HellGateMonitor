@@ -542,6 +542,12 @@
     <ClInclude Include="Source\HgmApp\ScreenRecv\ScreenRecv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lv_conf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HgmControl\HgmControlLogic.cpp">
@@ -1454,6 +1460,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\HgmApp\ScreenRecv\ScreenRecv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LvglSrc\lvgl\src\extra\libs\sjpg\lv_sjpg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

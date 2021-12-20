@@ -13,8 +13,9 @@
 #include <WiFi.h>
 
 namespace HgmApplication {
-#define TCP_PACK_HEADER "HgmTCP"
+#define TCP_PACK_HEADER     "HgmTCP"
 #define SERVER_DEFAULT_PORT 20
+#define TCP_MAX_BUF_SIZE    (8192)
 
     typedef enum HgmTcpPackMethod
     {
@@ -27,7 +28,8 @@ namespace HgmApplication {
         HGM_TCP_PACK_METHOD_HWI,                    // (4) Hardware info pack
         HGM_TCP_PACK_METHOD_DS_MATCH,               // (5) Match data source 
 
-        HGM_TCP_PACK_METHOD_PROJECTION,             // (6) 
+        HGM_TCP_PACK_METHOD_PROJECTION_BEGIN,       // (6) Projection begin
+        HGM_TCP_PACK_METHOD_PROJECTION_END,         // (7) Projection end
 
         HGM_TCP_PACK_METHOD_NORMAL,                 // (M-1) Pack is Normal data
         HGM_TCP_PACK_METHOD_NULL,                   // (M) Null
@@ -58,6 +60,8 @@ namespace HgmApplication {
         bool hasClient = false;
         TcpControlMethod tcm = TCP_NULL;
         WiFiClient accept;
+
+        uint8_t* tbuf = nullptr;
 
         struct _frtos {
             TaskHandle_t tcpControlTaskHandle = NULL;

@@ -41,3 +41,20 @@ void HgmApplication::HardwareGpuData::Set(HDJsonDoc& hdjd)
     this->powerCur = hdjd["Data"]["GPU"]["power"]["current"].as<float>();
     this->powerMax = hdjd["Data"]["GPU"]["power"]["max"].as<float>();
 }
+
+void HgmApplication::HardwareGpuData::Set(DynamicJsonDocument& hdjd)
+{
+    this->name = hdjd["Data"]["GPU"]["name"].as<String>();
+
+    this->tempCoreCur = hdjd["Data"]["GPU"]["temp"]["current"].as<float>();
+    this->tempCoreMax = hdjd["Data"]["GPU"]["temp"]["max"].as<float>();
+
+    this->coreFreq = hdjd["Data"]["GPU"]["freq"]["core"]["current"].as<float>();
+    this->memFreq = hdjd["Data"]["GPU"]["freq"]["mem"]["current"].as<float>();
+
+    this->coreLoad = hdjd["Data"]["GPU"]["load"]["coreCurrent"].as<float>();
+    this->coreLoadMax = hdjd["Data"]["GPU"]["load"]["coreMax"].as<float>();
+
+    this->powerCur = hdjd["Data"]["GPU"]["power"]["current"].as<float>();
+    this->powerMax = hdjd["Data"]["GPU"]["power"]["max"].as<float>();
+}

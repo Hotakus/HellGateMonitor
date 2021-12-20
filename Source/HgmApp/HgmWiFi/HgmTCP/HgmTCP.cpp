@@ -86,7 +86,7 @@ void HgmApplication::HgmTCP::initTask()
     xTaskCreatePinnedToCore(
         TcpControlTask,
         "TcpControlTask",
-        8192,
+        3072,
         NULL,
         6,
         &frtos.tcpControlTaskHandle,
@@ -213,6 +213,7 @@ void HgmApplication::HgmTCP::sendDatePack(String& rawData, HgmTcpPackMethod meth
     instance->accept.write((uint8_t*)s.c_str(), s.length());
 }
 
+static uint8_t sbuf[8192];
 /**
  * @brief Receive and analyze the data pack.
  * @param DateToSave Return data that was analyzed
@@ -226,41 +227,26 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         return HGM_TCP_PACK_METHOD_ERROR;
 
     String str = "";
-
-    Serial.printf("----------------------------------------------------------- 01\n");
+    
     // Receive raw pack
     size_t packSize = (instance->accept.available() + 1);
-    HDJsonDoc rawPack(packSize + 1024);
-    uint8_t* buf = (uint8_t*)heap_caps_calloc(packSize, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+    DynamicJsonDocument rawPack(packSize + 1024);
 
-    Serial.printf("----------------------------------------------------------- 02\n");
-
-    //uint8_t* buf = (uint8_t*)malloc(sizeof(uint8_t) * packSize);
-    if (!buf) {
+    if (!instance->tbuf) {
         Serial.println("TCP allocated error");
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         return HGM_TCP_PACK_METHOD_ERROR;
     }
 
-    Serial.printf("----------------------------------------------------------- 03\n");
-
-    instance->accept.readBytes(buf, packSize - 1);
-    buf[packSize - 1] = '\0';
-    for (size_t i = 0; i < packSize; i++)
-    {
-        Serial.printf("%02X ", buf[i]);
-    }
-    Serial.printf("\n", buf);
-    Serial.printf("----------------------------------------------------------- 04\n");
-    deserializeJson(rawPack, buf);
-    Serial.printf("----------------------------------------------------------- 05\n");
-    heap_caps_free(buf);
-    Serial.printf("----------------------------------------------------------- 06\n");
+    instance->accept.readBytes(instance->tbuf, packSize - 1);
+    instance->tbuf[packSize - 1] = '\0';
+    deserializeJson(rawPack, instance->tbuf);
 
     // Match Header
     String Header = rawPack["Header"];
-    Serial.println(Header);
+    //Serial.println(Header);
     if (Header.compareTo(TCP_PACK_HEADER)) {
+        instance->accept.flush();
         str = "Header error. No a valid HGM TCP pack";
         Serial.println(str);
         HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
@@ -289,8 +275,6 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
             hgm_log_e(TAG, "Monitor msg is null.");
             return HGM_TCP_PACK_METHOD_ERROR;
         }
-
-        Serial.printf("----------------------------------------------------------- 07\n");
         
         HardwareRequest* hrr = (HardwareRequest*)msg->pData();
         if (hrr->isRequest(HGM_CPU))
@@ -304,10 +288,7 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
         if (hrr->isRequest(HGM_HARD_DISK))
             hrr->hd->diskData->Set(rawPack);
 
-        Serial.printf("----------------------------------------------------------- 08\n");
-
         bool ret = mc.notify(str, str);
-        Serial.printf("----------------------------------------------------------- 09\n");
         if (ret)
             HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
         else {
@@ -315,16 +296,11 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
             HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
         }
 
-        Serial.printf("----------------------------------------------------------- 10\n");
-
         return HGM_TCP_PACK_METHOD_OK;
     }
-    case HGM_TCP_PACK_METHOD_PROJECTION: {
-
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 1\n");
-
+    case HGM_TCP_PACK_METHOD_PROJECTION_BEGIN: {
         sr_data_t dat;
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 2\n");
+
         if (rawPack["Data"]["cf"].as<String>() == "JPG") {
             dat.cf = SR_IMG_FMT_JPG;
         } else if (rawPack["Data"]["cf"].as<String>() == "PNG") {
@@ -337,32 +313,30 @@ HgmTcpPackMethod HgmApplication::HgmTCP::receiveDataPack()
             return HGM_TCP_PACK_METHOD_ERROR;
         }
 
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 3\n");
+        // dat.w = rawPack["Data"]["w"].as<size_t>();
+        // dat.h = rawPack["Data"]["h"].as<size_t>();
+        // 
+        // screenRecv.setFrameHead(dat);
+        // //Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 5\n");
+        // 
+        // //HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        // bool ret = screenRecv.imgReceive(instance->accept);
+        // Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 6\n");
+        // if (ret)
+        //     HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
+        // else 
+        //     HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
+        // 
+        // return HGM_TCP_PACK_METHOD_PROJECTION;
 
-        dat.fb = rawPack["Data"]["fb"].as<size_t>();
-        if (!dat.fb) {
-            hgm_log_e(TAG, "Image's size is zero.");
-            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
-            return HGM_TCP_PACK_METHOD_ERROR;
-        }
-
-        dat.w = rawPack["Data"]["w"].as<size_t>();
-        dat.h = rawPack["Data"]["h"].as<size_t>();
-
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 4\n");
-
+        screenRecv.beginFlag = true;
         screenRecv.setFrameHead(dat);
-
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 5\n");
-
-        bool ret = screenRecv.imgReceive(instance->accept);
-        Serial.printf("---------------------HGM_TCP_PACK_METHOD_PROJECTION- 6\n");
-        if (ret)
-            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_OK);
-        else 
-            HgmTCP::sendDatePack(str, HGM_TCP_PACK_METHOD_ERROR);
-        
-        return HGM_TCP_PACK_METHOD_PROJECTION;
+        screenRecv.imgReceive(instance->accept);
+        return HGM_TCP_PACK_METHOD_OK;
+    }
+    case HGM_TCP_PACK_METHOD_PROJECTION_END: {
+        screenRecv.beginFlag = false;
+        return HGM_TCP_PACK_METHOD_OK;
     }
     case HGM_TCP_PACK_METHOD_DS_MATCH: {
         instance->isDataSrc = true;
@@ -414,7 +388,7 @@ static void TcpControlTask(void* params)
         }
 
         switch (methodRecv) {
-        case TCP_BEGIN_SERVER:         // server begin
+        case TCP_BEGIN_SERVER:         // server begin 
             if (instance->frtos.tcpServerTaskHandle == NULL) {
                 while (!WiFi.isConnected())
                     vTaskDelay(100);
@@ -422,9 +396,9 @@ static void TcpControlTask(void* params)
                 xTaskCreatePinnedToCore(
                     TcpServerListeningTask,
                     "TcpServerListeningTask",
-                    3072,
+                    8192,
                     NULL,
-                    4, // 9
+                    2, // 9
                     &instance->frtos.tcpServerTaskHandle,
                     1
                 );
@@ -477,12 +451,16 @@ static void TcpServerListeningTask(void* params)
         instance->hasClient = true;
         instance->matchDataSrc();
 
+        //instance->tbuf = (uint8_t*)heap_caps_calloc(TCP_MAX_BUF_SIZE, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+        instance->tbuf = (uint8_t*)malloc(sizeof(uint8_t) * TCP_MAX_BUF_SIZE);
         while (instance->accept.connected()) {
             xSemaphoreTake(wbs, portMAX_DELAY);
             HgmTCP::receiveDataPack();
             xSemaphoreGive(wbs);
             vTaskDelay(10);
         }
+        free(instance->tbuf);
+        //heap_caps_free(instance->tbuf);
 
         instance->hasClient = false;
         instance->isDataSrc = false;

@@ -78,7 +78,7 @@ static void ctl_event_cb(lv_event_t* e)
 {
     lv_obj_t* obj = lv_event_get_current_target(e);
 
-    if (obj == instance->widget.prompt.btn) {
+    if (obj == instance->widget.img.self) {
         instance->widget.prompt.value = ~(instance->widget.prompt.value);
         if (instance->widget.prompt.value) {
             lv_label_set_text_fmt(instance->widget.prompt.frame.ip_label, "#ffffff IP: %s#", WiFi.localIP().toString().c_str());
@@ -122,7 +122,7 @@ void HgmGUI::HgmSRView::begin()
 
     showFpsTimer = lv_timer_create(show_fps, 1000, NULL);
 
-    //lv_event_send(instance->widget.prompt.btn, LV_EVENT_CLICKED, NULL);
+    lv_event_send(instance->widget.img.self, LV_EVENT_CLICKED, NULL);
 }
 
 void HgmGUI::HgmSRView::end()
@@ -131,10 +131,10 @@ void HgmGUI::HgmSRView::end()
 
     lv_group_remove_all_objs(widget.group);
 
-    // if (instance->widget.prompt.value) {
-    //     lv_event_send(instance->widget.prompt.btn, LV_EVENT_CLICKED, NULL);
-    //     vTaskDelay(300);
-    // }
+    if (instance->widget.prompt.value) {
+        lv_event_send(instance->widget.img.self, LV_EVENT_CLICKED, NULL);
+        vTaskDelay(300);
+    }
 
     Serial.println("HgmSRView::begin() ----------------------------------------- 05");
     // TODO: Destroy
@@ -160,7 +160,7 @@ static void prompt_create()
     // prompt frame
     instance->widget.prompt.frame.self = lv_imgbtn_create(lv_scr_act());
     lv_obj_set_width(instance->widget.prompt.frame.self, 200);
-    lv_obj_set_style_opa(instance->widget.prompt.frame.self, LV_OPA_70, 0);
+    lv_obj_set_style_opa(instance->widget.prompt.frame.self, LV_OPA_0, 0);
     lv_obj_align(instance->widget.prompt.frame.self, LV_ALIGN_CENTER, 0, 0);
     // lv_img_set_src(instance->widget.prompt.frame.self, &prompt_frame);
     lv_imgbtn_set_src(instance->widget.prompt.frame.self, LV_IMGBTN_STATE_RELEASED, &prompt_frame_left, &prompt_frame_mid, &prompt_frame_right);
@@ -194,6 +194,7 @@ void HgmGUI::HgmSRView::widgetCreate()
     widget.img.self = lv_img_create(lv_scr_act());
     lv_obj_set_size(widget.img.self, 240, 135);
     lv_obj_align(widget.img.self, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_add_event_cb(widget.img.self, ctl_event_cb, LV_EVENT_CLICKED, NULL);
 
     // String path = String("/") + String("sr_test.jpg");
     // instance->widget.img.buf = (uint8_t*)hotakusAlloc(sizeof(uint8_t) * (Sfu::fileSize(path) + 1024));
@@ -208,7 +209,7 @@ void HgmGUI::HgmSRView::widgetCreate()
     //lv_label_set_text_fmt(widget.fps_label, "#486817 --#", 0);
     lv_label_set_text_fmt(widget.fps_label, "#ffffff --#", 0);
 
-    //prompt_create();
+    prompt_create();
 
     widget.group = keypad_group;
 }
